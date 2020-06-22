@@ -1,28 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:posflutterapp/page/home_page.dart';
-import 'package:posflutterapp/page/login_page.dart';
+import 'package:posflutterapp/bloc/authentication/authentication_bloc.dart';
+import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/page/splash_screen.dart';
-import 'package:posflutterapp/user_repository.dart';
 
-import 'bloc/authentication/authentication_bloc.dart';
-import 'bloc/external/external_bloc.dart';
+import '../user_repository.dart';
+import 'home_page.dart';
+import 'login_page.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-//  BlocSupervisor.delegate = SimpleBlocDelegate();
-  final UserRepository userRepository = UserRepository();
-  runApp(
-    MyApp(
-      userRepository: userRepository,
-    ),
-  );
-}
-
-class MyApp extends StatelessWidget {
+class MyHomePage extends StatelessWidget {
   final UserRepository _userRepository;
 
-  MyApp({Key key, @required UserRepository userRepository})
+  MyHomePage({Key key, @required UserRepository userRepository})
       : assert(userRepository != null),
         _userRepository = userRepository,
         super(key: key);

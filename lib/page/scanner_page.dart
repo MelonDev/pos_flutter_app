@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'bloc/external/external_bloc.dart';
+import '../bloc/external/external_bloc.dart';
 
 class ScannerPage extends StatefulWidget {
   ScannerPage({Key key}) : super(key: key);

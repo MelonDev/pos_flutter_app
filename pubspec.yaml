@@ -44,3 +44,13 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - images/products/fanta01.jpg
+    - images/products/fanta02.jpg
+    - images/products/lay01.jpg
+    - images/products/lay02.jpg
+    - images/products/coke-zero01.jpg
+    - images/products/jabjai01.jpg
+    - images/products/oichi01.jpg
+    - images/products/pepsi01.jpg
