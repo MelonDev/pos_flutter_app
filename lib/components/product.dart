@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:posflutterapp/bloc/firebase_products/firebase_products_bloc.dart';
 
 class Products extends StatefulWidget {
   @override
@@ -6,87 +8,56 @@ class Products extends StatefulWidget {
 }
 
 class _ProductsState extends State<Products> {
-  var product_list = [
-    {
-      "name": "Blazer",
-      "picture": "images/products/coke-zero01.jpg",
-      "old_price": 120,
-      "price": 85,
-    },
-    {
-      "name": "Red dress",
-      "picture": "images/products/fanta01.jpg",
-      "old_price": 100,
-      "price": 50,
-    },
-    {
-      "name": "Red dress",
-      "picture": "images/products/fanta02.jpg",
-      "old_price": 100,
-      "price": 50,
-    },
-    {
-      "name": "Red dress",
-      "picture": "images/products/jabjai01.jpg",
-      "old_price": 100,
-      "price": 50,
-    },
-    {
-      "name": "Blazer",
-      "picture": "images/products/coke-zero01.jpg",
-      "old_price": 120,
-      "price": 85,
-    },
-    {
-      "name": "Red dress",
-      "picture": "images/products/fanta01.jpg",
-      "old_price": 100,
-      "price": 50,
-    },
-    {
-      "name": "Red dress",
-      "picture": "images/products/fanta02.jpg",
-      "old_price": 100,
-      "price": 50,
-    },
-    {
-      "name": "Red dress",
-      "picture": "images/products/jabjai01.jpg",
-      "old_price": 100,
-      "price": 50,
-    },
-  ];
+  FirebaseProductsBloc _firebaseProductsBloc;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-        itemCount: product_list.length,
-        gridDelegate:
-            new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-        itemBuilder: (BuildContext context, int index) {
-          return Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Single_prod(
-              prod_name: product_list[index]['name'],
-              prod_pricture: product_list[index]['picture'],
-              prod_old_price: product_list[index]['old_price'],
-              prod_price: product_list[index]['price'],
-            ),
+    _firebaseProductsBloc = BlocProvider.of<FirebaseProductsBloc>(context);
+    _firebaseProductsBloc.add(RefreshFirebaseProductsEvent());
+    return BlocBuilder<FirebaseProductsBloc, FirebaseProductsState>(
+      builder: (BuildContext context, _state) {
+        print("HI");
+        print(_state);
+        if (_state is UpdatedFirebaseProductsState) {
+          return GridView.builder(
+              itemCount: _state.data.length ?? 0,
+              gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2),
+              itemBuilder: (BuildContext context, int index) {
+                return Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Single_prod(
+                    prod_name: _state.data[index].name,
+                    prod_image: _state.data[index].images != null
+                        ? (_state.data[index].images.length > 0
+                            ? _state.data[index].images[0]
+                            : "")
+                        : "",
+                    prod_quantity: _state.data[index].salePrice,
+                    prod_price: _state.data[index].quantity,
+                  ),
+                );
+              });
+        } else {
+          return Container(
+            color: Colors.red,
           );
-        });
+        }
+      },
+    );
   }
 }
 
 class Single_prod extends StatelessWidget {
   final prod_name;
-  final prod_pricture;
-  final prod_old_price;
+  final String prod_image;
+  final prod_quantity;
   final prod_price;
 
   Single_prod({
     this.prod_name,
-    this.prod_pricture,
-    this.prod_old_price,
+    this.prod_image,
+    this.prod_quantity,
     this.prod_price,
   });
 
@@ -103,16 +74,16 @@ class Single_prod extends StatelessWidget {
                 color: Colors.white70,
                 child: ListTile(
                   leading: Text(
-                    prod_name,
+                    prod_name ?? "",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   title: Text(
-                    "\$$prod_price",
+                    "\$$prod_price" ?? "",
                     style: TextStyle(
                         color: Colors.red, fontWeight: FontWeight.w800),
                   ),
                   subtitle: Text(
-                    "\$$prod_old_price",
+                    "\$$prod_quantity" ?? "",
                     style: TextStyle(
                         color: Colors.black54,
                         fontWeight: FontWeight.w800,
@@ -120,10 +91,12 @@ class Single_prod extends StatelessWidget {
                   ),
                 ),
               ),
-              child: Image.asset(
-                prod_pricture,
-                fit: BoxFit.cover,
-              ),
+              child: prod_image.length > 0
+                  ? Image.network(
+                      prod_image,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(),
             ),
           ),
         ),

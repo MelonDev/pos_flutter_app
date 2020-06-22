@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/db/product_db.dart';
 
 class addProducts extends StatefulWidget {
@@ -16,6 +17,7 @@ class addProducts extends StatefulWidget {
 }
 
 class _addProductsState extends State<addProducts> {
+  ExternalBloc _externalBloc;
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   GlobalKey<FormState> _categoryFormkey = GlobalKey();
   GlobalKey<FormState> _formKey = GlobalKey();
@@ -65,6 +67,8 @@ class _addProductsState extends State<addProducts> {
 
   @override
   Widget build(BuildContext context) {
+    _externalBloc = BlocProvider.of<ExternalBloc>(context);
+
     return Scaffold(
       appBar: new AppBar(
         iconTheme: new IconThemeData(color: Colors.purple),
@@ -136,20 +140,45 @@ class _addProductsState extends State<addProducts> {
                               elevation: 0.0,
                               child: Padding(
                                 padding: const EdgeInsets.all(10),
-                                child: TextFormField(
-                                  controller: _serialNumberTextController,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    WhitelistingTextInputFormatter.digitsOnly
-                                  ],
-                                  decoration: InputDecoration(
-                                      hintText: "SerialNumber",
-                                      border: InputBorder.none),
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'The SerialNumber field cannot be empty';
+                                child: BlocBuilder<ExternalBloc, ExternalState>(
+                                  builder: (BuildContext context, _state) {
+                                    print("HI");
+                                    print(_state);
+                                    if (_state is NormalExternalState) {
+                                      _serialNumberTextController.text =
+                                          _state.barcode ?? "";
+                                      return TextFormField(
+                                        controller: _serialNumberTextController,
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: <TextInputFormatter>[
+                                          WhitelistingTextInputFormatter
+                                              .digitsOnly
+                                        ],
+                                        decoration: InputDecoration(
+                                          hintText: "SerialNumber",
+                                          border: InputBorder.none,
+                                          prefixIcon: IconButton(
+                                            icon: Icon(Icons.camera),
+                                            tooltip: "Scan",
+                                            onPressed: () {
+                                              print("A0");
+                                              _externalBloc.add(
+                                                  OpenScannerExternalEvent());
+                                            },
+                                          ),
+                                        ),
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return 'The SerialNumber field cannot be empty';
+                                          }
+                                          return null;
+                                        },
+                                      );
+                                    } else {
+                                      return Container(
+                                        color: Colors.red,
+                                      );
                                     }
-                                    return null;
                                   },
                                 ),
                               ),
@@ -171,6 +200,7 @@ class _addProductsState extends State<addProducts> {
 //                              )
 //                            ],
 //                          ),
+
                           Padding(
                             padding: const EdgeInsets.all(10),
                             child: Material(
@@ -182,8 +212,9 @@ class _addProductsState extends State<addProducts> {
                                 child: TextFormField(
                                   controller: _typeTextController,
                                   decoration: InputDecoration(
-                                      hintText: "Type",
-                                      border: InputBorder.none),
+                                    hintText: "Type",
+                                    border: InputBorder.none,
+                                  ),
                                   validator: (value) {
                                     if (value.isEmpty) {
                                       return 'The Type field cannot be empty';
@@ -194,6 +225,7 @@ class _addProductsState extends State<addProducts> {
                               ),
                             ),
                           ),
+
                           Padding(
                             padding: const EdgeInsets.all(10),
                             child: Material(
@@ -360,6 +392,19 @@ class _addProductsState extends State<addProducts> {
 //          ),
         ],
       ),
+//      BlocBuilder<ExternalBloc, ExternalState>(
+//        builder: (BuildContext context, _state) {
+//          print("HI");
+//          print(_state);
+//          if (_state is NormalExternalState) {
+//            return
+//          } else {
+//            return Container(
+//              color: Colors.red,
+//            );
+//          }
+//        },
+//      ),
     );
   }
 

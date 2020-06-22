@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:posflutterapp/bloc/firebase_products/firebase_products_bloc.dart';
 import 'package:posflutterapp/page/home_page.dart';
 import 'package:posflutterapp/page/login_page.dart';
 import 'package:posflutterapp/page/splash_screen.dart';
@@ -43,7 +44,13 @@ class MyApp extends StatelessWidget {
                 ..add(
                   AuthenticationStarted(),
                 ),
-        )
+        ),
+        BlocProvider<FirebaseProductsBloc>(
+          create: (context) => FirebaseProductsBloc()
+            ..add(
+              InitialFirebaseProductsEvent(),
+            ),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

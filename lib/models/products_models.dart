@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Product {
   static const ID = "id";
   static const TYPE = "type";
-  static const NAME = "name";
+  static const NAME = "productName";
   static const PRICE = "price";
   static const SERIALNUMBER = "serialNumber";
   static const QUANTITY = "quantity";
@@ -17,10 +17,10 @@ class Product {
   String _id;
   String _name;
   String _type;
-  String _image;
-  int _serialNumber;
+  List _image;
+  String _serialNumber;
   String _price;
-  int _quantity;
+  String _quantity;
   List _sizes;
   List _subIngredients;
   String _salePrice;
@@ -33,13 +33,13 @@ class Product {
   String get name => _name;
   String get id => _id;
   String get type => _type;
-  String get images => _image;
+  List get images => _image;
   String get price => _price;
-  int get quantity => _quantity;
+  String get quantity => _quantity;
   List get sizes => _sizes;
   List get subIngredients => _subIngredients;
   String get salePrice => _salePrice;
-  int get serialNumber => _serialNumber;
+  String get serialNumber => _serialNumber;
   Timestamp get createdAt => _createdAt;
   Timestamp get updatedAt => _updatedAt;
 //  named constructure
@@ -49,9 +49,9 @@ class Product {
     _id = data[ID];
     _type = data[TYPE];
     _price = data[PRICE].toString();
-    _quantity = data[QUANTITY];
+    _quantity = data[QUANTITY].toString();
     _salePrice = data[SALEPRICE].toString();
-    _serialNumber = data[SERIALNUMBER];
+    _serialNumber = data[SERIALNUMBER].toString();
     _sizes = data[SIZES];
     _subIngredients = data[SUBINGREDIENTS];
     _image = data[IMAGES];
