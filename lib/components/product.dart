@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_products/firebase_products_bloc.dart';
@@ -9,11 +10,20 @@ class Products extends StatefulWidget {
 
 class _ProductsState extends State<Products> {
   FirebaseProductsBloc _firebaseProductsBloc;
+  Future<void> run() async {
+    Firestore.instance.collection('products').snapshots().listen((value) {
+      _firebaseProductsBloc.add(RefreshFirebaseProductsEvent(value));
+      value.documents.forEach((element) {
+        print(element.data);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     _firebaseProductsBloc = BlocProvider.of<FirebaseProductsBloc>(context);
-    _firebaseProductsBloc.add(RefreshFirebaseProductsEvent());
+
+    run();
     return BlocBuilder<FirebaseProductsBloc, FirebaseProductsState>(
       builder: (BuildContext context, _state) {
         print("HI");

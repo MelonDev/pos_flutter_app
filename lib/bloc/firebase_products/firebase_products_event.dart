@@ -8,7 +8,9 @@ class StartFirebaseProductsEvent extends FirebaseProductsEvent {
 }
 
 class RefreshFirebaseProductsEvent extends FirebaseProductsEvent {
-  RefreshFirebaseProductsEvent();
+  final QuerySnapshot snapshot;
+
+  RefreshFirebaseProductsEvent(this.snapshot);
 }
 
 class InitialFirebaseProductsEvent extends FirebaseProductsEvent {

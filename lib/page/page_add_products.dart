@@ -364,6 +364,7 @@ class _addProductsState extends State<addProducts> {
                               child: MaterialButton(
                                 onPressed: () {
                                   _validateAndUpload();
+                                  _externalBloc.add(InitialExternalEvent());
                                 },
                                 minWidth: MediaQuery.of(context).size.width,
                                 child: Text(
