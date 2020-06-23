@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_products/firebase_products_bloc.dart';
+import 'package:posflutterapp/page/page_products_details.dart';
 
 class Products extends StatefulWidget {
   @override
@@ -45,6 +46,10 @@ class _ProductsState extends State<Products> {
                         : "",
                     prod_quantity: _state.data[index].salePrice,
                     prod_price: _state.data[index].quantity,
+                    prod_type: _state.data[index].type,
+                    prod_salePrice: _state.data[index].salePrice,
+                    prod_serialNumber: _state.data[index].serialNumber,
+                    prod_size: _state.data[index].sizes,
                   ),
                 );
               });
@@ -63,12 +68,20 @@ class Single_prod extends StatelessWidget {
   final String prod_image;
   final prod_quantity;
   final prod_price;
+  final prod_salePrice;
+  final prod_serialNumber;
+  final prod_size;
+  final prod_type;
 
   Single_prod({
     this.prod_name,
     this.prod_image,
     this.prod_quantity,
     this.prod_price,
+    this.prod_salePrice,
+    this.prod_serialNumber,
+    this.prod_size,
+    this.prod_type,
   });
 
   @override
@@ -78,7 +91,20 @@ class Single_prod extends StatelessWidget {
         tag: new Text("hero1"),
         child: Material(
           child: InkWell(
-            onTap: () {},
+            onTap: () => Navigator.of(context).push(
+              new MaterialPageRoute(
+                builder: (context) => new ProductDetail(
+                  product_detail_name: prod_name,
+                  product_detail_price: prod_price,
+                  product_detail_quantity: prod_quantity,
+                  product_detail_image: prod_image,
+                  product_detail_size: prod_size,
+                  product_detail_salePrice: prod_salePrice,
+                  product_detail_serialNumber: prod_serialNumber,
+                  product_detail_type: prod_type,
+                ),
+              ),
+            ),
             child: GridTile(
               footer: Container(
                 color: Colors.white70,
@@ -88,16 +114,16 @@ class Single_prod extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   title: Text(
-                    "\$$prod_price" ?? "",
+                    "ราคา " + "$prod_price" + " ฿" ?? "",
                     style: TextStyle(
                         color: Colors.red, fontWeight: FontWeight.w800),
                   ),
                   subtitle: Text(
-                    "\$$prod_quantity" ?? "",
+                    "คงเหลือ " + "$prod_quantity" ?? "",
                     style: TextStyle(
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w800,
-                        decoration: TextDecoration.lineThrough),
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ),

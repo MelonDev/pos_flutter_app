@@ -7,7 +7,7 @@ class Product {
   static const PRICE = "price";
   static const SERIALNUMBER = "serialNumber";
   static const QUANTITY = "quantity";
-  static const SIZES = "sizes";
+  static const SIZES = "size";
   static const SALEPRICE = "salePrice";
   static const IMAGES = "images";
   static const CREATEDAT = "createdAt";
@@ -21,7 +21,7 @@ class Product {
   String _serialNumber;
   String _price;
   String _quantity;
-  List _sizes;
+  String _sizes;
   List _subIngredients;
   String _salePrice;
   Timestamp _createdAt;
@@ -36,7 +36,7 @@ class Product {
   List get images => _image;
   String get price => _price;
   String get quantity => _quantity;
-  List get sizes => _sizes;
+  String get sizes => _sizes;
   List get subIngredients => _subIngredients;
   String get salePrice => _salePrice;
   String get serialNumber => _serialNumber;
@@ -52,7 +52,7 @@ class Product {
     _quantity = data[QUANTITY].toString();
     _salePrice = data[SALEPRICE].toString();
     _serialNumber = data[SERIALNUMBER].toString();
-    _sizes = data[SIZES];
+    _sizes = data[SIZES].toString();
     _subIngredients = data[SUBINGREDIENTS];
     _image = data[IMAGES];
     _createdAt = data[CREATEDAT];
