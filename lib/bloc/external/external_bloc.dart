@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:bloc/bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
+import 'package:posflutterapp/models/products_models.dart';
 
 part 'external_event.dart';
 
@@ -14,10 +17,27 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
   @override
   Stream<ExternalState> mapEventToState(ExternalEvent event) async* {
     if (event is InitialExternalEvent) {
-      yield NormalExternalState();
+      yield NormalExternalState(null);
     } else if (event is OpenScannerExternalEvent) {
       yield* mapScannerToState(event);
+    } else if (event is EditExternalEvent) {
+      yield EditExternalState(event.barcode);
+    } else if (event is BackToNormalStateExternalEvent) {
+      yield NormalExternalState(event.barcode);
+    }else if(event is OpenGelleryExternalEvent){
+      yield* mapGelleryToState(event);
     }
+  }
+
+  @override
+  Stream<ExternalState> mapGelleryToState(
+      OpenGelleryExternalEvent event) async* {
+
+    PickedFile pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+    File file = File(pickedFile.path);
+
+    yield EditExternalState(null,fromImage: file);
+
   }
 
   @override
@@ -26,11 +46,18 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
     yield ScannerIsUsingExternalState();
     ScanResult result = await BarcodeScanner.scan();
 
-    print("HELLO");
     if (result.type == ResultType.Barcode) {
-      yield NormalExternalState(barcode: result.rawContent);
+      if(event.isEdit){
+        yield EditExternalState(result.rawContent,fromScanner: true);
+      }else{
+        yield NormalExternalState(result.rawContent);
+      }
     } else {
-      yield NormalExternalState(barcode: null);
+      if(event.isEdit){
+        yield EditExternalState(null);
+      }else{
+        yield NormalExternalState(null);
+      }
     }
   }
 }

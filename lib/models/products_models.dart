@@ -48,10 +48,10 @@ class Product {
     _name = data[NAME];
     _id = data[ID];
     _type = data[TYPE];
-    _price = data[PRICE].toString();
+    _price = double.parse(data[PRICE].toString()).toStringAsFixed(2);
     _quantity = data[QUANTITY].toString();
-    _salePrice = data[SALEPRICE].toString();
-    _serialNumber = data[SERIALNUMBER].toString();
+    _salePrice = double.parse(data[SALEPRICE].toString()).toStringAsFixed(2);
+    _serialNumber = double.parse(data[SERIALNUMBER].toString()).toStringAsFixed(0);
     _sizes = data[SIZES].toString();
     _subIngredients = data[SUBINGREDIENTS];
     _image = data[IMAGES];

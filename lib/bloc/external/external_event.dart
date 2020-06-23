@@ -8,5 +8,22 @@ class InitialExternalEvent extends ExternalEvent {
 }
 
 class OpenScannerExternalEvent extends ExternalEvent {
-  OpenScannerExternalEvent();
+  final bool isEdit;
+  OpenScannerExternalEvent(this.isEdit);
+}
+
+class OpenGelleryExternalEvent extends ExternalEvent {
+  final bool isEdit;
+  OpenGelleryExternalEvent(this.isEdit);
+}
+
+
+class EditExternalEvent extends ExternalEvent {
+  final String barcode;
+  EditExternalEvent(this.barcode);
+}
+
+class BackToNormalStateExternalEvent extends ExternalEvent {
+  final String barcode;
+  BackToNormalStateExternalEvent(this.barcode);
 }

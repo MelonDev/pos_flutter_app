@@ -102,8 +102,7 @@ class _addProductsState extends State<addProducts> {
                                   width: 1.0),
                               onPressed: () {
                                 _selectImage(
-                                    ImagePicker.pickImage(
-                                        source: ImageSource.gallery),
+                                  ImagePicker().getImage(source: ImageSource.gallery),
                                     1);
                               },
                               child: _displayChild(),
@@ -163,7 +162,7 @@ class _addProductsState extends State<addProducts> {
                                             onPressed: () {
                                               print("A0");
                                               _externalBloc.add(
-                                                  OpenScannerExternalEvent());
+                                                  OpenScannerExternalEvent(false));
                                             },
                                           ),
                                         ),
@@ -382,74 +381,14 @@ class _addProductsState extends State<addProducts> {
               ),
             ),
           ),
-//          Visibility(
-//            visible: isLoading ?? true,
-//            child: Container(
-//              color: Colors.white.withOpacity(0.7),
-//              child: CircularProgressIndicator(
-//                valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-//              ),
-//            ),
-//          ),
         ],
       ),
-//      BlocBuilder<ExternalBloc, ExternalState>(
-//        builder: (BuildContext context, _state) {
-//          print("HI");
-//          print(_state);
-//          if (_state is NormalExternalState) {
-//            return
-//          } else {
-//            return Container(
-//              color: Colors.red,
-//            );
-//          }
-//        },
-//      ),
     );
   }
 
-//  void _categoryAlert() {
-//    var alert = new AlertDialog(
-//      content: Form(
-//        key: _categoryFormkey,
-//        child: TextFormField(
-//          controller: catrgoryController,
-//          // ignore: missing_return
-//          validator: (value) {
-//            if (value.isEmpty) {
-//              return 'category cannot be empty';
-//            }
-//            _formKey.currentState.reset();
-//          },
-//          decoration: InputDecoration(hintText: "add category"),
-//        ),
-//      ),
-//      actions: [
-//        FlatButton(
-//          onPressed: () {
-//            if (catrgoryController.text != null) {
-//              _categoryService.createCategory(catrgoryController.text);
-//            }
-//            Fluttertoast.showToast(msg: 'category created');
-//            Navigator.pop(context);
-//          },
-//          child: Text('ADD'),
-//        ),
-//        FlatButton(
-//          onPressed: () {
-//            Navigator.pop(context);
-//          },
-//          child: Text('CANCEL'),
-//        ),
-//      ],
-//    );
-//
-//    showDialog(context: context, builder: (_) => alert);
-//  }
-
-  void _selectImage(Future<File> pickImage, int imageNumber) async {
-    File tempImg = await pickImage;
+  void _selectImage(Future<PickedFile> pickImage, int imageNumber) async {
+    PickedFile pickedFile = await pickImage;
+    File tempImg = File(pickedFile.path);
     switch (imageNumber) {
       case 1:
         setState(() => _image1 = tempImg);

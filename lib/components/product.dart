@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/bloc/firebase_products/firebase_products_bloc.dart';
+import 'package:posflutterapp/models/products_models.dart';
 import 'package:posflutterapp/page/page_products_details.dart';
 
 class Products extends StatefulWidget {
@@ -37,20 +40,7 @@ class _ProductsState extends State<Products> {
               itemBuilder: (BuildContext context, int index) {
                 return Padding(
                   padding: const EdgeInsets.all(4.0),
-                  child: Single_prod(
-                    prod_name: _state.data[index].name,
-                    prod_image: _state.data[index].images != null
-                        ? (_state.data[index].images.length > 0
-                            ? _state.data[index].images[0]
-                            : "")
-                        : "",
-                    prod_quantity: _state.data[index].salePrice,
-                    prod_price: _state.data[index].quantity,
-                    prod_type: _state.data[index].type,
-                    prod_salePrice: _state.data[index].salePrice,
-                    prod_serialNumber: _state.data[index].serialNumber,
-                    prod_size: _state.data[index].sizes,
-                  ),
+                  child: Single_prod(_state.data[index]),
                 );
               });
         } else {
@@ -64,75 +54,131 @@ class _ProductsState extends State<Products> {
 }
 
 class Single_prod extends StatelessWidget {
-  final prod_name;
-  final String prod_image;
-  final prod_quantity;
-  final prod_price;
-  final prod_salePrice;
-  final prod_serialNumber;
-  final prod_size;
-  final prod_type;
+  final Product _product;
+  String _image;
 
-  Single_prod({
-    this.prod_name,
-    this.prod_image,
-    this.prod_quantity,
-    this.prod_price,
-    this.prod_salePrice,
-    this.prod_serialNumber,
-    this.prod_size,
-    this.prod_type,
-  });
+  Single_prod(this._product);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    _image = _product.images != null
+        ? (_product.images.length > 0 ? _product.images[0] : "")
+        : "";
+
+    return Container(
+      color: Colors.green,
+      width: MediaQuery.of(context).size.width/2 - 8,
+      height: 560,
       child: Hero(
         tag: new Text("hero1"),
         child: Material(
           child: InkWell(
-            onTap: () => Navigator.of(context).push(
-              new MaterialPageRoute(
-                builder: (context) => new ProductDetail(
-                  product_detail_name: prod_name,
-                  product_detail_price: prod_price,
-                  product_detail_quantity: prod_quantity,
-                  product_detail_image: prod_image,
-                  product_detail_size: prod_size,
-                  product_detail_salePrice: prod_salePrice,
-                  product_detail_serialNumber: prod_serialNumber,
-                  product_detail_type: prod_type,
+            onTap: () {
+              Navigator.push(context,
+                MaterialPageRoute(
+                  builder: (context) => ProductDetail(_product),
                 ),
-              ),
-            ),
-            child: GridTile(
-              footer: Container(
-                color: Colors.white70,
-                child: ListTile(
-                  leading: Text(
-                    prod_name ?? "",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  title: Text(
-                    "ราคา " + "$prod_price" + " ฿" ?? "",
-                    style: TextStyle(
-                        color: Colors.red, fontWeight: FontWeight.w800),
-                  ),
-                  subtitle: Text(
-                    "คงเหลือ " + "$prod_quantity" ?? "",
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w800,
+              );
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width/2 -8,
+              child: Stack(
+                children: [
+                  _image.length > 0
+                      ? Container(
+                    width: (MediaQuery.of(context).size.width/2) - 8,
+                    height: 120,
+                    child: Image.network(
+                      _image,
+                      fit: BoxFit.fitHeight,
                     ),
-                  ),
-                ),
+                  )
+                      : Container()
+                  ,Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      height: 80,
+                      width: (MediaQuery.of(context).size.width/2) - 8,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            height: (80/5)*2,
+                            width: (MediaQuery.of(context).size.width/2) - 8,
+                            //color: Color(0x40000000),
+                            child: Container(
+                              alignment: Alignment.bottomLeft,
+                              margin: EdgeInsets.only(left: 20,right: 20),
+                              child: Text(
+                                _product.name ?? "",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: GoogleFonts.itim(fontWeight: FontWeight.bold,fontSize: 24,color: Colors.black87),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: (80/5)*3,
+                            width: (MediaQuery.of(context).size.width/2) - 8,
+                            color: Colors.white,
+                            child: Column(children: [
+                              Container(
+                                alignment: Alignment.bottomLeft,
+                                margin: EdgeInsets.only(left: 20,right: 20),
+                                child: Stack(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        "ราคา",
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        style: GoogleFonts.itim(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black87),
+                                      ),
+                                    ),Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        "${_product.salePrice}" + " ฿" ?? "",
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        style: GoogleFonts.itim(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black87),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),Container(
+                                alignment: Alignment.bottomLeft,
+                                margin: EdgeInsets.only(left: 20,right: 20),
+                                child: Stack(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        "คงเหลืิอ",
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        style: GoogleFonts.itim(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black87),
+                                      ),
+                                    ),Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        "${_product.quantity}" ?? "",
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        style: GoogleFonts.itim(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black87),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],),
+                          )
+                        ],
+                      ),
+                    ),
+                  )
+                ],
               ),
-              child: prod_image.length > 0
-                  ? Image.network(
-                      prod_image,
-                      fit: BoxFit.cover,
-                    )
-                  : Container(),
             ),
           ),
         ),
