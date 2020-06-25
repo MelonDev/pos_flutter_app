@@ -9,7 +9,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:posflutterapp/bloc/external/external_bloc.dart';
+import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
 import 'package:posflutterapp/db/product_db.dart';
+import 'package:posflutterapp/models/products_models.dart';
+import 'package:uuid/uuid.dart';
 
 class addProducts extends StatefulWidget {
   @override
@@ -18,6 +21,8 @@ class addProducts extends StatefulWidget {
 
 class _addProductsState extends State<addProducts> {
   ExternalBloc _externalBloc;
+  FirebaseCrudBloc _firebaseCrudBloc;
+
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   GlobalKey<FormState> _categoryFormkey = GlobalKey();
   GlobalKey<FormState> _formKey = GlobalKey();
@@ -68,121 +73,145 @@ class _addProductsState extends State<addProducts> {
   @override
   Widget build(BuildContext context) {
     _externalBloc = BlocProvider.of<ExternalBloc>(context);
+    _firebaseCrudBloc = BlocProvider.of<FirebaseCrudBloc>(context);
 
-    return Scaffold(
-      appBar: new AppBar(
-        iconTheme: new IconThemeData(color: Colors.purple),
-        elevation: 0.1,
-        backgroundColor: Colors.white,
-        title: Text(
-          "เพิ่มสินค้า",
-          style: TextStyle(color: Colors.purple),
-        ),
-      ),
-      body: Stack(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Center(
-              child: Form(
-                key: _formKey,
-                child: isLoading
-                    ? CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.orange),
+    return BlocBuilder<ExternalBloc, ExternalState>(
+      builder: (BuildContext context, _state) {
+        print("HI");
+        print(_state);
+        if (_state is NormalExternalState) {
+          if (_state.fromImage == null) {
+            _serialNumberTextController.text = _state.barcode ?? "";
+          }
+          return BlocBuilder<FirebaseCrudBloc, FirebaseCrudState>(
+            builder: (BuildContext contextCRUD, _stateCRUD) {
+              if (_stateCRUD is LoadingFirebaseCrudState) {
+                return Container(
+                  color: Colors.purple,
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
                       )
-                    : ListView(
-                        children: <Widget>[
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 100, right: 100),
-                            child: OutlineButton(
-                              borderSide: BorderSide(
-                                  color: Colors.grey.withOpacity(0.8),
-                                  width: 1.0),
-                              onPressed: () {
-                                _selectImage(
-                                  ImagePicker().getImage(source: ImageSource.gallery),
-                                    1);
-                              },
-                              child: _displayChild(),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.white,
-                              elevation: 0.0,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: TextFormField(
-                                  controller: _nameTextController,
-                                  decoration: InputDecoration(
-                                      hintText: "Name",
-                                      border: InputBorder.none),
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'The Name field cannot be empty';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.white,
-                              elevation: 0.0,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: BlocBuilder<ExternalBloc, ExternalState>(
-                                  builder: (BuildContext context, _state) {
-                                    print("HI");
-                                    print(_state);
-                                    if (_state is NormalExternalState) {
-                                      _serialNumberTextController.text =
-                                          _state.barcode ?? "";
-                                      return TextFormField(
-                                        controller: _serialNumberTextController,
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: <TextInputFormatter>[
-                                          WhitelistingTextInputFormatter
-                                              .digitsOnly
-                                        ],
-                                        decoration: InputDecoration(
-                                          hintText: "SerialNumber",
-                                          border: InputBorder.none,
-                                          prefixIcon: IconButton(
-                                            icon: Icon(Icons.camera),
-                                            tooltip: "Scan",
-                                            onPressed: () {
-                                              print("A0");
-                                              _externalBloc.add(
-                                                  OpenScannerExternalEvent(false));
-                                            },
+                    ],
+                  ),
+                );
+              } else {
+                return Scaffold(
+                  appBar: new AppBar(
+                    iconTheme: new IconThemeData(color: Colors.purple),
+                    elevation: 0.1,
+                    backgroundColor: Colors.white,
+                    title: Text(
+                      "เพิ่มสินค้า",
+                      style: TextStyle(color: Colors.purple),
+                    ),
+                  ),
+                  body: Stack(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Center(
+                          child: Form(
+                            key: _formKey,
+                            child: isLoading
+                                ? CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.orange),
+                                  )
+                                : ListView(
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 100, right: 100),
+                                        child: OutlineButton(
+                                          borderSide: BorderSide(
+                                              color:
+                                                  Colors.grey.withOpacity(0.8),
+                                              width: 1.0),
+                                          onPressed: () {
+                                            _externalBloc.add(
+                                                OpenGelleryExternalEvent(
+                                                    false));
+                                          },
+                                          child: _displayChild(
+                                              _state.fromImage ?? _image1),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Material(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Colors.white,
+                                          elevation: 0.0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: TextFormField(
+                                              controller: _nameTextController,
+                                              decoration: InputDecoration(
+                                                  hintText: "Name",
+                                                  border: InputBorder.none),
+                                              validator: (value) {
+                                                if (value.isEmpty) {
+                                                  return 'The Name field cannot be empty';
+                                                }
+                                                return null;
+                                              },
+                                            ),
                                           ),
                                         ),
-                                        validator: (value) {
-                                          if (value.isEmpty) {
-                                            return 'The SerialNumber field cannot be empty';
-                                          }
-                                          return null;
-                                        },
-                                      );
-                                    } else {
-                                      return Container(
-                                        color: Colors.red,
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Material(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Colors.white,
+                                          elevation: 0.0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: TextFormField(
+                                              controller:
+                                                  _serialNumberTextController,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: <
+                                                  TextInputFormatter>[
+                                                WhitelistingTextInputFormatter
+                                                    .digitsOnly
+                                              ],
+                                              decoration: InputDecoration(
+                                                hintText: "SerialNumber",
+                                                border: InputBorder.none,
+                                                prefixIcon: IconButton(
+                                                  icon: Icon(Icons.camera),
+                                                  tooltip: "Scan",
+                                                  onPressed: () {
+                                                    print("A0");
+                                                    _externalBloc.add(
+                                                        OpenScannerExternalEvent(
+                                                            false));
+                                                  },
+                                                ),
+                                              ),
+                                              validator: (value) {
+                                                if (value.isEmpty) {
+                                                  return 'The SerialNumber field cannot be empty';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
 //                          Row(
 //                            children: <Widget>[
 //                              Padding(
@@ -200,139 +229,158 @@ class _addProductsState extends State<addProducts> {
 //                            ],
 //                          ),
 
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.white,
-                              elevation: 0.0,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: TextFormField(
-                                  controller: _typeTextController,
-                                  decoration: InputDecoration(
-                                    hintText: "Type",
-                                    border: InputBorder.none,
-                                  ),
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'The Type field cannot be empty';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Material(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Colors.white,
+                                          elevation: 0.0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: TextFormField(
+                                              controller: _typeTextController,
+                                              decoration: InputDecoration(
+                                                hintText: "Type",
+                                                border: InputBorder.none,
+                                              ),
+                                              validator: (value) {
+                                                if (value.isEmpty) {
+                                                  return 'The Type field cannot be empty';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
 
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.white,
-                              elevation: 0.0,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: TextFormField(
-                                  controller: _sizeTextController,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    WhitelistingTextInputFormatter.digitsOnly
-                                  ],
-                                  decoration: InputDecoration(
-                                      hintText: "Size",
-                                      border: InputBorder.none),
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'The Size field cannot be empty';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.white,
-                              elevation: 0.0,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: TextFormField(
-                                  controller: _priceTextController,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    WhitelistingTextInputFormatter.digitsOnly
-                                  ],
-                                  decoration: InputDecoration(
-                                      hintText: "Price",
-                                      border: InputBorder.none),
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'The Price field cannot be empty';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.white,
-                              elevation: 0.0,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: TextFormField(
-                                  controller: _salePriceTextController,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    WhitelistingTextInputFormatter.digitsOnly
-                                  ],
-                                  decoration: InputDecoration(
-                                      hintText: "Sale Price",
-                                      border: InputBorder.none),
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'The Price field cannot be empty';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.white,
-                              elevation: 0.0,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: TextFormField(
-                                  controller: _quantityTextController,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    WhitelistingTextInputFormatter.digitsOnly
-                                  ],
-                                  decoration: InputDecoration(
-                                      hintText: "Quantity",
-                                      border: InputBorder.none),
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'The Quantity field cannot be empty';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Material(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Colors.white,
+                                          elevation: 0.0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: TextFormField(
+                                              controller: _sizeTextController,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: <
+                                                  TextInputFormatter>[
+                                                WhitelistingTextInputFormatter
+                                                    .digitsOnly
+                                              ],
+                                              decoration: InputDecoration(
+                                                  hintText: "Size",
+                                                  border: InputBorder.none),
+                                              validator: (value) {
+                                                if (value.isEmpty) {
+                                                  return 'The Size field cannot be empty';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Material(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Colors.white,
+                                          elevation: 0.0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: TextFormField(
+                                              controller: _priceTextController,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: <
+                                                  TextInputFormatter>[
+                                                WhitelistingTextInputFormatter
+                                                    .digitsOnly
+                                              ],
+                                              decoration: InputDecoration(
+                                                  hintText: "Price",
+                                                  border: InputBorder.none),
+                                              validator: (value) {
+                                                if (value.isEmpty) {
+                                                  return 'The Price field cannot be empty';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Material(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Colors.white,
+                                          elevation: 0.0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: TextFormField(
+                                              controller:
+                                                  _salePriceTextController,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: <
+                                                  TextInputFormatter>[
+                                                WhitelistingTextInputFormatter
+                                                    .digitsOnly
+                                              ],
+                                              decoration: InputDecoration(
+                                                  hintText: "Sale Price",
+                                                  border: InputBorder.none),
+                                              validator: (value) {
+                                                if (value.isEmpty) {
+                                                  return 'The Price field cannot be empty';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Material(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Colors.white,
+                                          elevation: 0.0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: TextFormField(
+                                              controller:
+                                                  _quantityTextController,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: <
+                                                  TextInputFormatter>[
+                                                WhitelistingTextInputFormatter
+                                                    .digitsOnly
+                                              ],
+                                              decoration: InputDecoration(
+                                                  hintText: "Quantity",
+                                                  border: InputBorder.none),
+                                              validator: (value) {
+                                                if (value.isEmpty) {
+                                                  return 'The Quantity field cannot be empty';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
 //                          Padding(
 //                            padding: const EdgeInsets.all(10),
 //                            child: Material(
@@ -354,50 +402,70 @@ class _addProductsState extends State<addProducts> {
 //                              ),
 //                            ),
 //                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.orange,
-                              elevation: 0.0,
-                              child: MaterialButton(
-                                onPressed: () {
-                                  _validateAndUpload();
-                                  _externalBloc.add(InitialExternalEvent());
-                                },
-                                minWidth: MediaQuery.of(context).size.width,
-                                child: Text(
-                                  "Add Product",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Material(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Colors.orange,
+                                          elevation: 0.0,
+                                          child: MaterialButton(
+                                            onPressed: () {
+                                              //_validateAndUpload();
+                                              _firebaseCrudBloc.add(
+                                                  AddProductFirebaseCrudEvent(
+                                                      context,
+                                                      zipProduct(),
+                                                      _image1));
+                                              _externalBloc
+                                                  .add(InitialExternalEvent());
+                                            },
+                                            minWidth: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            child: Text(
+                                              "Add Product",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                           ),
-                        ],
+                        ),
                       ),
-              ),
-            ),
-          ),
-        ],
-      ),
+                    ],
+                  ),
+                );
+              }
+            },
+          );
+        } else {
+          return Container(
+            color: Colors.red,
+          );
+        }
+      },
     );
   }
 
-  void _selectImage(Future<PickedFile> pickImage, int imageNumber) async {
-    PickedFile pickedFile = await pickImage;
-    File tempImg = File(pickedFile.path);
-    switch (imageNumber) {
-      case 1:
-        setState(() => _image1 = tempImg);
-        break;
-    }
-  }
+//  void _selectImage(Future<PickedFile> pickImage, int imageNumber) async {
+//    PickedFile pickedFile = await pickImage;
+//    File tempImg = File(pickedFile.path);
+//    switch (imageNumber) {
+//      case 1:
+//        setState(() => _image1 = tempImg);
+//        break;
+//    }
+//  }
 
-  Widget _displayChild() {
-    if (_image1 == null) {
+  Widget _displayChild(File _image) {
+    _image1 = _image;
+    if (_image == null) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(14, 70, 14, 70),
         child: new Icon(
@@ -407,47 +475,61 @@ class _addProductsState extends State<addProducts> {
       );
     } else {
       return Image.file(
-        _image1,
+        _image,
         fit: BoxFit.fill,
         width: double.infinity,
       );
     }
   }
 
-  void _validateAndUpload() async {
-    if (_formKey.currentState.validate()) {
-      setState(() => isLoading = true);
-      if (_image1 != null) {
-        String imageUrl;
-        final FirebaseStorage storage = FirebaseStorage.instance;
-        final String picture =
-            "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
-        StorageUploadTask task = storage.ref().child(picture).putFile(_image1);
-
-        task.onComplete.then((snapshot) async {
-          imageUrl = await snapshot.ref.getDownloadURL();
-          List<String> imageList = [imageUrl];
-          _productService.uploadProduct({
-            "productName": _nameTextController.text,
-            "serialNumber": double.parse(_serialNumberTextController.text),
-            "type": _typeTextController.text,
-            "price": double.parse(_priceTextController.text),
-            "salePrice": double.parse(_salePriceTextController.text),
-            "size": double.parse(_sizeTextController.text),
-            "quantity": int.parse(_quantityTextController.text),
-            "images": imageList,
-          });
-          _formKey.currentState.reset();
-          setState(() => isLoading = false);
-          Fluttertoast.showToast(msg: 'Product added');
-          Navigator.pop(context);
-        });
-      } else {
-        setState(() => isLoading = false);
-        Fluttertoast.showToast(msg: 'The image must be provider');
-      }
-    }
+  Product zipProduct() {
+    Product product = Product();
+    product.name = _nameTextController.text;
+    product.serialNumber = _serialNumberTextController.text;
+    product.type = _typeTextController.text;
+    product.price = _priceTextController.text;
+    product.salePrice = _salePriceTextController.text;
+    product.sizes = _sizeTextController.text;
+    product.quantity = _quantityTextController.text;
+    return product;
   }
+
+//  void _validateAndUpload() async {
+//    if (_formKey.currentState.validate()) {
+//      setState(() => isLoading = true);
+//      if (_image1 != null) {
+//        String imageUrl;
+//        String id = Uuid().v1().toString();
+//
+//        final FirebaseStorage storage = FirebaseStorage.instance;
+//        final String picture =
+//            "$id.jpg";
+//        StorageUploadTask task = storage.ref().child(picture).putFile(_image1);
+//
+//        task.onComplete.then((snapshot) async {
+//          imageUrl = await snapshot.ref.getDownloadURL();
+//          List<String> imageList = [imageUrl];
+//          _productService.uploadProduct(id,{
+//            "productName": _nameTextController.text,
+//            "serialNumber": double.parse(_serialNumberTextController.text),
+//            "type": _typeTextController.text,
+//            "price": double.parse(_priceTextController.text),
+//            "salePrice": double.parse(_salePriceTextController.text),
+//            "size": double.parse(_sizeTextController.text),
+//            "quantity": int.parse(_quantityTextController.text),
+//            "images": imageList,
+//          });
+//          _formKey.currentState.reset();
+//          setState(() => isLoading = false);
+//          Fluttertoast.showToast(msg: 'Product added');
+//          Navigator.pop(context);
+//        });
+//      } else {
+//        setState(() => isLoading = false);
+//        Fluttertoast.showToast(msg: 'The image must be provider');
+//      }
+//    }
+//  }
 
 //  _getCategories() async {
 //    List<DocumentSnapshot> data = await _categoryService.getCategories();

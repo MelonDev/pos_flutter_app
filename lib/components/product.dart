@@ -61,8 +61,8 @@ class Single_prod extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _image = _product.images != null
-        ? (_product.images.length > 0 ? _product.images[0] : "")
+    _image = _product.image != null
+        ? (_product.image.length > 0 ? _product.image[0] : "")
         : "";
 
     return Container(

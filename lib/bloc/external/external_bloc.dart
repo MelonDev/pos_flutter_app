@@ -33,10 +33,15 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
   Stream<ExternalState> mapGelleryToState(
       OpenGelleryExternalEvent event) async* {
 
-    PickedFile pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+    PickedFile pickedFile = await ImagePicker().getImage(source: ImageSource.gallery,imageQuality: 60);
     File file = File(pickedFile.path);
 
-    yield EditExternalState(null,fromImage: file);
+    if(event.isEdit){
+      yield EditExternalState(null,fromImage: file);
+    }else {
+yield NormalExternalState(null,fromImage: file);
+    }
+
 
   }
 

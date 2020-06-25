@@ -8,8 +8,10 @@ class InitialExternalState extends ExternalState {}
 class NormalExternalState extends ExternalState {
   final String barcode;
   final Product newProduct;
+  final bool fromScanner;
+  final File fromImage;
 
-  NormalExternalState(this.barcode,{this.newProduct});
+  NormalExternalState(this.barcode,{this.newProduct,this.fromScanner,this.fromImage});
 }
 
 class EditExternalState extends NormalExternalState {

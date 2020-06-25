@@ -14,49 +14,35 @@ class Product {
   static const UPDATEDAT = "updatedAt";
   static const SUBINGREDIENTS = "subIngredients";
 
-  String _id;
-  String _name;
-  String _type;
-  List _image;
-  String _serialNumber;
-  String _price;
-  String _quantity;
-  String _sizes;
-  List _subIngredients;
-  String _salePrice;
-  Timestamp _createdAt;
-  Timestamp _updatedAt;
+  String id;
+  String name;
+  String type;
+  List image;
+  String serialNumber;
+  String price;
+  String quantity;
+  String sizes;
+  List subIngredients;
+  String salePrice;
+  Timestamp createdAt;
+  Timestamp updatedAt;
 
   Product();
 
-//  getters
-  String get name => _name;
-  String get id => _id;
-  String get type => _type;
-  List get images => _image;
-  String get price => _price;
-  String get quantity => _quantity;
-  String get sizes => _sizes;
-  List get subIngredients => _subIngredients;
-  String get salePrice => _salePrice;
-  String get serialNumber => _serialNumber;
-  Timestamp get createdAt => _createdAt;
-  Timestamp get updatedAt => _updatedAt;
-//  named constructure
   Product.fromSnapshot(DocumentSnapshot snapshot) {
     Map data = snapshot.data;
-    _name = data[NAME];
-    _id = data[ID];
-    _type = data[TYPE];
-    _price = double.parse(data[PRICE].toString()).toStringAsFixed(2);
-    _quantity = data[QUANTITY].toString();
-    _salePrice = double.parse(data[SALEPRICE].toString()).toStringAsFixed(2);
-    _serialNumber = double.parse(data[SERIALNUMBER].toString()).toStringAsFixed(0);
-    _sizes = data[SIZES].toString();
-    _subIngredients = data[SUBINGREDIENTS];
-    _image = data[IMAGES];
-    _createdAt = data[CREATEDAT];
-    _updatedAt = data[UPDATEDAT];
+    name = data[NAME];
+    id = data[ID];
+    type = data[TYPE];
+    price = double.parse(data[PRICE].toString()).toStringAsFixed(2);
+    quantity = data[QUANTITY].toString();
+    salePrice = double.parse(data[SALEPRICE].toString()).toStringAsFixed(2);
+    serialNumber = double.parse(data[SERIALNUMBER].toString()).toStringAsFixed(0);
+    sizes = data[SIZES].toString();
+    subIngredients = data[SUBINGREDIENTS];
+    image = data[IMAGES];
+    createdAt = data[CREATEDAT];
+    updatedAt = data[UPDATEDAT];
   }
 
 //  Product.fromMap(Map<String, dynamic> data) {
@@ -85,7 +71,7 @@ class Product {
       'sizes': sizes,
       'subIngredients': subIngredients,
       'salePrice': salePrice,
-      'images': images,
+      'images': image,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };
