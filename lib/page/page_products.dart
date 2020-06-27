@@ -35,7 +35,7 @@ class _ProductsPageState extends State<ProductsPage> {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (BuildContext context) {
-              return addProducts(
+              return addProducts(null
 //                isUpdating: false,
                   );
             }),

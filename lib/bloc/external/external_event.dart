@@ -12,6 +12,10 @@ class OpenScannerExternalEvent extends ExternalEvent {
   OpenScannerExternalEvent(this.isEdit);
 }
 
+class OpenScannerOnCartExternalEvent extends ExternalEvent {
+  OpenScannerOnCartExternalEvent();
+}
+
 class OpenGelleryExternalEvent extends ExternalEvent {
   final bool isEdit;
   OpenGelleryExternalEvent(this.isEdit);

@@ -17,7 +17,7 @@ class Product {
   String id;
   String name;
   String type;
-  List image;
+  List<String> image;
   String serialNumber;
   String price;
   String quantity;
@@ -40,9 +40,14 @@ class Product {
     serialNumber = double.parse(data[SERIALNUMBER].toString()).toStringAsFixed(0);
     sizes = data[SIZES].toString();
     subIngredients = data[SUBINGREDIENTS];
-    image = data[IMAGES];
+    //image = data[IMAGES];
+    image = _convertToListString(data[IMAGES]);
     createdAt = data[CREATEDAT];
     updatedAt = data[UPDATEDAT];
+  }
+
+  List<String> _convertToListString(List<dynamic> list){
+    return list.map((value) => value.toString()).toList();
   }
 
 //  Product.fromMap(Map<String, dynamic> data) {
@@ -59,6 +64,8 @@ class Product {
 //    createdAt = data['createdAt'];
 //    updatedAt = data['updatedAt'];
 //  }
+
+
 
   Map<String, dynamic> toMap() {
     return {

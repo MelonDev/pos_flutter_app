@@ -107,6 +107,7 @@ class ProductDetail extends StatelessWidget {
     product.salePrice = _salePriceTextControllerProductDetails.text;
     product.sizes = _sizeTextControllerProductDetails.text;
     product.quantity = _quantityTextControllerProductDetails.text;
+    product.image = _product.image;
     return product;
   }
 
@@ -115,6 +116,9 @@ class ProductDetail extends StatelessWidget {
     _image = _product.image != null
         ? (_product.image.length > 0 ? _product.image[0] : "")
         : "";
+
+
+    print("B:${_product.image != null}");
 
     updateController();
     _externalBloc = BlocProvider.of<ExternalBloc>(context);
@@ -201,7 +205,7 @@ class ProductDetail extends StatelessWidget {
                                           if (_state is EditExternalState) {
                                             _externalBloc.add(
                                                 BackToNormalStateExternalEvent(
-                                                    _state.barcode));
+                                                    _state.barcode),);
                                           } else {
                                             Navigator.pop(context);
                                           }
@@ -259,6 +263,8 @@ class ProductDetail extends StatelessWidget {
                                       onPressed: () {
                                         if (_state is EditExternalState) {
                                           print("Start UPDATE");
+                                          print("C:${_product.image != null}");
+
                                           _firebaseCrudBloc.add(
                                             UpdateProductFirebaseCrudEvent(
                                                 context,
@@ -299,11 +305,7 @@ class ProductDetail extends StatelessWidget {
                                         builder: (lbContext, constraint) {
                                           return FlatButton(
                                             padding: EdgeInsets.all(0),
-                                            onPressed: () {
-                                              _firebaseCrudBloc.add(
-                                                  DeleteProductFirebaseCrudEvent(
-                                                      context, _product.id));
-                                            },
+                                            onPressed: () {_firebaseCrudBloc.add(DeleteProductFirebaseCrudEvent(context,_product.id));},
                                             child: Icon(
                                               Icons.delete,
                                               color: Colors.purple,

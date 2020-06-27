@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_products/firebase_products_bloc.dart';
+import 'package:posflutterapp/models/ProductPack.dart';
 import 'package:posflutterapp/models/products_models.dart';
 import 'package:posflutterapp/page/page_products_details.dart';
 
@@ -13,53 +15,48 @@ class Cart_Products extends StatefulWidget {
 
 class _Cart_ProductsState extends State<Cart_Products> {
   FirebaseProductsBloc _firebaseProductsBloc;
-  Future<void> run() async {
-    Firestore.instance.collection('products').snapshots().listen((value) {
-      _firebaseProductsBloc.add(RefreshFirebaseProductsEvent(value));
-      value.documents.forEach((element) {
-        print(element.data);
-      });
-    });
-  }
+
+  List<ProductPack> _listProductPack = [];
 
   @override
   Widget build(BuildContext context) {
     _firebaseProductsBloc = BlocProvider.of<FirebaseProductsBloc>(context);
 
-    run();
-    return BlocBuilder<FirebaseProductsBloc, FirebaseProductsState>(
+    return BlocBuilder<ExternalBloc, ExternalState>(
       builder: (BuildContext context, _state) {
-        print("HI");
-        print(_state);
-        if (_state is UpdatedFirebaseProductsState) {
-          return ListView.builder(
-              itemCount: _state.data.length ?? 0,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Single_cart_product(_state.data[index]),
-                );
-              });
-        } else {
-          return Container(
-            color: Colors.red,
-          );
+        if (_state is NormalExternalState) {
+          if(_state.notfound != null) {
+            if (_state.notfound) {
+              print("GO TO NEW PRODUCT");
+//addProducts(_state.barcode);
+            } else {
+              _listProductPack.add(_state.productPack);
+            }
+          }
         }
+        return ListView.builder(
+            itemCount: _listProductPack.length ?? 0,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Single_cart_product(_listProductPack[index]),
+              );
+            });
       },
     );
   }
 }
 
 class Single_cart_product extends StatelessWidget {
-  final Product _product;
+  final ProductPack _productPack;
   String _image;
 
-  Single_cart_product(this._product);
+  Single_cart_product(this._productPack);
 
   @override
   Widget build(BuildContext context) {
-    _image = _product.image != null
-        ? (_product.image.length > 0 ? _product.image[0] : "")
+    _image = _productPack.product.image != null
+        ? (_productPack.product.image.length > 0 ? _productPack.product.image[0] : "")
         : "";
 
     return Container(
@@ -74,7 +71,7 @@ class Single_cart_product extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProductDetail(_product),
+                  builder: (context) => ProductDetail(_productPack.product),
                 ),
               );
             },
@@ -89,6 +86,7 @@ class Single_cart_product extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
+                            width: 100,
                             alignment: Alignment.centerLeft,
                             //color: Color(0x40000000),
                             child: _image.length > 0
@@ -102,14 +100,18 @@ class Single_cart_product extends StatelessWidget {
                                 : Container(),
                           ),
                           Container(
+                            width: MediaQuery.of(context).size.width -
+                                100 -
+                                50 -
+                                100,
                             //color: Color(0x40000000),
                             child: Container(
                               alignment: Alignment.centerLeft,
                               margin: EdgeInsets.only(left: 20, right: 20),
                               child: Text(
-                                _product.name ?? "",
+                                _productPack.product.name ?? "",
                                 overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
+                                maxLines: 4,
                                 style: GoogleFonts.itim(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
@@ -118,10 +120,11 @@ class Single_cart_product extends StatelessWidget {
                             ),
                           ),
                           Container(
+                            width: 90,
                             color: Colors.white,
                             child: Container(
                               child: Text(
-                                "${_product.salePrice}" + " ฿" ?? "",
+                                "${_productPack.product.salePrice}" + " ฿" ?? "",
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                                 style: GoogleFonts.itim(
@@ -132,6 +135,7 @@ class Single_cart_product extends StatelessWidget {
                             ),
                           ),
                           Container(
+                            width: 50,
                             alignment: Alignment.centerRight,
                             color: Colors.white,
                             child: Column(
@@ -141,7 +145,7 @@ class Single_cart_product extends StatelessWidget {
                                   onPressed: () {},
                                 ),
                                 new Text(
-                                  "1",
+                                  _productPack.count.toString(),
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w500,
