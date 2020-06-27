@@ -1,4 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:posflutterapp/bloc/firebase_products/firebase_products_bloc.dart';
+import 'package:posflutterapp/models/products_models.dart';
+import 'package:posflutterapp/page/page_products_details.dart';
 
 class Cart_Products extends StatefulWidget {
   @override
@@ -6,136 +12,158 @@ class Cart_Products extends StatefulWidget {
 }
 
 class _Cart_ProductsState extends State<Cart_Products> {
-  var Products_on_the_cart = [
-    {
-      "name": "Fanta",
-      "picture": "images/products/fanta01.jpg",
-      "price": 10,
-      "quantity": 1,
-    },
-    {
-      "name": "Lay",
-      "picture": "images/products/lay01.jpg",
-      "price": 18,
-      "quantity": 1,
-    },
-    {
-      "name": "Coke Zero",
-      "picture": "images/products/coke-zero01.jpg",
-      "price": 10,
-      "quantity": 1,
-    },
-    {
-      "name": "Lay",
-      "picture": "images/products/lay02.jpg",
-      "price": 18,
-      "quantity": 1,
-    },
-  ];
+  FirebaseProductsBloc _firebaseProductsBloc;
+  Future<void> run() async {
+    Firestore.instance.collection('products').snapshots().listen((value) {
+      _firebaseProductsBloc.add(RefreshFirebaseProductsEvent(value));
+      value.documents.forEach((element) {
+        print(element.data);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new ListView.builder(
-        itemCount: Products_on_the_cart.length,
-        itemBuilder: (context, index) {
-          return Single_caer_product(
-            cart_prod_name: Products_on_the_cart[index]["name"],
-            cart_prod_picture: Products_on_the_cart[index]["picture"],
-            cart_prod_price: Products_on_the_cart[index]["price"],
-            cart_prod_quantity: Products_on_the_cart[index]["quantity"],
+    _firebaseProductsBloc = BlocProvider.of<FirebaseProductsBloc>(context);
+
+    run();
+    return BlocBuilder<FirebaseProductsBloc, FirebaseProductsState>(
+      builder: (BuildContext context, _state) {
+        print("HI");
+        print(_state);
+        if (_state is UpdatedFirebaseProductsState) {
+          return ListView.builder(
+              itemCount: _state.data.length ?? 0,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Single_cart_product(_state.data[index]),
+                );
+              });
+        } else {
+          return Container(
+            color: Colors.red,
           );
-        });
+        }
+      },
+    );
   }
 }
 
-class Single_caer_product extends StatelessWidget {
-  final cart_prod_name;
-  final cart_prod_picture;
-  final cart_prod_price;
-  final cart_prod_quantity;
+class Single_cart_product extends StatelessWidget {
+  final Product _product;
+  String _image;
 
-  Single_caer_product({
-    this.cart_prod_name,
-    this.cart_prod_picture,
-    this.cart_prod_price,
-    this.cart_prod_quantity,
-  });
+  Single_cart_product(this._product);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Stack(
-        children: <Widget>[
-          Positioned(
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: ListTile(
-                    leading: new Image.asset(
-                      cart_prod_picture,
-                      width: 50,
-                      height: 50,
+    _image = _product.image != null
+        ? (_product.image.length > 0 ? _product.image[0] : "")
+        : "";
+
+    return Container(
+      color: Colors.green,
+      width: double.infinity,
+      height: 120,
+      child: Hero(
+        tag: new Text("hero1"),
+        child: Material(
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductDetail(_product),
+                ),
+              );
+            },
+            child: Container(
+              width: double.infinity,
+              child: Stack(
+                children: <Widget>[
+                  Align(
+                    child: Container(
+                      height: 120,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            //color: Color(0x40000000),
+                            child: _image.length > 0
+                                ? Container(
+                                    height: 120,
+                                    child: Image.network(
+                                      _image,
+                                      fit: BoxFit.fitHeight,
+                                    ),
+                                  )
+                                : Container(),
+                          ),
+                          Container(
+                            //color: Color(0x40000000),
+                            child: Container(
+                              alignment: Alignment.centerLeft,
+                              margin: EdgeInsets.only(left: 20, right: 20),
+                              child: Text(
+                                _product.name ?? "",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: GoogleFonts.itim(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.black87),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            color: Colors.white,
+                            child: Container(
+                              child: Text(
+                                "${_product.salePrice}" + " ฿" ?? "",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: GoogleFonts.itim(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.black87),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.centerRight,
+                            color: Colors.white,
+                            child: Column(
+                              children: <Widget>[
+                                new IconButton(
+                                  icon: Icon(Icons.arrow_drop_up),
+                                  onPressed: () {},
+                                ),
+                                new Text(
+                                  "1",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16),
+                                ),
+                                new IconButton(
+                                  icon: Icon(Icons.arrow_drop_down),
+                                  onPressed: () {},
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: ListTile(
-                    title: new Text(
-                      cart_prod_name,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
-                    ),
-                    subtitle: new Text(
-                      "จำนวน",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18),
-                    ),
-                  ),
-                ),
-                Spacer(),
-                Expanded(
-                  child: ListTile(
-                    title: new Text(
-                      "$cart_prod_price\.-",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: ListTile(
-                    title: new Column(
-                      children: <Widget>[
-                        new IconButton(
-                          icon: Icon(Icons.arrow_drop_up),
-                          onPressed: () {},
-                        ),
-                        new Text(
-                          "$cart_prod_quantity",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16),
-                        ),
-                        new IconButton(
-                          icon: Icon(Icons.arrow_drop_down),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
-
 }

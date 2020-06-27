@@ -277,7 +277,7 @@ class ProductDetail extends StatelessWidget {
                                       },
                                       child: Icon(
                                         _state is EditExternalState
-                                            ? Icons.send
+                                            ? Icons.save
                                             : Icons.edit,
                                         color: _state is EditExternalState
                                             ? Colors.white
@@ -299,7 +299,11 @@ class ProductDetail extends StatelessWidget {
                                         builder: (lbContext, constraint) {
                                           return FlatButton(
                                             padding: EdgeInsets.all(0),
-                                            onPressed: () {_firebaseCrudBloc.add(DeleteProductFirebaseCrudEvent(context,_product.id));},
+                                            onPressed: () {
+                                              _firebaseCrudBloc.add(
+                                                  DeleteProductFirebaseCrudEvent(
+                                                      context, _product.id));
+                                            },
                                             child: Icon(
                                               Icons.delete,
                                               color: Colors.purple,

@@ -67,111 +67,132 @@ class Single_prod extends StatelessWidget {
 
     return Container(
       color: Colors.green,
-      width: MediaQuery.of(context).size.width/2 - 8,
+      width: MediaQuery.of(context).size.width / 2 - 8,
       height: 560,
       child: Hero(
         tag: new Text("hero1"),
         child: Material(
           child: InkWell(
             onTap: () {
-              Navigator.push(context,
+              Navigator.push(
+                context,
                 MaterialPageRoute(
                   builder: (context) => ProductDetail(_product),
                 ),
               );
             },
             child: Container(
-              width: MediaQuery.of(context).size.width/2 -8,
+              width: MediaQuery.of(context).size.width / 2 - 8,
               child: Stack(
                 children: [
                   _image.length > 0
                       ? Container(
-                    width: (MediaQuery.of(context).size.width/2) - 8,
-                    height: 120,
-                    child: Image.network(
-                      _image,
-                      fit: BoxFit.fitHeight,
-                    ),
-                  )
-                      : Container()
-                  ,Align(
+                          width: (MediaQuery.of(context).size.width / 2) - 8,
+                          height: 120,
+                          child: Image.network(
+                            _image,
+                            fit: BoxFit.fitHeight,
+                          ),
+                        )
+                      : Container(),
+                  Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
                       height: 80,
-                      width: (MediaQuery.of(context).size.width/2) - 8,
+                      width: (MediaQuery.of(context).size.width / 2) - 8,
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
                           Container(
-                            height: (80/5)*2,
-                            width: (MediaQuery.of(context).size.width/2) - 8,
+                            height: (80 / 5) * 2,
+                            width: (MediaQuery.of(context).size.width / 2) - 8,
                             //color: Color(0x40000000),
                             child: Container(
                               alignment: Alignment.bottomLeft,
-                              margin: EdgeInsets.only(left: 20,right: 20),
+                              margin: EdgeInsets.only(left: 20, right: 20),
                               child: Text(
                                 _product.name ?? "",
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
-                                style: GoogleFonts.itim(fontWeight: FontWeight.bold,fontSize: 24,color: Colors.black87),
+                                style: GoogleFonts.itim(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 24,
+                                    color: Colors.black87),
                               ),
                             ),
                           ),
                           Container(
-                            height: (80/5)*3,
-                            width: (MediaQuery.of(context).size.width/2) - 8,
+                            height: (80 / 5) * 3,
+                            width: (MediaQuery.of(context).size.width / 2) - 8,
                             color: Colors.white,
-                            child: Column(children: [
-                              Container(
-                                alignment: Alignment.bottomLeft,
-                                margin: EdgeInsets.only(left: 20,right: 20),
-                                child: Stack(
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        "ราคา",
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style: GoogleFonts.itim(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black87),
+                            child: Column(
+                              children: [
+                                Container(
+                                  alignment: Alignment.bottomLeft,
+                                  margin: EdgeInsets.only(left: 20, right: 20),
+                                  child: Stack(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          "ราคา",
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          style: GoogleFonts.itim(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                              color: Colors.black87),
+                                        ),
                                       ),
-                                    ),Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        "${_product.salePrice}" + " ฿" ?? "",
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style: GoogleFonts.itim(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black87),
-                                      ),
-                                    )
-                                  ],
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
+                                          "${_product.salePrice}" + " ฿" ?? "",
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          style: GoogleFonts.itim(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                              color: Colors.black87),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),Container(
-                                alignment: Alignment.bottomLeft,
-                                margin: EdgeInsets.only(left: 20,right: 20),
-                                child: Stack(
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        "คงเหลืิอ",
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style: GoogleFonts.itim(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black87),
+                                Container(
+                                  alignment: Alignment.bottomLeft,
+                                  margin: EdgeInsets.only(left: 20, right: 20),
+                                  child: Stack(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          "คงเหลืิอ",
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          style: GoogleFonts.itim(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                              color: Colors.black87),
+                                        ),
                                       ),
-                                    ),Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                        "${_product.quantity}" ?? "",
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style: GoogleFonts.itim(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black87),
-                                      ),
-                                    )
-                                  ],
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
+                                          "${_product.quantity}" ?? "",
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          style: GoogleFonts.itim(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                              color: Colors.black87),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],),
+                              ],
+                            ),
                           )
                         ],
                       ),
