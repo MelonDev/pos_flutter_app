@@ -116,7 +116,6 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     await Firestore.instance.collection(ref).document(id).updateData(data);
   }
 
-
   @override
   Stream<FirebaseCrudState> mapUpdateToState(
       UpdateProductFirebaseCrudEvent event) async* {
@@ -143,12 +142,16 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
         await _updateProduct(ref, event.product.id, data, null);
       }
     } else {
+      print("isImageUpdate ${event.isImageUpdate}");
+      print("NULL? ${event.product.image == null}");
+      print("SIZE ${event.product.image.length}");
       if (event.isImageUpdate) {
         data["images"] = [];
       } else {
         data["images"] = event.product.image;
       }
-      await _updateProduct(ref, event.product.id, data, null);
+      await _updateProduct(ref, event.product.id, data,
+          event.isImageUpdate ? [] : event.product.image);
     }
 
     Navigator.pop(event.context);
@@ -162,13 +165,22 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     String ref = 'products';
     final String picture = "${event.key}.jpg";
 
-    DocumentReference documentReference = Firestore.instance.collection(ref).document(event.key);
-    StorageReference storageReference = FirebaseStorage.instance.ref().child(picture);
+    DocumentReference documentReference =
+        Firestore.instance.collection(ref).document(event.key);
+    StorageReference storageReference =
+        FirebaseStorage.instance.ref().child(picture);
     await storageReference.delete();
     await documentReference.delete();
 
-      Navigator.pop(event.context);
-      yield ClearFirebaseCrudState();
+    Navigator.pop(event.context);
+    yield ClearFirebaseCrudState();
+  }
 
+  Future<List<Product>> readingCRUD() async {
+    QuerySnapshot querySnapshot =
+        await Firestore.instance.collection('products').getDocuments();
+    return await querySnapshot.documents
+        .map((document) => Product.fromSnapshot(document))
+        .toList();
   }
 }

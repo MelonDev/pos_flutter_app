@@ -15,13 +15,22 @@ import 'package:posflutterapp/models/products_models.dart';
 import 'package:uuid/uuid.dart';
 
 class addProducts extends StatefulWidget {
+
+  final String code;
+
+
+addProducts(this.code);
   @override
-  _addProductsState createState() => _addProductsState();
+  _addProductsState createState() => _addProductsState(code);
 }
 
 class _addProductsState extends State<addProducts> {
   ExternalBloc _externalBloc;
   FirebaseCrudBloc _firebaseCrudBloc;
+
+  String code;
+
+  _addProductsState(this.code);
 
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   GlobalKey<FormState> _categoryFormkey = GlobalKey();
@@ -74,6 +83,10 @@ class _addProductsState extends State<addProducts> {
   Widget build(BuildContext context) {
     _externalBloc = BlocProvider.of<ExternalBloc>(context);
     _firebaseCrudBloc = BlocProvider.of<FirebaseCrudBloc>(context);
+
+    if(code != null){
+      _serialNumberTextController.text = code;
+    }
 
     return BlocBuilder<ExternalBloc, ExternalState>(
       builder: (BuildContext context, _state) {
