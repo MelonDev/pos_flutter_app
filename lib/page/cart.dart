@@ -6,6 +6,7 @@ import 'package:posflutterapp/bloc/firebase_products/firebase_products_bloc.dart
 import 'package:posflutterapp/components/cart_products.dart';
 import 'package:posflutterapp/models/ProductPack.dart';
 import 'package:posflutterapp/models/products_models.dart';
+import 'package:posflutterapp/page/page_add_products.dart';
 import 'package:posflutterapp/page/page_products_details.dart';
 import 'package:posflutterapp/page/scanner_page.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -41,6 +42,11 @@ class _CartState extends State<Cart> {
         if (_state is NormalExternalState) {
           if (_state.notfound != null) {
             if (_state.notfound) {
+              Navigator.of(context).push(
+                new MaterialPageRoute(
+                  builder: (context) => new addProducts(_state.barcode),
+                ),
+              );
               print("GO TO NEW PRODUCT");
 //addProducts(_state.barcode);
             } else {
@@ -160,11 +166,17 @@ class _CartState extends State<Cart> {
                                       width: 100,
                                       alignment: Alignment.centerLeft,
                                       //color: Color(0x40000000),
-                                      child: _listProductPack[index].product.image.length > 0
+                                      child: _listProductPack[index]
+                                                  .product
+                                                  .image
+                                                  .length >
+                                              0
                                           ? Container(
                                               height: 120,
                                               child: Image.network(
-                                                _getImage(_listProductPack[index].product),
+                                                _getImage(
+                                                    _listProductPack[index]
+                                                        .product),
                                                 fit: BoxFit.fitHeight,
                                               ),
                                             )
@@ -181,7 +193,10 @@ class _CartState extends State<Cart> {
                                         margin: EdgeInsets.only(
                                             left: 20, right: 20),
                                         child: Text(
-                                          _listProductPack[index].product.name ?? "",
+                                          _listProductPack[index]
+                                                  .product
+                                                  .name ??
+                                              "",
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 4,
                                           style: GoogleFonts.itim(
@@ -217,11 +232,14 @@ class _CartState extends State<Cart> {
                                           new IconButton(
                                             icon: Icon(Icons.arrow_drop_up),
                                             onPressed: () {
-                                              _listProductPack[index].increaseCount();
+                                              _listProductPack[index]
+                                                  .increaseCount();
                                             },
                                           ),
                                           new Text(
-                                            _listProductPack[index].count.toString(),
+                                            _listProductPack[index]
+                                                .count
+                                                .toString(),
                                             style: TextStyle(
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.w500,
@@ -230,7 +248,8 @@ class _CartState extends State<Cart> {
                                           new IconButton(
                                             icon: Icon(Icons.arrow_drop_down),
                                             onPressed: () {
-                                              _listProductPack[index].decreaseCount();
+                                              _listProductPack[index]
+                                                  .decreaseCount();
                                             },
                                           ),
                                         ],
@@ -344,7 +363,7 @@ class _CartState extends State<Cart> {
     );
   }
 
-  String _getImage(Product product){
+  String _getImage(Product product) {
     return product.image != null
         ? (product.image.length > 0 ? product.image[0] : "")
         : "";
