@@ -18,6 +18,28 @@ class AddProductFirebaseCrudEvent extends FirebaseCrudEvent {
 
 }
 
+class AddTransitionFirebaseCrudEvent extends FirebaseCrudEvent {
+  final List<ProductPack> listProduct;
+  final double price;
+  final double receiveMoney;
+  final BuildContext context;
+
+  AddTransitionFirebaseCrudEvent(this.listProduct, this.price, this.receiveMoney, this.context);
+
+
+}
+
+class StartTransitionFirebaseCrudEvent extends FirebaseCrudEvent {
+  final List<ProductPack> listProduct;
+  final double price;
+  final BuildContext context;
+
+  StartTransitionFirebaseCrudEvent(this.listProduct, this.price, this.context);
+
+
+}
+
+
 class UpdateProductFirebaseCrudEvent extends FirebaseCrudEvent {
   final Product product;
   final File imageFile;

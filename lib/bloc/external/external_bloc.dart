@@ -2,12 +2,15 @@ import 'dart:async';
 import 'dart:io';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
 import 'package:posflutterapp/models/ProductPack.dart';
 import 'package:posflutterapp/models/products_models.dart';
+import 'package:posflutterapp/page/page_add_products.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 part 'external_event.dart';
 
@@ -31,6 +34,10 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       yield* _mapGelleryToState(event);
     } else if (event is OpenScannerOnCartExternalEvent) {
       yield* _mapScannerOnCartToState(event);
+    } else if (event is IncreaseProductPackExternalEvent) {
+      yield* _increaserProductPackToState(event);
+    } else if (event is DecreaseProductPackExternalEvent) {
+      yield* _decreaseProductPackToState(event);
     }
   }
 
@@ -84,15 +91,100 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
               .contains(result.rawContent.toUpperCase()))
           .toList();
 
-      if(filterList.length > 0){
-        yield NormalExternalState(null,isCart: true,notfound: false,productPack: ProductPack().initialProductPack(filterList[0]));
-      }else {
-        yield NormalExternalState(result.rawContent,isCart: true,notfound: true);
+      if (filterList.length > 0) {
+        if (int.parse(filterList[0].quantity.toString()) > 0) {
+          yield NormalExternalState(null,
+              isCart: true,
+              notfound: false,
+              productPack: ProductPack().initialProductPack(filterList[0]));
+        }else {
+          yield NormalExternalState(null,
+              isCart: true,
+              notfound: false,
+              outOfStock: true,
+              productPack: ProductPack().initialProductPack(filterList[0]));
+          showDialog(event.context);
+
+        }
+      } else {
+        yield NormalExternalState(result.rawContent,
+            isCart: true, notfound: true);
+        Navigator.push(
+            event.context,
+            MaterialPageRoute(
+              builder: (context) => new addProducts(result.rawContent),
+            ));
       }
-
-
     } else {
-      yield NormalExternalState(null,isCart: true);
+      yield NormalExternalState(null, isCart: true);
     }
+  }
+
+  @override
+  Stream<ExternalState> _increaserProductPackToState(
+      IncreaseProductPackExternalEvent event) async* {
+
+    List<Product> listProduct = await FirebaseCrudBloc().readingCRUD();
+
+    List<Product> filterList = listProduct
+        .where((element) => element.serialNumber
+        .toUpperCase()
+        .contains(event.productPack.product.serialNumber.toUpperCase()))
+        .toList();
+
+    if (filterList.length > 0) {
+
+      ProductPack ppb = event.productPack;
+
+      //ProductPack ppa = ppb.increaseCount();
+      ProductPack ppa = ProductPack().initialProductPack(ppb.product);
+      ppa.count = ppb.count + 1;
+
+      if (int.parse(filterList[0].quantity.toString()) >= ppa.count) {
+        yield NormalExternalState(null,
+            manageProduct: true,
+            isCart: true,
+            productPack: ppa,
+            position: event.position);
+      }else {
+        yield NormalExternalState(null,
+            manageProduct: true,
+            isCart: true,
+            outOfStock: true,
+            productPack: event.productPack,
+            position: event.position);
+        showDialog(event.context);
+      }
+    }
+
+
+  }
+
+  void showDialog(BuildContext context){
+      Alert(
+        context: context,
+        title: "OUT OF STOCK",
+//      desc: "เงินทอน 0 บาท",
+        buttons: [
+          DialogButton(
+            child: Text("ยืนยัน"),
+            color: Colors.green,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ).show();
+
+  }
+
+  @override
+  Stream<ExternalState> _decreaseProductPackToState(
+      DecreaseProductPackExternalEvent event) async* {
+    yield NormalExternalState(null,
+        manageProduct: true,
+        isCart: true,
+        productPack: event.productPack.decreaseCount(),
+        position: event.position);
   }
 }

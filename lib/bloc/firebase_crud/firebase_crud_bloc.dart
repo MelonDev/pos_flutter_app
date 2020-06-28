@@ -4,10 +4,15 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:meta/meta.dart';
+import 'package:posflutterapp/bloc/external/external_bloc.dart';
+import 'package:posflutterapp/models/ProductPack.dart';
 import 'package:posflutterapp/models/products_models.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:uuid/uuid.dart';
 
 part 'firebase_crud_event.dart';
@@ -23,16 +28,20 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     if (event is InitialFirebaseCrudEvent) {
       yield InitialFirebaseCrudState();
     } else if (event is AddProductFirebaseCrudEvent) {
-      yield* mapAddToState(event);
+      yield* _mapAddToState(event);
     } else if (event is UpdateProductFirebaseCrudEvent) {
-      yield* mapUpdateToState(event);
+      yield* _mapUpdateToState(event);
     } else if (event is DeleteProductFirebaseCrudEvent) {
-      yield* mapDeleteToState(event);
+      yield* _mapDeleteToState(event);
+    } else if (event is AddTransitionFirebaseCrudEvent) {
+      yield* _transitionToState(event);
+    } else if (event is StartTransitionFirebaseCrudEvent){
+      yield* _startTransitionToState(event);
     }
   }
 
   @override
-  Stream<FirebaseCrudState> mapAddToState(
+  Stream<FirebaseCrudState> _mapAddToState(
       AddProductFirebaseCrudEvent event) async* {
     yield LoadingFirebaseCrudState();
     String imageUrl;
@@ -117,7 +126,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
   }
 
   @override
-  Stream<FirebaseCrudState> mapUpdateToState(
+  Stream<FirebaseCrudState> _mapUpdateToState(
       UpdateProductFirebaseCrudEvent event) async* {
     yield LoadingFirebaseCrudState();
 
@@ -159,7 +168,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
   }
 
   @override
-  Stream<FirebaseCrudState> mapDeleteToState(
+  Stream<FirebaseCrudState> _mapDeleteToState(
       DeleteProductFirebaseCrudEvent event) async* {
     yield LoadingFirebaseCrudState();
     String ref = 'products';
@@ -182,5 +191,146 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     return await querySnapshot.documents
         .map((document) => Product.fromSnapshot(document))
         .toList();
+  }
+
+  @override
+  Stream<FirebaseCrudState> _transitionToState(
+      AddTransitionFirebaseCrudEvent event) async* {
+    yield LoadingFirebaseCrudState();
+    String refTransition = 'transition';
+    String refProduct = 'products';
+
+
+    WriteBatch batch = Firestore.instance.batch();
+
+    String id = Uuid().v1().toString();
+
+    Map<String, dynamic> data = {
+      "id": id,
+      "price": event.price,
+      "receiveMoney": event.receiveMoney,
+      "cart": event.listProduct.map((i) => i.toMap()).toList()
+    };
+
+    DocumentReference documentReference = Firestore.instance.collection(refTransition).document(id);
+    batch.setData(documentReference, data);
+
+    for(ProductPack productPack in event.listProduct){
+      DocumentReference documentReferencePack = Firestore.instance.collection(refProduct).document(productPack.product.id);
+      Product product = productPack.product;
+      product.quantity = (int.parse(product.quantity) - productPack.count).toString();
+      batch.updateData(documentReferencePack, product.toMap());
+    }
+
+    await batch.commit();
+
+    _showDialogSuccess(event.context,event.receiveMoney-event.price);
+
+    yield ClearFirebaseCrudState();
+  }
+
+  @override
+  Stream<FirebaseCrudState> _startTransitionToState(
+      StartTransitionFirebaseCrudEvent event) async* {
+    _showDialogPay(event.context, event.price, event.listProduct);
+    yield ClearFirebaseCrudState();
+
+
+  }
+
+  _showDialogSuccess(BuildContext context,double change) {
+    Alert(
+      context: context,
+      title: "เสร็จสิ้น",
+      desc: "เงินทอน ${change.toStringAsFixed(2)} บาท",
+      buttons: [
+        DialogButton(
+          child: Text("ยืนยัน"),
+          color: Colors.green,
+          onPressed: () {
+            BlocProvider.of<ExternalBloc>(context).add(InitialExternalEvent());
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ).show();
+  }
+
+  _showDialogNotEnoughMoney(BuildContext context) {
+    Alert(
+      context: context,
+      title: "ยอดเงินไม่เพียงพอ",
+      //desc: "เงินทอน ${change.toStringAsFixed(2)} บาท",
+      buttons: [
+        DialogButton(
+          child: Text("ยืนยัน"),
+          color: Colors.green,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ).show();
+  }
+
+  _showDialogPay(BuildContext context,double _totalPrice,List<ProductPack> listProduct) {
+    TextEditingController _reciveMoneyController = TextEditingController();
+    Alert(
+      context: context,
+      title: "ชำระเงิน",
+      desc: "ยอดรวม ${_totalPrice.toStringAsFixed(2)} บาท",
+      content: Form(
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _reciveMoneyController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: "ระบุจำนวนเงิน"),
+            ),
+          ],
+        ),
+      ),
+      buttons: [
+        DialogButton(
+          child: Text(
+            "ยกเลิก",
+            style: TextStyle(color: Colors.black87),
+          ),
+          color: Colors.black12,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        DialogButton(
+          child: Text(
+            "ยืนยัน",
+            style: TextStyle(color: Colors.black87),
+          ),
+          color: Colors.lightGreenAccent,
+          onPressed: () {
+            try {
+              if(double.parse(_reciveMoneyController.text) >= _totalPrice) {
+                Navigator.pop(context);
+                this.add(AddTransitionFirebaseCrudEvent(
+                    listProduct,
+                    _totalPrice,
+                    double.parse(_reciveMoneyController.text),
+                    context));
+              }else {
+                Navigator.pop(context);
+                _showDialogNotEnoughMoney(context);
+
+              }
+            } catch(error) {
+              Navigator.pop(context);
+
+              print("NOT DOUBLE");
+            }
+
+          },
+        ),
+      ],
+    ).show();
   }
 }

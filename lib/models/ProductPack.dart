@@ -11,12 +11,23 @@ class ProductPack{
     return this;
   }
 
-  void increaseCount(){
+  ProductPack increaseCount(){
     this.count += 1;
+    return this;
   }
 
-  void decreaseCount(){
+  ProductPack decreaseCount(){
     this.count -= 1;
+    return this;
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'product': product.toMap(),
+      'amount': count
+    };
+  }
+
+
 
 }

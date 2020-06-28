@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/bloc/external/external_bloc.dart';
+import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_products/firebase_products_bloc.dart';
 import 'package:posflutterapp/components/cart_products.dart';
 import 'package:posflutterapp/models/ProductPack.dart';
+import 'package:posflutterapp/models/ProductPackDuplicate.dart';
 import 'package:posflutterapp/models/products_models.dart';
 import 'package:posflutterapp/page/page_add_products.dart';
 import 'package:posflutterapp/page/page_products_details.dart';
@@ -17,7 +19,7 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  FirebaseProductsBloc _firebaseProductsBloc;
+  FirebaseCrudBloc _firebaseCrudBloc;
 
   List<ProductPack> _listProductPack = [];
 
@@ -29,7 +31,7 @@ class _CartState extends State<Cart> {
   Widget build(BuildContext context) {
     _externalBloc = BlocProvider.of<ExternalBloc>(context);
 
-    _firebaseProductsBloc = BlocProvider.of<FirebaseProductsBloc>(context);
+    _firebaseCrudBloc = BlocProvider.of<FirebaseCrudBloc>(context);
 
 /*    _image = _productPack.product.image != null
         ? (_productPack.product.image.length > 0 ? _productPack.product.image[0] : "")
@@ -40,17 +42,50 @@ class _CartState extends State<Cart> {
     return BlocBuilder<ExternalBloc, ExternalState>(
       builder: (BuildContext context, _state) {
         if (_state is NormalExternalState) {
+          if (_state.manageProduct != null) {
+            if (_state.productPack.count > 0) {
+              if (_state.outOfStock == null) {
+                _listProductPack.removeAt(_state.position);
+                _listProductPack.insert(_state.position, _state.productPack);
+              }
+            } else {
+              _listProductPack.removeAt(_state.position);
+            }
+            _totalPrice = 0;
+            for (ProductPack productPack in _listProductPack) {
+              _totalPrice += (double.parse(productPack.product.salePrice) *
+                      productPack.count)
+                  .toDouble();
+            }
+          }
           if (_state.notfound != null) {
             if (_state.notfound) {
-              Navigator.of(context).push(
-                new MaterialPageRoute(
-                  builder: (context) => new addProducts(_state.barcode),
-                ),
-              );
               print("GO TO NEW PRODUCT");
 //addProducts(_state.barcode);
             } else {
-              _listProductPack.add(_state.productPack);
+              List<ProductPackDuplicate> duplicateList = [];
+              for (int i = 0; i < _listProductPack.length; i++) {
+                if (_listProductPack[i]
+                    .product
+                    .serialNumber
+                    .contains(_state.productPack.product.serialNumber)) {
+                  duplicateList.add(ProductPackDuplicate()
+                      .initialProductPack(_listProductPack[i], i));
+                }
+              }
+
+              if (duplicateList.length > 0) {
+                _externalBloc.add(IncreaseProductPackExternalEvent(
+                    duplicateList[0].productPack,
+                    duplicateList[0].position,
+                    this.context));
+              } else {
+                if (_state.outOfStock == null) {
+                  _listProductPack.add(_state.productPack);
+                  _totalPrice +=
+                      double.parse(_state.productPack.product.salePrice);
+                }
+              }
             }
           }
         }
@@ -70,25 +105,30 @@ class _CartState extends State<Cart> {
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
                     Container(
-                        color: Colors.transparent,
-                        child: SizedBox(
-                          width: 60,
-                          height: 56,
-                          child: LayoutBuilder(builder: (context, constraint) {
+                      color: Colors.transparent,
+                      child: SizedBox(
+                        width: 60,
+                        height: 56,
+                        child: LayoutBuilder(
+                          builder: (context, constraint) {
                             return FlatButton(
-                                padding: EdgeInsets.all(0),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                color: Colors.transparent,
-                                child: Icon(
-                                  Icons.arrow_back,
-                                  size: constraint.biggest.height - 26,
-                                  //color: Colors.black.withAlpha(150),
-                                  color: Colors.purple,
-                                ));
-                          }),
-                        )),
+                              padding: EdgeInsets.all(0),
+                              onPressed: () {
+                                _externalBloc.add(InitialExternalEvent());
+                                Navigator.pop(context);
+                              },
+                              color: Colors.transparent,
+                              child: Icon(
+                                Icons.arrow_back,
+                                size: constraint.biggest.height - 26,
+                                //color: Colors.black.withAlpha(150),
+                                color: Colors.purple,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(
@@ -123,7 +163,12 @@ class _CartState extends State<Cart> {
                             return FlatButton(
                               padding: EdgeInsets.all(0),
                               onPressed: () {
-                                return ShowDialogPay();
+                                _externalBloc.add(InitialExternalEvent());
+                                _firebaseCrudBloc.add(
+                                    StartTransitionFirebaseCrudEvent(
+                                        _listProductPack,
+                                        _totalPrice,
+                                        this.context));
                               },
                               child: Icon(
                                 Icons.send,
@@ -232,8 +277,11 @@ class _CartState extends State<Cart> {
                                           new IconButton(
                                             icon: Icon(Icons.arrow_drop_up),
                                             onPressed: () {
-                                              _listProductPack[index]
-                                                  .increaseCount();
+                                              _externalBloc.add(
+                                                  IncreaseProductPackExternalEvent(
+                                                      _listProductPack[index],
+                                                      index,
+                                                      this.context));
                                             },
                                           ),
                                           new Text(
@@ -248,8 +296,11 @@ class _CartState extends State<Cart> {
                                           new IconButton(
                                             icon: Icon(Icons.arrow_drop_down),
                                             onPressed: () {
-                                              _listProductPack[index]
-                                                  .decreaseCount();
+                                              _externalBloc.add(
+                                                  DecreaseProductPackExternalEvent(
+                                                      _listProductPack[index],
+                                                      index,
+                                                      this.context));
                                             },
                                           ),
                                         ],
@@ -298,40 +349,25 @@ class _CartState extends State<Cart> {
                                       color: Colors.white),
                                 ),
                               ),
-                              BlocBuilder<ExternalBloc, ExternalState>(
-                                builder: (BuildContext context, _state) {
-                                  if (_state is NormalExternalState) {
-                                    if (_state.notfound != null) {
-                                      if (_state.notfound) {
-                                        print("GO TO NEW PRODUCT");
-                                      } else {
-                                        _listProductPack
-                                            .add(_state.productPack);
-                                        _totalPrice += double.parse(_state
-                                            .productPack.product.salePrice);
-                                      }
-                                    }
-                                  }
-                                  return Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      "${_totalPrice.toStringAsFixed(2)} ฿",
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      style: GoogleFonts.itim(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 24,
-                                          color: Colors.white),
-                                    ),
-                                  );
-                                },
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  "${_totalPrice.toStringAsFixed(2)} ฿",
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: GoogleFonts.itim(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 24,
+                                      color: Colors.white),
+                                ),
                               ),
                             ],
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
-                            _externalBloc.add(OpenScannerOnCartExternalEvent());
+                            _externalBloc
+                                .add(OpenScannerOnCartExternalEvent(context));
                           },
                           child: Container(
                             color: Colors.orange,
@@ -367,58 +403,6 @@ class _CartState extends State<Cart> {
     return product.image != null
         ? (product.image.length > 0 ? product.image[0] : "")
         : "";
-  }
-
-  ShowDialogPay() {
-    Alert(
-      context: context,
-      title: "ชำระเงิน",
-      desc: "ยอดรวม 500 บาท",
-      content: Form(
-        child: Column(
-          children: [
-            TextFormField(
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: "ระบุจำนวนเงิน"),
-            ),
-          ],
-        ),
-      ),
-      buttons: [
-        DialogButton(
-          child: Text("ยกเลิก"),
-          color: Colors.purple,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        DialogButton(
-          child: Text("ยืนยัน"),
-          color: Colors.green,
-          onPressed: () {
-            Navigator.pop(context);
-            return ShowDialogSuccess();
-          },
-        ),
-      ],
-    ).show();
-  }
-
-  ShowDialogSuccess() {
-    Alert(
-      context: context,
-      title: "เสร็จสิ้น",
-      desc: "เงินทอน 0 บาท",
-      buttons: [
-        DialogButton(
-          child: Text("ยืนยัน"),
-          color: Colors.green,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ],
-    ).show();
   }
 }
 //class Single_cart_product extends StatelessWidget {

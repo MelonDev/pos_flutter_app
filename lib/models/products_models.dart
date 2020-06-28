@@ -70,17 +70,14 @@ class Product {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'name': name,
+      'productName': name,
       'type': type,
       'price': price,
       'serialNumber': serialNumber,
       'quantity': quantity,
       'sizes': sizes,
-      'subIngredients': subIngredients,
       'salePrice': salePrice,
       'images': image,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
     };
   }
 }

@@ -179,13 +179,13 @@ class Single_prod extends StatelessWidget {
                                       Align(
                                         alignment: Alignment.centerRight,
                                         child: Text(
-                                          "${_product.quantity}" ?? "",
+                                          _product.quantity == null ? "" : (double.parse(_product.quantity) == 0 ? "สินค้าหมด" : _product.quantity),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                           style: GoogleFonts.itim(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16,
-                                              color: Colors.black87),
+                                              color: _product.quantity == null ? Colors.black87 : (double.parse(_product.quantity) == 0 ? Colors.red : Colors.black87)),
                                         ),
                                       )
                                     ],

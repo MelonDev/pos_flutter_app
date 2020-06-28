@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
@@ -15,11 +16,9 @@ import 'package:posflutterapp/models/products_models.dart';
 import 'package:uuid/uuid.dart';
 
 class addProducts extends StatefulWidget {
-
   final String code;
 
-
-addProducts(this.code);
+  addProducts(this.code);
   @override
   _addProductsState createState() => _addProductsState(code);
 }
@@ -84,7 +83,7 @@ class _addProductsState extends State<addProducts> {
     _externalBloc = BlocProvider.of<ExternalBloc>(context);
     _firebaseCrudBloc = BlocProvider.of<FirebaseCrudBloc>(context);
 
-    if(code != null){
+    if (code != null) {
       _serialNumberTextController.text = code;
     }
 
@@ -122,9 +121,55 @@ class _addProductsState extends State<addProducts> {
                     iconTheme: new IconThemeData(color: Colors.purple),
                     elevation: 0.1,
                     backgroundColor: Colors.white,
-                    title: Text(
-                      "เพิ่มสินค้า",
-                      style: TextStyle(color: Colors.purple),
+                    automaticallyImplyLeading: false,
+                    title: Stack(
+                      children: <Widget>[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: <Widget>[
+                            Container(
+                                color: Colors.transparent,
+                                child: SizedBox(
+                                  width: 60,
+                                  height: 56,
+                                  child: LayoutBuilder(
+                                      builder: (context, constraint) {
+                                    return FlatButton(
+                                        padding: EdgeInsets.all(0),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        color: Colors.transparent,
+                                        child: Icon(
+                                          Icons.arrow_back,
+                                          //color: Colors.black.withAlpha(150),
+                                          color: Colors.purple,
+                                        ));
+                                  }),
+                                )),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 56,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                child: Text(
+                                  "เพิ่มสินค้า",
+                                  style: GoogleFonts.itim(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: Colors.purple),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   body: Stack(

@@ -13,8 +13,12 @@ class NormalExternalState extends ExternalState {
   final bool notfound;
   final bool isCart;
   final ProductPack productPack;
+  final bool outOfStock;
 
-  NormalExternalState(this.barcode,{this.newProduct,this.fromScanner,this.fromImage,this.notfound,this.isCart,this.productPack});
+  final bool manageProduct;
+  final int position;
+
+  NormalExternalState(this.barcode,{this.newProduct,this.fromScanner,this.fromImage,this.outOfStock,this.notfound,this.isCart,this.position,this.productPack,this.manageProduct});
 }
 
 class EditExternalState extends NormalExternalState {
@@ -26,7 +30,10 @@ class EditExternalState extends NormalExternalState {
 
 class ScannerIsUsingExternalState extends ExternalState {}
 
-class ScannerOnCartIsUsingExternalState extends ExternalState {}
+class ScannerOnCartIsUsingExternalState extends ExternalState {
+
+
+}
 class LoadingExternalState extends ExternalState {}
 
 
