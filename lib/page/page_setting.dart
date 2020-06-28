@@ -44,17 +44,6 @@ class _SettingPageState extends State<SettingPage> {
         child: new ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            new UserAccountsDrawerHeader(
-              accountName: Text(
-                "$name",
-              ),
-              decoration: BoxDecoration(
-                color: Colors.purple,
-              ),
-              accountEmail: Text(
-                "$email",
-              ),
-            ),
 
             InkWell(
               onTap: () {
