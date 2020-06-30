@@ -71,7 +71,7 @@ class Single_cart_product extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProductDetail(_productPack.product),
+                  builder: (context) => ProductDetail(_productPack.product,context),
                 ),
               );
             },

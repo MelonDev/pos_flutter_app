@@ -40,7 +40,7 @@ class Product {
     serialNumber = double.parse(data[SERIALNUMBER].toString()).toStringAsFixed(0);
     sizes = data[SIZES].toString();
     subIngredients = data[SUBINGREDIENTS];
-    //image = data[IMAGES];
+//    image = data[IMAGES];
     image = _convertToListString(data[IMAGES]);
     createdAt = data[CREATEDAT];
     updatedAt = data[UPDATEDAT];

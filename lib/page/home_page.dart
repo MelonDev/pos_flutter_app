@@ -10,12 +10,11 @@ import '../user_repository.dart';
 import 'cart.dart';
 
 class HomePage extends StatelessWidget {
-  final String name;
-  final String email;
+
   final UserRepository _userRepository;
 
   HomePage(
-      {Key key, @required this.name, this.email, UserRepository userRepository})
+      {Key key, @required UserRepository userRepository})
       : _userRepository = userRepository,
         super(key: key);
   @override
@@ -28,35 +27,6 @@ class HomePage extends StatelessWidget {
         title: Text(
           'POS',
           style: TextStyle(color: Colors.purple, fontSize: 30),
-        ),
-      ),
-      drawer: new Drawer(
-        child: new ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            new UserAccountsDrawerHeader(
-              accountName: Text(
-                "$name",
-              ),
-              decoration: BoxDecoration(
-                color: Colors.purple,
-              ),
-              accountEmail: Text(
-                "$email",
-              ),
-            ),
-            InkWell(
-              onTap: () {
-                BlocProvider.of<AuthenticationBloc>(context).add(
-                  AuthenticationLoggedOut(),
-                );
-              },
-              child: ListTile(
-                title: Text('Log out'),
-                leading: Icon(Icons.highlight_off),
-              ),
-            ),
-          ],
         ),
       ),
       body: Container(
@@ -179,20 +149,21 @@ class HomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(18.0)),
                   color: Colors.purple, // button color
                   child: InkWell(
-                    onTap: () => Navigator.of(context).push(
-                        new MaterialPageRoute(
-                            builder: (context) =>
-                                new SettingPage())), // button pressed
+                    onTap: () {
+                      BlocProvider.of<AuthenticationBloc>(context).add(
+                        AuthenticationLoggedOut(),
+                      );
+                    }, // button pressed
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Icon(
-                          Icons.settings,
+                          Icons.exit_to_app,
                           color: Colors.white,
                           size: 100,
                         ), // icon
                         Text(
-                          "ตั้งค่า",
+                          "ออกจากระบบ",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 40,

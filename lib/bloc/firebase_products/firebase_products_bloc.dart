@@ -23,12 +23,12 @@ class FirebaseProductsBloc
     if (event is InitialFirebaseProductsEvent) {
       yield InitialFirebaseProductsState();
     } else if (event is RefreshFirebaseProductsEvent) {
-      yield* mapRefreshToState(event);
+      yield* _mapRefreshToState(event);
     }
   }
 
   @override
-  Stream<FirebaseProductsState> mapRefreshToState(
+  Stream<FirebaseProductsState> _mapRefreshToState(
       RefreshFirebaseProductsEvent event) async* {
 //    if (_firestore == null) {
 //      _firestore = Firestore.instance;

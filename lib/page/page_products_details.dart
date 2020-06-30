@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,12 +20,20 @@ class ProductDetails extends StatefulWidget {
 class _ProductDetailsState extends State<ProductDetails> {
   FirebaseProductsBloc _firebaseProductsBloc;
   Future<void> run() async {
-    Firestore.instance.collection('products').snapshots().listen((value) {
-      _firebaseProductsBloc.add(RefreshFirebaseProductsEvent(value));
-      value.documents.forEach((element) {
-        print(element.data);
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    if (user != null) {
+      Firestore.instance
+          .collection("Users")
+          .document(user.uid)
+          .collection('products')
+          .snapshots()
+          .listen((value) {
+        _firebaseProductsBloc.add(RefreshFirebaseProductsEvent(value));
+        value.documents.forEach((element) {
+          print(element.data);
+        });
       });
-    });
+    }
   }
 
   @override
@@ -39,7 +48,7 @@ class _ProductDetailsState extends State<ProductDetails> {
           return PageView.builder(
               scrollDirection: Axis.vertical,
               itemBuilder: (BuildContext context, int index) {
-                return ProductDetail(_state.data[index]);
+                return ProductDetail(_state.data[index], this.context);
               });
         } else {
           return Container(
@@ -60,8 +69,8 @@ class ProductDetail extends StatelessWidget {
   File _imageOffline;
 
   String id;
-
-  ProductDetail(this._product);
+  BuildContext mainContext;
+  ProductDetail(this._product, this.mainContext);
 
   ExternalBloc _externalBloc;
   bool isImageEdit = false;
@@ -116,7 +125,6 @@ class ProductDetail extends StatelessWidget {
     _image = _product.image != null
         ? (_product.image.length > 0 ? _product.image[0] : "")
         : "";
-
 
     print("B:${_product.image != null}");
 
@@ -204,8 +212,9 @@ class ProductDetail extends StatelessWidget {
                                         onPressed: () {
                                           if (_state is EditExternalState) {
                                             _externalBloc.add(
-                                                BackToNormalStateExternalEvent(
-                                                    _state.barcode),);
+                                              BackToNormalStateExternalEvent(
+                                                  _state.barcode),
+                                            );
                                           } else {
                                             Navigator.pop(context);
                                           }
@@ -305,7 +314,11 @@ class ProductDetail extends StatelessWidget {
                                         builder: (lbContext, constraint) {
                                           return FlatButton(
                                             padding: EdgeInsets.all(0),
-                                            onPressed: () {_firebaseCrudBloc.add(DeleteProductFirebaseCrudEvent(context,_product.id));},
+                                            onPressed: () {
+                                              _firebaseCrudBloc.add(
+                                                  DeleteProductFirebaseCrudEvent(
+                                                      context, _product.id));
+                                            },
                                             child: Icon(
                                               Icons.delete,
                                               color: Colors.purple,
@@ -334,7 +347,8 @@ class ProductDetail extends StatelessWidget {
                                     onPressed: () {
                                       if (_state is EditExternalState) {
                                         _externalBloc.add(
-                                            OpenGelleryExternalEvent(true));
+                                            OpenImageSourceExternalEvent(
+                                                this.mainContext, true));
                                       }
                                     },
                                     borderSide: BorderSide(

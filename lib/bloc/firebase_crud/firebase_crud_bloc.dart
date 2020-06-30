@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
   @override
   Stream<FirebaseCrudState> mapEventToState(FirebaseCrudEvent event) async* {
     if (event is InitialFirebaseCrudEvent) {
-      yield InitialFirebaseCrudState();
+      yield InitialFirebaseCrudState(clear: event.clear);
     } else if (event is AddProductFirebaseCrudEvent) {
       yield* _mapAddToState(event);
     } else if (event is UpdateProductFirebaseCrudEvent) {
@@ -35,7 +36,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       yield* _mapDeleteToState(event);
     } else if (event is AddTransitionFirebaseCrudEvent) {
       yield* _transitionToState(event);
-    } else if (event is StartTransitionFirebaseCrudEvent){
+    } else if (event is StartTransitionFirebaseCrudEvent) {
       yield* _startTransitionToState(event);
     }
   }
@@ -44,6 +45,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
   Stream<FirebaseCrudState> _mapAddToState(
       AddProductFirebaseCrudEvent event) async* {
     yield LoadingFirebaseCrudState();
+
     String imageUrl;
     String id = Uuid().v1().toString();
 
@@ -71,58 +73,75 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       await _createProduct(ref, id, data, null);
     }
 
-//    final FirebaseStorage storage = FirebaseStorage.instance;
-//    final String picture =
-//        "$id.jpg";
-//    StorageUploadTask task = storage.ref().child(picture).putFile(event.imageFile);
-//
-//
-//    await task.onComplete.then((snapshot) async {
-//      imageUrl = await snapshot.ref.getDownloadURL();
-//      List<String> imageList = [imageUrl];
-//      Map<String, dynamic> data = {
-//        "productName":event.product.name,
-//        "serialNumber": event.product.serialNumber,
-//        "type": event.product.type,
-//        "price": event.product.price,
-//        "salePrice": event.product.salePrice,
-//        "size": event.product.sizes,
-//        "quantity": event.product.quantity,
-//        "images": imageList,
-//      };
-//      await Firestore.instance.collection(ref).document(id).setData(data);
-//    });
     yield ClearFirebaseCrudState();
     Navigator.pop(event.context);
   }
 
   Future<String> _uploadImage(String id, File imageFile) async {
+
+
     final FirebaseStorage storage = FirebaseStorage.instance;
     final String picture = "$id.jpg";
-    StorageUploadTask task = storage.ref().child(picture).putFile(imageFile);
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    if (user.uid != null) {
+      StorageUploadTask task =
+          storage.ref().child(user.uid).child(picture).putFile(imageFile);
 
-    StorageTaskSnapshot snap = await task.onComplete;
+      StorageTaskSnapshot snap = await task.onComplete;
 
-    if (snap != null) {
-      String imageUrl = await snap.ref.getDownloadURL();
-      return imageUrl;
+      if (snap != null) {
+        String imageUrl = await snap.ref.getDownloadURL();
+        return imageUrl;
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
+  }
+
+  Future<DocumentReference> _initialFirestore(String ref,String id) async{
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    if(user != null){
+      if(id == null){
+        return Firestore.instance.collection("Users")
+            .document(user.uid)
+            .collection(ref)
+            .document();
+      }else {
+        return Firestore.instance.collection("Users")
+            .document(user.uid)
+            .collection(ref)
+            .document(id);
+      }
+    }else {
+      return null;
+    }
+
   }
 
   Future<void> _createProduct(String ref, String id, Map<String, dynamic> data,
       List<String> imageList) async {
     data["images"] = imageList ?? [];
 
-    await Firestore.instance.collection(ref).document(id).setData(data);
+    DocumentReference path = await _initialFirestore(ref, id);
+    if(path != null){
+      await path.setData(data);
+
+    }
+
   }
 
   Future<void> _updateProduct(String ref, String id, Map<String, dynamic> data,
       List<String> imageList) async {
     data["images"] = imageList ?? [];
 
-    await Firestore.instance.collection(ref).document(id).updateData(data);
+    DocumentReference path = await _initialFirestore(ref, id);
+    if(path != null){
+      await path.updateData(data);
+
+    }
+
   }
 
   @override
@@ -174,20 +193,33 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     String ref = 'products';
     final String picture = "${event.key}.jpg";
 
-    DocumentReference documentReference =
-        Firestore.instance.collection(ref).document(event.key);
-    StorageReference storageReference =
-        FirebaseStorage.instance.ref().child(picture);
-    await storageReference.delete();
-    await documentReference.delete();
+    DocumentReference documentReference;
+
+    DocumentReference path = await _initialFirestore(ref, event.key);
+    if(path != null){
+
+
+      FirebaseUser user = await FirebaseAuth.instance.currentUser();
+      if (user.uid != null) {
+        StorageReference storageReference =
+        FirebaseStorage.instance.ref().child(user.uid).child(picture);
+        await storageReference.delete();
+        await documentReference.delete();
+      }
+    }
 
     Navigator.pop(event.context);
     yield ClearFirebaseCrudState();
   }
 
   Future<List<Product>> readingCRUD() async {
-    QuerySnapshot querySnapshot =
-        await Firestore.instance.collection('products').getDocuments();
+    QuerySnapshot querySnapshot;
+
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    if(user != null){
+      querySnapshot = await Firestore.instance.collection("Users").document(user.uid).collection('products').getDocuments();
+    }
+
     return await querySnapshot.documents
         .map((document) => Product.fromSnapshot(document))
         .toList();
@@ -212,19 +244,26 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       "cart": event.listProduct.map((i) => i.toMap()).toList()
     };
 
-    DocumentReference documentReference = Firestore.instance.collection(refTransition).document(id);
-    batch.setData(documentReference, data);
+    DocumentReference documentReference = await _initialFirestore(refTransition, id);
+    if(documentReference != null){
+      batch.setData(documentReference, data);
+    }
 
-    for(ProductPack productPack in event.listProduct){
-      DocumentReference documentReferencePack = Firestore.instance.collection(refProduct).document(productPack.product.id);
-      Product product = productPack.product;
-      product.quantity = (int.parse(product.quantity) - productPack.count).toString();
-      batch.updateData(documentReferencePack, product.toMap());
+    for (ProductPack productPack in event.listProduct) {
+
+      DocumentReference documentReferencePack = await _initialFirestore(refProduct, productPack.product.id);
+      if(documentReferencePack != null){
+        Product product = productPack.product;
+        product.quantity =
+            (int.parse(product.quantity) - productPack.count).toString();
+        batch.updateData(documentReferencePack, product.toMap());
+      }
+
     }
 
     await batch.commit();
 
-    _showDialogSuccess(event.context,event.receiveMoney-event.price);
+    _showDialogSuccess(event.context, event.receiveMoney - event.price);
 
     yield ClearFirebaseCrudState();
   }
@@ -234,11 +273,9 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       StartTransitionFirebaseCrudEvent event) async* {
     _showDialogPay(event.context, event.price, event.listProduct);
     yield ClearFirebaseCrudState();
-
-
   }
 
-  _showDialogSuccess(BuildContext context,double change) {
+  _showDialogSuccess(BuildContext context, double change) {
     Alert(
       context: context,
       title: "เสร็จสิ้น",
@@ -274,7 +311,8 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     ).show();
   }
 
-  _showDialogPay(BuildContext context,double _totalPrice,List<ProductPack> listProduct) {
+  _showDialogPay(
+      BuildContext context, double _totalPrice, List<ProductPack> listProduct) {
     TextEditingController _reciveMoneyController = TextEditingController();
     Alert(
       context: context,
@@ -310,24 +348,22 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
           color: Colors.lightGreenAccent,
           onPressed: () {
             try {
-              if(double.parse(_reciveMoneyController.text) >= _totalPrice) {
+              if (double.parse(_reciveMoneyController.text) >= _totalPrice) {
                 Navigator.pop(context);
                 this.add(AddTransitionFirebaseCrudEvent(
                     listProduct,
                     _totalPrice,
                     double.parse(_reciveMoneyController.text),
                     context));
-              }else {
+              } else {
                 Navigator.pop(context);
                 _showDialogNotEnoughMoney(context);
-
               }
-            } catch(error) {
+            } catch (error) {
               Navigator.pop(context);
 
               print("NOT DOUBLE");
             }
-
           },
         ),
       ],

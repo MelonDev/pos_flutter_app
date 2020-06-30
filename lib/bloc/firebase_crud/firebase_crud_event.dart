@@ -4,7 +4,8 @@ part of 'firebase_crud_bloc.dart';
 abstract class FirebaseCrudEvent {}
 
 class InitialFirebaseCrudEvent extends FirebaseCrudEvent {
-  InitialFirebaseCrudEvent();
+  final bool clear;
+  InitialFirebaseCrudEvent({this.clear});
 }
 
 class AddProductFirebaseCrudEvent extends FirebaseCrudEvent {

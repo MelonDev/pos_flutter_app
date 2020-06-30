@@ -13,6 +13,7 @@ import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
 import 'package:posflutterapp/db/product_db.dart';
 import 'package:posflutterapp/models/products_models.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:uuid/uuid.dart';
 
 class addProducts extends StatefulWidget {
@@ -116,6 +117,15 @@ class _addProductsState extends State<addProducts> {
                   ),
                 );
               } else {
+                /*  if(_stateCRUD is InitialFirebaseCrudState){
+                  print("_stateCRUD is InitialFirebaseCrudState");
+                  if(_stateCRUD.clear != null){
+                    print("_stateCRUD.clear != null");
+                    _image1 = null;
+                  }
+                }
+
+               */
                 return Scaffold(
                   appBar: new AppBar(
                     iconTheme: new IconThemeData(color: Colors.purple),
@@ -139,6 +149,11 @@ class _addProductsState extends State<addProducts> {
                                     return FlatButton(
                                         padding: EdgeInsets.all(0),
                                         onPressed: () {
+                                          _firebaseCrudBloc.add(
+                                              InitialFirebaseCrudEvent(
+                                                  clear: true));
+                                          _externalBloc
+                                              .add(InitialExternalEvent());
                                           Navigator.of(context).pop();
                                         },
                                         color: Colors.transparent,
@@ -196,8 +211,8 @@ class _addProductsState extends State<addProducts> {
                                               width: 1.0),
                                           onPressed: () {
                                             _externalBloc.add(
-                                                OpenGelleryExternalEvent(
-                                                    false));
+                                                OpenImageSourceExternalEvent(
+                                                    this.context, false));
                                           },
                                           child: _displayChild(
                                               _state.fromImage ?? _image1),
@@ -214,8 +229,11 @@ class _addProductsState extends State<addProducts> {
                                             padding: const EdgeInsets.all(10),
                                             child: TextFormField(
                                               controller: _nameTextController,
+                                              autovalidate: true,
                                               decoration: InputDecoration(
-                                                  hintText: "Name",
+                                                  labelText: 'ชื่อสินค้า',
+                                                  labelStyle: TextStyle(
+                                                      color: Colors.purple),
                                                   border: InputBorder.none),
                                               validator: (value) {
                                                 if (value.isEmpty) {
@@ -247,7 +265,9 @@ class _addProductsState extends State<addProducts> {
                                                     .digitsOnly
                                               ],
                                               decoration: InputDecoration(
-                                                hintText: "SerialNumber",
+                                                labelText: "รหัสสินค้า",
+                                                labelStyle: TextStyle(
+                                                    color: Colors.purple),
                                                 border: InputBorder.none,
                                                 prefixIcon: IconButton(
                                                   icon: Icon(Icons.camera),
@@ -299,7 +319,9 @@ class _addProductsState extends State<addProducts> {
                                             child: TextFormField(
                                               controller: _typeTextController,
                                               decoration: InputDecoration(
-                                                hintText: "Type",
+                                                labelText: "ประเภทสินค้า",
+                                                labelStyle: TextStyle(
+                                                    color: Colors.purple),
                                                 border: InputBorder.none,
                                               ),
                                               validator: (value) {
@@ -332,7 +354,9 @@ class _addProductsState extends State<addProducts> {
                                                     .digitsOnly
                                               ],
                                               decoration: InputDecoration(
-                                                  hintText: "Size",
+                                                  labelText: "ขนาดสินค้า",
+                                                  labelStyle: TextStyle(
+                                                      color: Colors.purple),
                                                   border: InputBorder.none),
                                               validator: (value) {
                                                 if (value.isEmpty) {
@@ -363,7 +387,9 @@ class _addProductsState extends State<addProducts> {
                                                     .digitsOnly
                                               ],
                                               decoration: InputDecoration(
-                                                  hintText: "Price",
+                                                  labelText: "ราคาต้น",
+                                                  labelStyle: TextStyle(
+                                                      color: Colors.purple),
                                                   border: InputBorder.none),
                                               validator: (value) {
                                                 if (value.isEmpty) {
@@ -395,7 +421,9 @@ class _addProductsState extends State<addProducts> {
                                                     .digitsOnly
                                               ],
                                               decoration: InputDecoration(
-                                                  hintText: "Sale Price",
+                                                  labelText: "ราคาขาย",
+                                                  labelStyle: TextStyle(
+                                                      color: Colors.purple),
                                                   border: InputBorder.none),
                                               validator: (value) {
                                                 if (value.isEmpty) {
@@ -427,7 +455,9 @@ class _addProductsState extends State<addProducts> {
                                                     .digitsOnly
                                               ],
                                               decoration: InputDecoration(
-                                                  hintText: "Quantity",
+                                                  labelText: "จำนวน",
+                                                  labelStyle: TextStyle(
+                                                      color: Colors.purple),
                                                   border: InputBorder.none),
                                               validator: (value) {
                                                 if (value.isEmpty) {
@@ -469,20 +499,24 @@ class _addProductsState extends State<addProducts> {
                                           elevation: 0.0,
                                           child: MaterialButton(
                                             onPressed: () {
+                                              Product zip = zipProduct();
                                               //_validateAndUpload();
-                                              _firebaseCrudBloc.add(
-                                                  AddProductFirebaseCrudEvent(
-                                                      context,
-                                                      zipProduct(),
-                                                      _image1));
-                                              _externalBloc
-                                                  .add(InitialExternalEvent());
+
+                                              if (zip != null) {
+                                                _firebaseCrudBloc.add(
+                                                    AddProductFirebaseCrudEvent(
+                                                        context, zip, _image1));
+                                                _externalBloc.add(
+                                                    InitialExternalEvent());
+                                              }else{
+                                                _showDialogIsNotEmpty(context);
+                                              }
                                             },
                                             minWidth: MediaQuery.of(context)
                                                 .size
                                                 .width,
                                             child: Text(
-                                              "Add Product",
+                                              "เพิ่มสินค้า",
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   color: Colors.white,
@@ -541,15 +575,45 @@ class _addProductsState extends State<addProducts> {
   }
 
   Product zipProduct() {
-    Product product = Product();
-    product.name = _nameTextController.text;
-    product.serialNumber = _serialNumberTextController.text;
-    product.type = _typeTextController.text;
-    product.price = _priceTextController.text;
-    product.salePrice = _salePriceTextController.text;
-    product.sizes = _sizeTextController.text;
-    product.quantity = _quantityTextController.text;
-    return product;
+    if (_checkTextReady(_nameTextController.text) &&
+        _checkTextReady(_serialNumberTextController.text) &&
+        _checkTextReady(_typeTextController.text) &&
+        _checkTextReady(_priceTextController.text) &&
+        _checkTextReady(_salePriceTextController.text) &&
+        _checkTextReady(_sizeTextController.text) &&
+        _checkTextReady(_quantityTextController.text)) {
+      Product product = Product();
+      product.name = _nameTextController.text;
+      product.serialNumber = _serialNumberTextController.text;
+      product.type = _typeTextController.text;
+      product.price = _priceTextController.text;
+      product.salePrice = _salePriceTextController.text;
+      product.sizes = _sizeTextController.text;
+      product.quantity = _quantityTextController.text;
+      return product;
+    } else {
+      return null;
+    }
+  }
+
+  bool _checkTextReady(String text) => text.length > 0;
+
+  _showDialogIsNotEmpty(BuildContext context) {
+    Alert(
+      context: context,
+
+      title: "กรุณากรอกข้อมูลให้ครบ !",
+      //desc: "เงินทอน ${change.toStringAsFixed(2)} บาท",
+      buttons: [
+        DialogButton(
+          child: Text("ยืนยัน"),
+          color: Colors.green,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ).show();
   }
 
 //  void _validateAndUpload() async {

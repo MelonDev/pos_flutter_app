@@ -19,8 +19,19 @@ class OpenScannerOnCartExternalEvent extends ExternalEvent {
 
 class OpenGelleryExternalEvent extends ExternalEvent {
   final bool isEdit;
-  OpenGelleryExternalEvent(this.isEdit);
+  final bool camera;
+  final BuildContext context;
+
+  OpenGelleryExternalEvent(this.context,this.isEdit,{this.camera});
 }
+
+class OpenImageSourceExternalEvent extends ExternalEvent {
+  final bool isEdit;
+  final BuildContext context;
+
+  OpenImageSourceExternalEvent(this.context,this.isEdit);
+}
+
 
 
 class EditExternalEvent extends ExternalEvent {

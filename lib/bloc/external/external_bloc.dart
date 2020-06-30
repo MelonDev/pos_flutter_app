@@ -38,14 +38,56 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       yield* _increaserProductPackToState(event);
     } else if (event is DecreaseProductPackExternalEvent) {
       yield* _decreaseProductPackToState(event);
+    }else if(event is OpenImageSourceExternalEvent){
+      yield* _mapImageSourceToState(event);
     }
+  }
+
+  @override
+  Stream<ExternalState> _mapImageSourceToState(
+      OpenImageSourceExternalEvent event) async* {
+    showDialog(
+        context:event.context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Container(
+              width: double.maxFinite,
+              height:100,
+              child: ListView(
+                  children: <Widget>[
+                    InkWell(
+                      onTap: () {
+                        this.add(OpenGelleryExternalEvent(event.context, event.isEdit,camera: true));
+Navigator.pop(event.context);
+                      },
+                      child: ListTile(
+                        title: Text("กล้อง"),
+                        leading: Icon(Icons.camera),
+                      ),
+                    ), InkWell(
+                      onTap: () {
+                        this.add(OpenGelleryExternalEvent(event.context, event.isEdit));
+                        Navigator.pop(event.context);
+
+                      },
+                      child: ListTile(
+                        title: Text("คลังรูปภาพ"),
+                        leading: Icon(Icons.image),
+                      ),
+                    ),
+                  ]
+              ),
+            ),
+          );
+        }
+    );
   }
 
   @override
   Stream<ExternalState> _mapGelleryToState(
       OpenGelleryExternalEvent event) async* {
     PickedFile pickedFile = await ImagePicker()
-        .getImage(source: ImageSource.gallery, imageQuality: 60);
+        .getImage(source: event.camera == null ? ImageSource.gallery : ImageSource.camera, imageQuality: 60);
     File file = File(pickedFile.path);
 
     if (event.isEdit) {
@@ -54,6 +96,8 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       yield NormalExternalState(null, fromImage: file);
     }
   }
+
+ 
 
   @override
   Stream<ExternalState> _mapScannerToState(
@@ -103,7 +147,7 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
               notfound: false,
               outOfStock: true,
               productPack: ProductPack().initialProductPack(filterList[0]));
-          showDialog(event.context);
+          showDialogs(event.context);
 
         }
       } else {
@@ -153,14 +197,14 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
             outOfStock: true,
             productPack: event.productPack,
             position: event.position);
-        showDialog(event.context);
+        showDialogs(event.context);
       }
     }
 
 
   }
 
-  void showDialog(BuildContext context){
+  void showDialogs(BuildContext context){
       Alert(
         context: context,
         title: "OUT OF STOCK",

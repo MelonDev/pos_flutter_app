@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,12 +16,16 @@ class Products extends StatefulWidget {
 class _ProductsState extends State<Products> {
   FirebaseProductsBloc _firebaseProductsBloc;
   Future<void> run() async {
-    Firestore.instance.collection('products').snapshots().listen((value) {
-      _firebaseProductsBloc.add(RefreshFirebaseProductsEvent(value));
-      value.documents.forEach((element) {
-        print(element.data);
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    if(user != null){
+      Firestore.instance.collection("Users").document(user.uid).collection('products').snapshots().listen((value) {
+        _firebaseProductsBloc.add(RefreshFirebaseProductsEvent(value));
+        value.documents.forEach((element) {
+          print(element.data);
+        });
       });
-    });
+    }
+    
   }
 
   @override
@@ -77,7 +82,7 @@ class Single_prod extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProductDetail(_product),
+                  builder: (context) => ProductDetail(_product,context),
                 ),
               );
             },
