@@ -10,6 +10,7 @@ import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_products/firebase_products_bloc.dart';
 import 'package:posflutterapp/models/products_models.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 //import 'package:posflutterapp/page/page_edit_products_details.dart';
 
 class ProductDetails extends StatefulWidget {
@@ -107,17 +108,47 @@ class ProductDetail extends StatelessWidget {
   }
 
   Product zipProduct() {
-    Product product = Product();
-    product.id = id;
-    product.name = _nameTextControllerProductDetails.text;
-    product.serialNumber = _serialNumberTextControllerProductDetails.text;
-    product.type = _typeTextControllerProductDetails.text;
-    product.price = _priceTextControllerProductDetails.text;
-    product.salePrice = _salePriceTextControllerProductDetails.text;
-    product.sizes = _sizeTextControllerProductDetails.text;
-    product.quantity = _quantityTextControllerProductDetails.text;
-    product.image = _product.image;
-    return product;
+    if (_checkTextReady(_nameTextControllerProductDetails.text) &&
+        _checkTextReady(_serialNumberTextControllerProductDetails.text) &&
+        _checkTextReady(_typeTextControllerProductDetails.text) &&
+        _checkTextReady(_priceTextControllerProductDetails.text) &&
+        _checkTextReady(_salePriceTextControllerProductDetails.text) &&
+        _checkTextReady(_sizeTextControllerProductDetails.text) &&
+        _checkTextReady(_quantityTextControllerProductDetails.text)) {
+      Product product = Product();
+      product.id = id;
+      product.name = _nameTextControllerProductDetails.text;
+      product.serialNumber = _serialNumberTextControllerProductDetails.text;
+      product.type = _typeTextControllerProductDetails.text;
+      product.price = _priceTextControllerProductDetails.text;
+      product.salePrice = _salePriceTextControllerProductDetails.text;
+      product.sizes = _sizeTextControllerProductDetails.text;
+      product.quantity = _quantityTextControllerProductDetails.text;
+      product.image = _product.image;
+      return product;
+    } else {
+      return null;
+    }
+  }
+
+  bool _checkTextReady(String text) => text.length > 0;
+
+  _showDialogIsNotEmpty(BuildContext context) {
+    Alert(
+      context: context,
+
+      title: "กรุณากรอกข้อมูลให้ครบ !",
+      //desc: "เงินทอน ${change.toStringAsFixed(2)} บาท",
+      buttons: [
+        DialogButton(
+          child: Text("ยืนยัน"),
+          color: Colors.green,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ).show();
   }
 
   @override
@@ -379,12 +410,15 @@ class ProductDetail extends StatelessWidget {
                                         enabled: _state is EditExternalState,
                                         controller:
                                             _nameTextControllerProductDetails,
+                                        autovalidate: true,
                                         decoration: InputDecoration(
-                                            hintText: "Name",
+                                            labelText: 'ชื่อสินค้า',
+                                            labelStyle:
+                                                TextStyle(color: Colors.purple),
                                             border: InputBorder.none),
                                         validator: (value) {
                                           if (value.isEmpty) {
-                                            return 'The Name field cannot be empty';
+                                            return 'กรุณากรอกข้อมูล';
                                           }
                                           return null;
                                         },
@@ -409,13 +443,14 @@ class ProductDetail extends StatelessWidget {
                                           WhitelistingTextInputFormatter
                                               .digitsOnly
                                         ],
+                                        autovalidate: true,
                                         decoration: InputDecoration(
-                                          hintText: "SerialNumber",
+                                          labelText: "รหัสสินค้า",
+                                          labelStyle: TextStyle(
+                                              color: Colors.purple),
                                           border: InputBorder.none,
                                           prefixIcon: IconButton(
-                                            icon: Icon(
-                                              Icons.camera,
-                                            ),
+                                            icon: Icon(Icons.camera),
                                             tooltip: "Scan",
                                             onPressed: () {
                                               print("A0");
@@ -427,7 +462,7 @@ class ProductDetail extends StatelessWidget {
                                         ),
                                         validator: (value) {
                                           if (value.isEmpty) {
-                                            return 'The SerialNumber field cannot be empty';
+                                            return 'กรุณากรอกข้อมูล';
                                           }
                                           return null;
                                         },
@@ -448,12 +483,14 @@ class ProductDetail extends StatelessWidget {
                                         controller:
                                             _typeTextControllerProductDetails,
                                         decoration: InputDecoration(
-                                          hintText: "Type",
+                                          labelText: "ประเภทสินค้า",
+                                          labelStyle: TextStyle(
+                                              color: Colors.purple),
                                           border: InputBorder.none,
                                         ),
                                         validator: (value) {
                                           if (value.isEmpty) {
-                                            return 'The Type field cannot be empty';
+                                            return 'กรุณากรอกข้อมูล';
                                           }
                                           return null;
                                         },
@@ -478,12 +515,15 @@ class ProductDetail extends StatelessWidget {
                                           WhitelistingTextInputFormatter
                                               .digitsOnly
                                         ],
+                                        autovalidate: true,
                                         decoration: InputDecoration(
-                                            hintText: "Size",
+                                            labelText: "ขนาดสินค้า",
+                                            labelStyle: TextStyle(
+                                                color: Colors.purple),
                                             border: InputBorder.none),
                                         validator: (value) {
                                           if (value.isEmpty) {
-                                            return 'The Size field cannot be empty';
+                                            return 'กรุณากรอกข้อมูล';
                                           }
                                           return null;
                                         },
@@ -508,12 +548,15 @@ class ProductDetail extends StatelessWidget {
                                           WhitelistingTextInputFormatter
                                               .digitsOnly
                                         ],
+                                        autovalidate: true,
                                         decoration: InputDecoration(
-                                            hintText: "Price",
+                                            labelText: "ราคาต้น",
+                                            labelStyle: TextStyle(
+                                                color: Colors.purple),
                                             border: InputBorder.none),
                                         validator: (value) {
                                           if (value.isEmpty) {
-                                            return 'The Price field cannot be empty';
+                                            return 'กรุณากรอกข้อมูล';
                                           }
                                           return null;
                                         },
@@ -538,12 +581,15 @@ class ProductDetail extends StatelessWidget {
                                           WhitelistingTextInputFormatter
                                               .digitsOnly
                                         ],
+                                        autovalidate: true,
                                         decoration: InputDecoration(
-                                            hintText: "Sale Price",
+                                            labelText: "ราคาขาย",
+                                            labelStyle: TextStyle(
+                                                color: Colors.purple),
                                             border: InputBorder.none),
                                         validator: (value) {
                                           if (value.isEmpty) {
-                                            return 'The Price field cannot be empty';
+                                            return 'กรุณากรอกข้อมูล';
                                           }
                                           return null;
                                         },
@@ -568,12 +614,15 @@ class ProductDetail extends StatelessWidget {
                                           WhitelistingTextInputFormatter
                                               .digitsOnly
                                         ],
+                                        autovalidate: true,
                                         decoration: InputDecoration(
-                                            hintText: "Quantity",
+                                            labelText: "จำนวน",
+                                            labelStyle: TextStyle(
+                                                color: Colors.purple),
                                             border: InputBorder.none),
                                         validator: (value) {
                                           if (value.isEmpty) {
-                                            return 'The Quantity field cannot be empty';
+                                            return 'กรุณากรอกข้อมูล';
                                           }
                                           return null;
                                         },

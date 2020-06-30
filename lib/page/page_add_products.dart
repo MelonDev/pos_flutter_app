@@ -237,7 +237,7 @@ class _addProductsState extends State<addProducts> {
                                                   border: InputBorder.none),
                                               validator: (value) {
                                                 if (value.isEmpty) {
-                                                  return 'The Name field cannot be empty';
+                                                  return 'กรุณากรอกข้อมูล';
                                                 }
                                                 return null;
                                               },
@@ -264,6 +264,7 @@ class _addProductsState extends State<addProducts> {
                                                 WhitelistingTextInputFormatter
                                                     .digitsOnly
                                               ],
+                                              autovalidate: true,
                                               decoration: InputDecoration(
                                                 labelText: "รหัสสินค้า",
                                                 labelStyle: TextStyle(
@@ -275,14 +276,15 @@ class _addProductsState extends State<addProducts> {
                                                   onPressed: () {
                                                     print("A0");
                                                     _externalBloc.add(
-                                                        OpenScannerExternalEvent(
-                                                            false));
+                                                      OpenScannerExternalEvent(
+                                                          false),
+                                                    );
                                                   },
                                                 ),
                                               ),
                                               validator: (value) {
                                                 if (value.isEmpty) {
-                                                  return 'The SerialNumber field cannot be empty';
+                                                  return 'กรุณากรอกข้อมูล';
                                                 }
                                                 return null;
                                               },
@@ -318,6 +320,7 @@ class _addProductsState extends State<addProducts> {
                                             padding: const EdgeInsets.all(10),
                                             child: TextFormField(
                                               controller: _typeTextController,
+                                              autovalidate: true,
                                               decoration: InputDecoration(
                                                 labelText: "ประเภทสินค้า",
                                                 labelStyle: TextStyle(
@@ -326,7 +329,7 @@ class _addProductsState extends State<addProducts> {
                                               ),
                                               validator: (value) {
                                                 if (value.isEmpty) {
-                                                  return 'The Type field cannot be empty';
+                                                  return 'กรุณากรอกข้อมูล';
                                                 }
                                                 return null;
                                               },
@@ -353,6 +356,7 @@ class _addProductsState extends State<addProducts> {
                                                 WhitelistingTextInputFormatter
                                                     .digitsOnly
                                               ],
+                                              autovalidate: true,
                                               decoration: InputDecoration(
                                                   labelText: "ขนาดสินค้า",
                                                   labelStyle: TextStyle(
@@ -360,7 +364,7 @@ class _addProductsState extends State<addProducts> {
                                                   border: InputBorder.none),
                                               validator: (value) {
                                                 if (value.isEmpty) {
-                                                  return 'The Size field cannot be empty';
+                                                  return 'กรุณากรอกข้อมูล';
                                                 }
                                                 return null;
                                               },
@@ -386,6 +390,7 @@ class _addProductsState extends State<addProducts> {
                                                 WhitelistingTextInputFormatter
                                                     .digitsOnly
                                               ],
+                                              autovalidate: true,
                                               decoration: InputDecoration(
                                                   labelText: "ราคาต้น",
                                                   labelStyle: TextStyle(
@@ -393,7 +398,7 @@ class _addProductsState extends State<addProducts> {
                                                   border: InputBorder.none),
                                               validator: (value) {
                                                 if (value.isEmpty) {
-                                                  return 'The Price field cannot be empty';
+                                                  return 'กรุณากรอกข้อมูล';
                                                 }
                                                 return null;
                                               },
@@ -420,6 +425,7 @@ class _addProductsState extends State<addProducts> {
                                                 WhitelistingTextInputFormatter
                                                     .digitsOnly
                                               ],
+                                              autovalidate: true,
                                               decoration: InputDecoration(
                                                   labelText: "ราคาขาย",
                                                   labelStyle: TextStyle(
@@ -427,7 +433,7 @@ class _addProductsState extends State<addProducts> {
                                                   border: InputBorder.none),
                                               validator: (value) {
                                                 if (value.isEmpty) {
-                                                  return 'The Price field cannot be empty';
+                                                  return 'กรุณากรอกข้อมูล';
                                                 }
                                                 return null;
                                               },
@@ -454,6 +460,7 @@ class _addProductsState extends State<addProducts> {
                                                 WhitelistingTextInputFormatter
                                                     .digitsOnly
                                               ],
+                                              autovalidate: true,
                                               decoration: InputDecoration(
                                                   labelText: "จำนวน",
                                                   labelStyle: TextStyle(
@@ -461,7 +468,7 @@ class _addProductsState extends State<addProducts> {
                                                   border: InputBorder.none),
                                               validator: (value) {
                                                 if (value.isEmpty) {
-                                                  return 'The Quantity field cannot be empty';
+                                                  return 'กรุณากรอกข้อมูล';
                                                 }
                                                 return null;
                                               },
@@ -508,7 +515,7 @@ class _addProductsState extends State<addProducts> {
                                                         context, zip, _image1));
                                                 _externalBloc.add(
                                                     InitialExternalEvent());
-                                              }else{
+                                              } else {
                                                 _showDialogIsNotEmpty(context);
                                               }
                                             },

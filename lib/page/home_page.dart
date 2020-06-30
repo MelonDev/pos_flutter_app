@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/bloc/authentication/authentication_bloc.dart';
 import 'package:posflutterapp/page/page_products.dart';
 import 'package:posflutterapp/page/page_report.dart';
@@ -10,11 +11,9 @@ import '../user_repository.dart';
 import 'cart.dart';
 
 class HomePage extends StatelessWidget {
-
   final UserRepository _userRepository;
 
-  HomePage(
-      {Key key, @required UserRepository userRepository})
+  HomePage({Key key, @required UserRepository userRepository})
       : _userRepository = userRepository,
         super(key: key);
   @override
@@ -24,9 +23,28 @@ class HomePage extends StatelessWidget {
         iconTheme: new IconThemeData(color: Colors.purple),
         elevation: 0.1,
         backgroundColor: Colors.white,
-        title: Text(
-          'POS',
-          style: TextStyle(color: Colors.purple, fontSize: 30),
+        automaticallyImplyLeading: false,
+        title: Stack(
+          children: <Widget>[
+            SizedBox(
+              height: 56,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      "POS",
+                      style: GoogleFonts.itim(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 40,
+                          color: Colors.purple),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
         ),
       ),
       body: Container(
@@ -59,7 +77,7 @@ class HomePage extends StatelessWidget {
                         ), // icon
                         Text(
                           "ขายสินค้า",
-                          style: TextStyle(
+                          style: GoogleFonts.itim(
                               color: Colors.white,
                               fontSize: 40,
                               fontWeight: FontWeight.bold),
@@ -93,7 +111,7 @@ class HomePage extends StatelessWidget {
                         ), // icon
                         Text(
                           "คลังสินค้า",
-                          style: TextStyle(
+                          style: GoogleFonts.itim(
                               color: Colors.white,
                               fontSize: 40,
                               fontWeight: FontWeight.bold),
@@ -128,7 +146,7 @@ class HomePage extends StatelessWidget {
                         ), // icon
                         Text(
                           "รายงาน",
-                          style: TextStyle(
+                          style: GoogleFonts.itim(
                               color: Colors.white,
                               fontSize: 40,
                               fontWeight: FontWeight.bold),
@@ -164,7 +182,7 @@ class HomePage extends StatelessWidget {
                         ), // icon
                         Text(
                           "ออกจากระบบ",
-                          style: TextStyle(
+                          style: GoogleFonts.itim(
                               color: Colors.white,
                               fontSize: 40,
                               fontWeight: FontWeight.bold),
