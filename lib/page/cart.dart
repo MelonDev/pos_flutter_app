@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/bloc/external/external_bloc.dart';
@@ -366,8 +367,7 @@ class _CartState extends State<Cart> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            _externalBloc
-                                .add(OpenScannerOnCartExternalEvent(context));
+                            _showDialogSelect(context);
                           },
                           child: Container(
                             color: Colors.orange,
@@ -404,7 +404,110 @@ class _CartState extends State<Cart> {
         ? (product.image.length > 0 ? product.image[0] : "")
         : "";
   }
+
+  _showDialogPay(
+      BuildContext context, double _totalPrice, List<ProductPack> listProduct) {
+    TextEditingController _serialNumberTextCartController = TextEditingController();
+    Alert(
+      context: context,
+      title: "ชำระเงิน",
+      desc: "ยอดรวม ${_totalPrice.toStringAsFixed(2)} บาท",
+      content: Form(
+        child: Column(
+          children: [
+            TextFormField(
+              controller:
+              _serialNumberTextCartController,
+              keyboardType:
+              TextInputType.number,
+              inputFormatters: <
+                  TextInputFormatter>[
+                WhitelistingTextInputFormatter
+                    .digitsOnly
+              ],
+              autovalidate: true,
+              decoration: InputDecoration(
+                labelText: "รหัสสินค้า",
+                labelStyle: TextStyle(
+                    color: Colors.purple),
+                border: InputBorder.none,
+              ),
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'กรุณากรอกข้อมูล';
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+      buttons: [
+        DialogButton(
+          child: Text(
+            "ยกเลิก",
+            style: TextStyle(color: Colors.black87),
+          ),
+          color: Colors.black12,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        DialogButton(
+          child: Text(
+            "ยืนยัน",
+            style: TextStyle(color: Colors.black87),
+          ),
+          color: Colors.lightGreenAccent,
+          onPressed: () {
+
+          },
+        ),
+      ],
+    ).show();
+  }
+
+  _showDialogSelect(BuildContext context) {
+    Alert(
+      context: context,
+      title: "เพิ่มสินค้า",
+      desc: "",
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                DialogButton(
+                  child: Text("แสกนบาร์โค้ด",style: GoogleFonts.itim(color: Colors.white),),
+                  color: Colors.orange,
+                  onPressed: () {
+                    BlocProvider.of<ExternalBloc>(context).add(InitialExternalEvent());
+                    Navigator.pop(context);
+                    _externalBloc
+                        .add(OpenScannerOnCartExternalEvent(context));
+                  },
+                ),
+              ])
+        ],
+      ),
+      buttons: [
+        DialogButton(
+          child: Text("กรอกรหัสสินค้า",style: GoogleFonts.itim(color: Colors.white),),
+          color: Colors.orange,
+          onPressed: () {
+            BlocProvider.of<ExternalBloc>(context).add(InitialExternalEvent());
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ).show();
+  }
 }
+
+
+
+
 //class Single_cart_product extends StatelessWidget {
 //  final ProductPack _productPack;
 //  String _image;

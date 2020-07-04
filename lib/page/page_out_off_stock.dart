@@ -106,46 +106,8 @@ class _OutOffStockPageState extends State<OutOffStockPage> {
             ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerFloat,
-//      ),ListView(
-//        margin: const EdgeInsets.only(left: 40, right: 40),
-//        child: ClipRRect(
-//          child: Column(
-//        children: <Widget>[
-//          new Padding(padding: const EdgeInsets.all(20)),
-//          SizedBox(
-//            height: 50,
-//            child: Material(
-//              shape: RoundedRectangleBorder(
-//                  borderRadius: BorderRadius.circular(18.0)),
-//              color: Colors.orange, // button color
-//              child: InkWell(
-//                onTap: () => Navigator.of(context).push(new MaterialPageRoute(
-//                    builder: (context) => new addProducts())), // button pressed
-//                child: Row(
-//                  mainAxisAlignment: MainAxisAlignment.center,
-//                  children: <Widget>[
-//                    Icon(
-//                      Icons.add,
-//                      color: Colors.white,
-//                    ), // icon
-//                    Text(
-//                      "Add Product",
-//                      style: TextStyle(color: Colors.white, fontSize: 18),
-//                    ), // text
-//                  ],
-//                ),
-//              ),
-//            ),
-//          ),
-//          SizedBox(
-//            height: 20,
-//          ),
-//
-//        ],
-//      ),
           );
-//      ),
-//    );
+
         } else {
           return Container(
             color: Colors.purple,

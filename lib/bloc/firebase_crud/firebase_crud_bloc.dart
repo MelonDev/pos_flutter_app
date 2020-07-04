@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:posflutterapp/bloc/external/external_bloc.dart';
@@ -341,7 +342,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
         DialogButton(
           child: Text(
             "ยกเลิก",
-            style: TextStyle(color: Colors.black87),
+            style: GoogleFonts.itim(color: Colors.black87),
           ),
           color: Colors.black12,
           onPressed: () {
@@ -351,7 +352,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
         DialogButton(
           child: Text(
             "ยืนยัน",
-            style: TextStyle(color: Colors.black87),
+            style: GoogleFonts.itim(color: Colors.black87),
           ),
           color: Colors.lightGreenAccent,
           onPressed: () {

@@ -4,6 +4,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
@@ -38,7 +39,7 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       yield* _increaserProductPackToState(event);
     } else if (event is DecreaseProductPackExternalEvent) {
       yield* _decreaseProductPackToState(event);
-    }else if(event is OpenImageSourceExternalEvent){
+    } else if (event is OpenImageSourceExternalEvent) {
       yield* _mapImageSourceToState(event);
     }
   }
@@ -47,47 +48,48 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
   Stream<ExternalState> _mapImageSourceToState(
       OpenImageSourceExternalEvent event) async* {
     showDialog(
-        context:event.context,
+        context: event.context,
         builder: (BuildContext context) {
           return AlertDialog(
             content: Container(
               width: double.maxFinite,
-              height:100,
-              child: ListView(
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        this.add(OpenGelleryExternalEvent(event.context, event.isEdit,camera: true));
-Navigator.pop(event.context);
-                      },
-                      child: ListTile(
-                        title: Text("กล้อง"),
-                        leading: Icon(Icons.camera),
-                      ),
-                    ), InkWell(
-                      onTap: () {
-                        this.add(OpenGelleryExternalEvent(event.context, event.isEdit));
-                        Navigator.pop(event.context);
-
-                      },
-                      child: ListTile(
-                        title: Text("คลังรูปภาพ"),
-                        leading: Icon(Icons.image),
-                      ),
-                    ),
-                  ]
-              ),
+              height: 100,
+              child: ListView(children: <Widget>[
+                InkWell(
+                  onTap: () {
+                    this.add(OpenGelleryExternalEvent(
+                        event.context, event.isEdit,
+                        camera: true));
+                    Navigator.pop(event.context);
+                  },
+                  child: ListTile(
+                    title: Text("กล้อง"),
+                    leading: Icon(Icons.camera),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    this.add(
+                        OpenGelleryExternalEvent(event.context, event.isEdit));
+                    Navigator.pop(event.context);
+                  },
+                  child: ListTile(
+                    title: Text("คลังรูปภาพ"),
+                    leading: Icon(Icons.image),
+                  ),
+                ),
+              ]),
             ),
           );
-        }
-    );
+        });
   }
 
   @override
   Stream<ExternalState> _mapGelleryToState(
       OpenGelleryExternalEvent event) async* {
-    PickedFile pickedFile = await ImagePicker()
-        .getImage(source: event.camera == null ? ImageSource.gallery : ImageSource.camera, imageQuality: 60);
+    PickedFile pickedFile = await ImagePicker().getImage(
+        source: event.camera == null ? ImageSource.gallery : ImageSource.camera,
+        imageQuality: 60);
     File file = File(pickedFile.path);
 
     if (event.isEdit) {
@@ -96,8 +98,6 @@ Navigator.pop(event.context);
       yield NormalExternalState(null, fromImage: file);
     }
   }
-
- 
 
   @override
   Stream<ExternalState> _mapScannerToState(
@@ -141,23 +141,23 @@ Navigator.pop(event.context);
               isCart: true,
               notfound: false,
               productPack: ProductPack().initialProductPack(filterList[0]));
-        }else {
+        } else {
           yield NormalExternalState(null,
               isCart: true,
               notfound: false,
               outOfStock: true,
               productPack: ProductPack().initialProductPack(filterList[0]));
           showDialogs(event.context);
-
         }
       } else {
         yield NormalExternalState(result.rawContent,
             isCart: true, notfound: true);
-        Navigator.push(
-            event.context,
-            MaterialPageRoute(
-              builder: (context) => new addProducts(result.rawContent),
-            ));
+        showDialogsNoProduct(event.context,result.rawContent);
+//        Navigator.push(
+//            event.context,
+//            MaterialPageRoute(
+//              builder: (context) => new addProducts(result.rawContent),
+//            ));
       }
     } else {
       yield NormalExternalState(null, isCart: true);
@@ -167,17 +167,15 @@ Navigator.pop(event.context);
   @override
   Stream<ExternalState> _increaserProductPackToState(
       IncreaseProductPackExternalEvent event) async* {
-
     List<Product> listProduct = await FirebaseCrudBloc().readingCRUD();
 
     List<Product> filterList = listProduct
         .where((element) => element.serialNumber
-        .toUpperCase()
-        .contains(event.productPack.product.serialNumber.toUpperCase()))
+            .toUpperCase()
+            .contains(event.productPack.product.serialNumber.toUpperCase()))
         .toList();
 
     if (filterList.length > 0) {
-
       ProductPack ppb = event.productPack;
 
       //ProductPack ppa = ppb.increaseCount();
@@ -190,7 +188,7 @@ Navigator.pop(event.context);
             isCart: true,
             productPack: ppa,
             position: event.position);
-      }else {
+      } else {
         yield NormalExternalState(null,
             manageProduct: true,
             isCart: true,
@@ -200,26 +198,55 @@ Navigator.pop(event.context);
         showDialogs(event.context);
       }
     }
-
-
   }
 
-  void showDialogs(BuildContext context){
-      Alert(
-        context: context,
-        title: "OUT OF STOCK",
+  void showDialogs(BuildContext context) {
+    Alert(
+      context: context,
+      title: "OUT OF STOCK",
 //      desc: "เงินทอน 0 บาท",
-        buttons: [
-          DialogButton(
-            child: Text("ยืนยัน"),
-            color: Colors.green,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ).show();
+      buttons: [
+        DialogButton(
+          child: Text("ยืนยัน"),
+          color: Colors.green,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ).show();
+  }
 
+  void showDialogsNoProduct(BuildContext context, String rawContent, ) {
+    Alert(
+      context: context,
+      title: "ไม่พบสินค้า",
+//      desc: "เงินทอน 0 บาท",
+      buttons: [
+        DialogButton(
+          child: Text("ยกเลิก",
+        style: GoogleFonts.itim(color: Colors.black87),),
+          color: Colors.red,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        DialogButton(
+          child: Text("เพิ่มสินค้า",
+    style: GoogleFonts.itim(color: Colors.black87),),
+          color: Colors.orange,
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => new addProducts(rawContent),
+                ));
+          },
+        ),
+
+      ],
+    ).show();
   }
 
   @override
