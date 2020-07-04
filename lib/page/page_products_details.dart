@@ -53,7 +53,7 @@ class _ProductDetailsState extends State<ProductDetails> {
               });
         } else {
           return Container(
-            color: Colors.red,
+            color: Colors.purple,
           );
         }
       },
@@ -643,7 +643,7 @@ class ProductDetail extends StatelessWidget {
           );
         } else {
           return Container(
-            color: Colors.red,
+            color: Colors.purple,
           );
         }
       },

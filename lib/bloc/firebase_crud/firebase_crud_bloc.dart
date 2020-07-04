@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/models/ProductPack.dart';
@@ -58,8 +59,12 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       "salePrice": event.product.salePrice,
       "size": event.product.sizes,
       "quantity": event.product.quantity,
+      "createAt" : DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(DateTime.now()),
+      "updateAt" : DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(DateTime.now())
     };
     String ref = 'products';
+
+
 
     if (event.imageFile != null) {
       String image = await _uploadImage(id, event.imageFile);
@@ -158,6 +163,8 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       "salePrice": event.product.salePrice,
       "size": event.product.sizes,
       "quantity": event.product.quantity,
+      "createAt":event.product.createdAt,
+      "updateAt":DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(DateTime.now())
     };
     String ref = 'products';
 
@@ -241,7 +248,8 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       "id": id,
       "price": event.price,
       "receiveMoney": event.receiveMoney,
-      "cart": event.listProduct.map((i) => i.toMap()).toList()
+      "cart": event.listProduct.map((i) => i.toMap()).toList(),
+      "createAt" : DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(DateTime.now())
     };
 
     DocumentReference documentReference = await _initialFirestore(refTransition, id);

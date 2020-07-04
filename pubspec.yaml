@@ -39,6 +39,7 @@ dependencies:
   firebase_core: ^0.4.5
   rflutter_alert: ^1.0.3
   flutter_dropdown: ^0.0.7+hotfix.1
+  flutter_spinkit: ^4.1.2+1
 
 dev_dependencies:
   flutter_test:

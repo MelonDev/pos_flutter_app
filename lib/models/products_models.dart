@@ -10,8 +10,8 @@ class Product {
   static const SIZES = "size";
   static const SALEPRICE = "salePrice";
   static const IMAGES = "images";
-  static const CREATEDAT = "createdAt";
-  static const UPDATEDAT = "updatedAt";
+  static const CREATEDAT = "createAt";
+  static const UPDATEDAT = "updateAt";
   static const SUBINGREDIENTS = "subIngredients";
 
   String id;
@@ -24,8 +24,8 @@ class Product {
   String sizes;
   List subIngredients;
   String salePrice;
-  Timestamp createdAt;
-  Timestamp updatedAt;
+  String createdAt;
+  String updatedAt;
 
   Product();
 
@@ -78,6 +78,8 @@ class Product {
       'sizes': sizes,
       'salePrice': salePrice,
       'images': image,
+      'createAt': createdAt,
+      'updateAt':updatedAt
     };
   }
 }

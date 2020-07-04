@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/bloc/firebase_products/firebase_products_bloc.dart';
 import 'package:posflutterapp/models/products_models.dart';
@@ -25,7 +26,7 @@ class _ProductsState extends State<Products> {
         });
       });
     }
-    
+
   }
 
   @override
@@ -50,7 +51,21 @@ class _ProductsState extends State<Products> {
               });
         } else {
           return Container(
-            color: Colors.red,
+            color: Colors.purple,
+            child: Stack(
+              children: [
+                Center(
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    child: SpinKitSquareCircle(
+                      color: Colors.white,
+                      size: 50.0,
+                    ),
+                  ),
+                )
+              ],
+            ),
           );
         }
       },

@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/bloc/external/external_bloc.dart';
 
 import 'package:flutter_dropdown/flutter_dropdown.dart';
-import 'package:posflutterapp/page/page_out_off_stock.dart';
-import 'package:posflutterapp/page/page_sales_report.dart';
 
-class ReportPage extends StatefulWidget {
+class SalesReportPage extends StatefulWidget {
   @override
-  _ReportPageState createState() => _ReportPageState();
+  _SalesReportPageState createState() => _SalesReportPageState();
 }
 
-class _ReportPageState extends State<ReportPage> {
+class _SalesReportPageState extends State<SalesReportPage> {
+  int _counter = 0;
+  List<Person> persons = [
+    Person(gender: "รายวัน"),
+    Person(gender: "รายสัปดาห์"),
+    Person(gender: "รายเดือน"),
+  ];
 
+  Person selectedPerson;
 
+  @override
+  void initState() {
+    selectedPerson = persons.first;
+    super.initState();
+  }
 
   ExternalBloc _externalBloc;
   @override
@@ -74,7 +83,7 @@ class _ReportPageState extends State<ReportPage> {
                       children: <Widget>[
                         Container(
                           child: Text(
-                            "รายงาน",
+                            "รายงานการขาย",
                             style: GoogleFonts.itim(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
@@ -92,56 +101,34 @@ class _ReportPageState extends State<ReportPage> {
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: <Widget>[
-
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Material(
-                        borderRadius:
-                        BorderRadius.circular(10),
-                        color: Colors.orange,
-                        elevation: 0.0,
-                        child: MaterialButton(
-                          onPressed: () => Navigator.of(context).push(
-                              new MaterialPageRoute(
-                                  builder: (context) =>
-                                  new SalesReportPage())),
-                          minWidth: MediaQuery.of(context)
-                              .size
-                              .width,
-                          child: Text(
-                            "รายงานการขาย",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.itim(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,fontSize: 20),
-                          ),
-                        ),
-                      ),
+                    DropDown<Person>(
+                      items: persons,
+//                initialValue: selectedPerson,
+                      hint: Text("Select"),
+                      initialValue: persons.first,
+                      onChanged: (Person p) {
+                        print(p?.gender);
+                        setState(() {
+                          selectedPerson = p;
+                        });
+                      },
+                      isCleared: selectedPerson == null,
+                      customWidgets:
+                          persons.map((p) => buildDropDownRow(p)).toList(),
+                      isExpanded: true,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Material(
-                        borderRadius:
-                        BorderRadius.circular(10),
-                        color: Colors.orange,
-                        elevation: 0.0,
-                        child: MaterialButton(
-                          onPressed: () => Navigator.of(context).push(
-                              new MaterialPageRoute(
-                                  builder: (context) =>
-                                  new OutOffStockPage())),
-                          minWidth: MediaQuery.of(context)
-                              .size
-                              .width,
-                          child: Text(
-                            "รายงานสินค้าหมด",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.itim(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,fontSize: 20),
-                          ),
+                    Card(
+                      child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        const ListTile(
+                          leading: Text('02-07-2563'),
+                          title: Text('ยอดการซื้อ 50 บาท'),
+//                          subtitle: Text('Music by Julie Gable. Lyrics by Sidney Stein.'),
                         ),
-                      ),
+
+                      ],
+                    ),
                     ),
                   ],
                 ),
@@ -151,25 +138,30 @@ class _ReportPageState extends State<ReportPage> {
         } else {
           return Container(
             color: Colors.purple,
-            child: Stack(
-              children: [
-                Center(
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    child: SpinKitSquareCircle(
-                      color: Colors.white,
-                      size: 50.0,
-                    ),
-                  ),
-                )
-              ],
-            ),
           );
         }
       },
     );
   }
 
+  Row buildDropDownRow(Person person) {
+    return Row(
+      children: <Widget>[
+        Expanded(
+            child: Text(
+          person?.gender ?? "Select",
+          style: GoogleFonts.itim(
+              fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),
+        )),
+      ],
+    );
+  }
+}
 
+class Person {
+  final String gender;
+  final String name;
+  final String url;
+
+  Person({this.name, this.gender, this.url});
 }
