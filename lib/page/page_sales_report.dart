@@ -153,28 +153,34 @@ class _SalesReportPageState extends State<SalesReportPage> {
                         children: [
                           Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              "รายการ",
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              style: GoogleFonts.itim(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  color: Colors.deepPurpleAccent),
+                            child: FlatButton(
+                              onPressed: () {},
+                              child: Text(
+                                "รายการ",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: GoogleFonts.itim(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.deepPurpleAccent),
+                              ),
                             ),
                           ),
                           Align(
                             alignment: Alignment.centerRight,
-                            child: Text(
-                              "ดูรายการย้อนหลัง",
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              style: GoogleFonts.itim(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Colors.deepPurpleAccent),
+                            child: FlatButton(
+                              onPressed: () {},
+                              child: Text(
+                                "ดูรายการย้อนหลัง",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: GoogleFonts.itim(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.deepPurpleAccent),
+                              ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),

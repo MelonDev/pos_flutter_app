@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/models/ProductPack.dart';
+import 'package:posflutterapp/models/TransitionModel.dart';
 import 'package:posflutterapp/models/products_models.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:uuid/uuid.dart';
@@ -232,6 +233,20 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
         .map((document) => Product.fromSnapshot(document))
         .toList();
   }
+
+  Future<List<TransitionModel>> readingTransitionCRUD() async {
+    QuerySnapshot querySnapshot;
+
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    if(user != null){
+      querySnapshot = await Firestore.instance.collection("Users").document(user.uid).collection('transition').getDocuments();
+    }
+
+    return await querySnapshot.documents
+        .map((document) => TransitionModel.fromSnapshot(document))
+        .toList();
+  }
+
 
   @override
   Stream<FirebaseCrudState> _transitionToState(

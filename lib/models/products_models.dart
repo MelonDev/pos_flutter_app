@@ -50,20 +50,20 @@ class Product {
     return list.map((value) => value.toString()).toList();
   }
 
-//  Product.fromMap(Map<String, dynamic> data) {
-//    name = data['name'];
-//    id = data['id'];
-//    type = data['type'];
-//    price = data['price'];
-//    quantity = data['quantity'];
-//    salePrice = data['salePrice'];
-//    serialNumber = data['serialNumber'];
-//    sizes = data['sizes'];
-//    subIngredients = data['subIngredients'];
-//    image = data['image'];
-//    createdAt = data['createdAt'];
-//    updatedAt = data['updatedAt'];
-//  }
+  Product.fromMap(Map<String, dynamic> data) {
+    name = data[NAME];
+    id = data[ID];
+    type = data[TYPE];
+    price = double.parse(data[PRICE].toString()).toStringAsFixed(2);
+    quantity = data[QUANTITY].toString();
+    salePrice = double.parse(data[SALEPRICE].toString()).toStringAsFixed(2);
+    serialNumber = double.parse(data[SERIALNUMBER].toString()).toStringAsFixed(0);
+    sizes = data[SIZES].toString();
+    subIngredients = data[SUBINGREDIENTS];
+    image = _convertToListString(data[IMAGES]);
+    createdAt = data[CREATEDAT];
+    updatedAt = data[UPDATEDAT];
+  }
 
 
 
