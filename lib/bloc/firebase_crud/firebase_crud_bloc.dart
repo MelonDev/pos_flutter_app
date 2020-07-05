@@ -11,11 +11,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:meta/meta.dart';
 import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/models/ProductPack.dart';
+import 'package:posflutterapp/models/TransitionItem.dart';
 import 'package:posflutterapp/models/TransitionModel.dart';
 import 'package:posflutterapp/models/products_models.dart';
+import 'package:posflutterapp/tools/TransitionDateTimeConverter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:uuid/uuid.dart';
 
@@ -242,13 +245,86 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       querySnapshot = await Firestore.instance.collection("Users").document(user.uid).collection('transition').getDocuments();
     }
 
-    return await querySnapshot.documents
+    List<TransitionModel> listModel =  await querySnapshot.documents
         .map((document) => TransitionModel.fromSnapshot(document))
         .toList();
+
+    return listModel;
+
+    //return TransitionDateTimeConverter().compareTransitionItemList(listModel);
+  }
+
+  Future<List<TransitionItem>> readingWeekTransitionCRUD() async {
+
+    List<TransitionModel> rawList = await readingTransitionCRUD();
+
+    List<TransitionModel> filterList = [];
+
+    DateTime dateTime = DateTime.now();
+
+    for (TransitionModel model in rawList){
+
+      var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      DateTime modelDateTime = formatter.parse(model.createAt);
+
+      if(modelDateTime.year == dateTime.year &&  Jiffy().week == Jiffy(modelDateTime).week){
+        filterList.add(model);
+      }
+
+    }
+
+    return TransitionDateTimeConverter().compareTransitionItemList(filterList);
+
+
+  }
+
+  Future<List<TransitionItem>> readingMonthTransitionCRUD() async {
+    List<TransitionModel> rawList = await readingTransitionCRUD();
+
+    List<TransitionModel> filterList = [];
+
+    DateTime dateTime = DateTime.now();
+
+    for (TransitionModel model in rawList){
+
+      var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      DateTime modelDateTime = formatter.parse(model.createAt);
+
+      if(modelDateTime.year == dateTime.year && modelDateTime.month == dateTime.month){
+        filterList.add(model);
+      }
+
+    }
+
+    return TransitionDateTimeConverter().compareTransitionItemList(filterList);
+
+
+  }
+
+  Future<List<TransitionItem>> readingYearTransitionCRUD() async {
+    List<TransitionModel> rawList = await readingTransitionCRUD();
+
+    List<TransitionModel> filterList = [];
+
+    DateTime dateTime = DateTime.now();
+
+    for (TransitionModel model in rawList){
+
+      var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      DateTime modelDateTime = formatter.parse(model.createAt);
+
+      if(modelDateTime.year == dateTime.year ){
+        filterList.add(model);
+      }
+
+    }
+
+    return TransitionDateTimeConverter().compareTransitionItemList(filterList);
+
   }
 
 
-  @override
+    @override
   Stream<FirebaseCrudState> _transitionToState(
       AddTransitionFirebaseCrudEvent event) async* {
     yield LoadingFirebaseCrudState();
@@ -393,4 +469,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       ],
     ).show();
   }
+
+
+
 }

@@ -6,9 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
 import 'package:posflutterapp/models/ProductPack.dart';
+import 'package:posflutterapp/models/SalesDataModel.dart';
+import 'package:posflutterapp/models/TransitionItem.dart';
 import 'package:posflutterapp/models/products_models.dart';
 import 'package:posflutterapp/page/page_add_products.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -41,6 +44,12 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       yield* _decreaseProductPackToState(event);
     } else if (event is OpenImageSourceExternalEvent) {
       yield* _mapImageSourceToState(event);
+    } else if (event is WeekReadTransitionExternalEvent) {
+      yield* _weekReadTransitionToState(event);
+    } else if (event is MonthReadTransitionExternalEvent) {
+      yield* _monthReadTransitionToState(event);
+    } else if (event is YearReadTransitionExternalEvent) {
+      yield* _yearReadTransitionToState(event);
     }
   }
 
@@ -152,7 +161,7 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       } else {
         yield NormalExternalState(result.rawContent,
             isCart: true, notfound: true);
-        showDialogsNoProduct(event.context,result.rawContent);
+        showDialogsNoProduct(event.context, result.rawContent);
 //        Navigator.push(
 //            event.context,
 //            MaterialPageRoute(
@@ -217,23 +226,30 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
     ).show();
   }
 
-  void showDialogsNoProduct(BuildContext context, String rawContent, ) {
+  void showDialogsNoProduct(
+    BuildContext context,
+    String rawContent,
+  ) {
     Alert(
       context: context,
       title: "ไม่พบสินค้า",
 //      desc: "เงินทอน 0 บาท",
       buttons: [
         DialogButton(
-          child: Text("ยกเลิก",
-        style: GoogleFonts.itim(color: Colors.black87),),
+          child: Text(
+            "ยกเลิก",
+            style: GoogleFonts.itim(color: Colors.black87),
+          ),
           color: Colors.red,
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         DialogButton(
-          child: Text("เพิ่มสินค้า",
-    style: GoogleFonts.itim(color: Colors.black87),),
+          child: Text(
+            "เพิ่มสินค้า",
+            style: GoogleFonts.itim(color: Colors.black87),
+          ),
           color: Colors.orange,
           onPressed: () {
             Navigator.pop(context);
@@ -244,7 +260,6 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
                 ));
           },
         ),
-
       ],
     ).show();
   }
@@ -257,5 +272,105 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
         isCart: true,
         productPack: event.productPack.decreaseCount(),
         position: event.position);
+  }
+
+  @override
+  Stream<ExternalState> _readTransitionToState(
+      ReadTransitionExternalEvent event) async* {
+    yield LoadingExternalState();
+/*
+    List<TransitionItem> list = await FirebaseCrudBloc().readingTransitionCRUD();
+
+    yield ReadTransitionExternalState(list.reversed.toList(),null);
+
+
+ */
+  }
+
+  @override
+  Stream<ExternalState> _weekReadTransitionToState(
+      WeekReadTransitionExternalEvent event) async* {
+    yield LoadingExternalState();
+
+    List<TransitionItem> list =
+        await FirebaseCrudBloc().readingWeekTransitionCRUD();
+
+    yield WeekReadTransitionExternalState(
+        list.reversed.toList(), _dayConvertSaleData(list));
+  }
+
+  @override
+  Stream<ExternalState> _monthReadTransitionToState(
+      MonthReadTransitionExternalEvent event) async* {
+    yield LoadingExternalState();
+
+    List<TransitionItem> list =
+        await FirebaseCrudBloc().readingMonthTransitionCRUD();
+
+    yield MonthReadTransitionExternalState(
+        list.reversed.toList(), _dayConvertSaleData(list));
+  }
+
+  @override
+  Stream<ExternalState> _yearReadTransitionToState(
+      YearReadTransitionExternalEvent event) async* {
+    yield LoadingExternalState();
+
+    List<TransitionItem> list =
+        await FirebaseCrudBloc().readingYearTransitionCRUD();
+
+    yield YearReadTransitionExternalState(
+        list.reversed.toList(), _monthConvertSaleData(list));
+  }
+
+  List<SalesData> _dayConvertSaleData(List<TransitionItem> list) {
+    List<SalesData> saleList = [];
+    double price = 0.00;
+    String dateTimes = "";
+    for (TransitionItem item in list) {
+      if (item.label == null) {
+        price += double.parse(item.value.price);
+        dateTimes = item.value.createAt;
+      } else {
+        var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        DateTime dateTime = formatter.parse(dateTimes);
+
+        saleList.add(SalesData("${dateTime.day}-${dateTime.month}", price));
+        price = 0.00;
+      }
+    }
+
+    return saleList;
+  }
+
+  List<SalesData> _monthConvertSaleData(List<TransitionItem> list) {
+    List<SalesData> saleList = [];
+    double price = 0.00;
+    int count = 0;
+    int month = 0;
+    for (TransitionItem item in list) {
+      count += 1;
+      if (item.label != null) {
+        if (count == list.length) {
+          price += double.parse(item.price);
+          saleList.add(SalesData("$month", price));
+
+        } else {
+          if (month == 0) {
+            month = item.month;
+            price = double.parse(item.price);
+          } else if (item.month != month) {
+            saleList.add(SalesData("$month", price));
+            month = item.month;
+            price = double.parse(item.price);
+          } else {
+
+            price += double.parse(item.price);
+          }
+        }
+      }
+    }
+
+    return saleList;
   }
 }

@@ -61,3 +61,21 @@ class DecreaseProductPackExternalEvent extends ExternalEvent {
   DecreaseProductPackExternalEvent(this.productPack,this.position, this.context);
 }
 
+class ReadTransitionExternalEvent extends ExternalEvent {
+
+  ReadTransitionExternalEvent();
+}
+
+class WeekReadTransitionExternalEvent extends ExternalEvent {
+
+  WeekReadTransitionExternalEvent();
+}
+
+class MonthReadTransitionExternalEvent extends ExternalEvent {
+
+  MonthReadTransitionExternalEvent();
+}
+class YearReadTransitionExternalEvent extends ExternalEvent {
+
+  YearReadTransitionExternalEvent();
+}

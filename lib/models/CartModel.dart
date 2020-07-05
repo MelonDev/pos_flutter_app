@@ -6,7 +6,7 @@ class CartModel {
   static const AMOUNT = "amount";
   static const PRODUCT = "product";
 
-  String amount;
+  int amount;
   Product product;
 
   CartModel();

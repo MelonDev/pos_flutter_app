@@ -59,3 +59,4 @@ class DeleteProductFirebaseCrudEvent extends FirebaseCrudEvent {
 
   DeleteProductFirebaseCrudEvent(this.context,this.key);
 }
+

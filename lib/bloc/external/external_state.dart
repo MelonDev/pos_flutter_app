@@ -36,5 +36,23 @@ class ScannerOnCartIsUsingExternalState extends ExternalState {
 }
 class LoadingExternalState extends ExternalState {}
 
+class ReadTransitionExternalState extends ExternalState {
+  final List<TransitionItem> data;
 
+  final List<SalesData> saleData;
+
+  ReadTransitionExternalState(this.data,this.saleData);
+}
+
+class WeekReadTransitionExternalState extends ReadTransitionExternalState {
+  WeekReadTransitionExternalState(List<TransitionItem> data, List<SalesData> saleData) : super(data, saleData);
+}
+
+class MonthReadTransitionExternalState extends ReadTransitionExternalState {
+  MonthReadTransitionExternalState(List<TransitionItem> data, List<SalesData> saleData) : super(data, saleData);
+}
+
+class YearReadTransitionExternalState extends ReadTransitionExternalState {
+  YearReadTransitionExternalState(List<TransitionItem> data, List<SalesData> saleData) : super(data, saleData);
+}
 
