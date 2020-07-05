@@ -226,7 +226,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
   Widget _buttonWidget() {
     return Container(
       alignment: Alignment.bottomLeft,
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.all(0),
       child: Stack(
         children: [
           Align(
@@ -250,23 +250,23 @@ class _SalesReportPageState extends State<SalesReportPage> {
               ),
             ),
           ),
-          Align(
-              alignment: Alignment.centerRight,
-              child: Container(
-                height: 50,
-                child: FlatButton(
-                  onPressed: () {},
-                  child: Text(
-                    "ดูรายการย้อนหลัง",
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: GoogleFonts.itim(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: Colors.deepPurpleAccent),
-                  ),
-                ),
-              )),
+//          Align(
+//              alignment: Alignment.centerRight,
+//              child: Container(
+//                height: 50,
+//                child: FlatButton(
+//                  onPressed: () {},
+//                  child: Text(
+//                    "ดูรายการย้อนหลัง",
+//                    overflow: TextOverflow.ellipsis,
+//                    maxLines: 1,
+//                    style: GoogleFonts.itim(
+//                        fontWeight: FontWeight.bold,
+//                        fontSize: 18,
+//                        color: Colors.deepPurpleAccent),
+//                  ),
+//                ),
+//              )),
         ],
       ),
     );

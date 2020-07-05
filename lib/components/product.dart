@@ -187,7 +187,7 @@ class Single_prod extends StatelessWidget {
                                       Align(
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          "คงเหลืิอ",
+                                          "คงเหลือ",
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                           style: GoogleFonts.itim(
