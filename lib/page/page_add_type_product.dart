@@ -4,6 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class PageAddTypeProduct extends StatefulWidget {
 
@@ -110,6 +111,7 @@ class _PageAddTypeProductState extends State<PageAddTypeProduct> {
                     if(index == 0){
                       //AD
                       // _firebaseCrudBloc.add(AddTypeFirebaseCrudEvent(this.context, {TYPE NAME},widget.isEdit));
+                      _showDialogTextTypeInput(context);
                     }else {
                       _externalBloc.add(ChooseTypeExternalEvent(this.context,widget.isEdit,_state.data[index - 1].name));
                     }
@@ -194,5 +196,51 @@ class _PageAddTypeProductState extends State<PageAddTypeProduct> {
         }
       },
     );
+  }
+
+  _showDialogTextTypeInput(BuildContext context) {
+    TextEditingController _TextInputController = TextEditingController();
+    Alert(
+      context: context,
+      title: "เพิ่มประเภทสินค้า",
+      content: Form(
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _TextInputController,
+              decoration: InputDecoration(labelText: "ระบุประเภทสินค้า"),
+            ),
+          ],
+        ),
+      ),
+      buttons: [
+        DialogButton(
+          child: Text(
+            "ยกเลิก",
+            style: GoogleFonts.itim(color: Colors.black87),
+          ),
+          color: Colors.black12,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        DialogButton(
+          child: Text(
+            "ยืนยัน",
+            style: GoogleFonts.itim(color: Colors.black87),
+          ),
+          color: Colors.lightGreenAccent,
+          onPressed: () {
+            BlocProvider.of<ExternalBloc>(context).add(InitialExternalEvent());
+            if (_TextInputController.text.length > 0) {
+              _firebaseCrudBloc.add(AddTypeFirebaseCrudEvent(this.context, _TextInputController.text,widget.isEdit));
+//              _externalBloc.add(
+//                  TextInputExternalEvent(_TextInputController.text, context));
+              Navigator.pop(context);
+            }
+          },
+        ),
+      ],
+    ).show();
   }
 }

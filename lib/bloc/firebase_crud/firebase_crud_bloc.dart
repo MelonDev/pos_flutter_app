@@ -61,8 +61,6 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     _externalBloc.add(ChooseTypeExternalEvent(event.context, event.isEdit, event.name));
 
     yield ClearFirebaseCrudState();
-    Navigator.pop(event.context);
-    Navigator.pop(event.context);
   }
 
   @override
