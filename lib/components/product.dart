@@ -44,7 +44,25 @@ class _ProductsState extends State<Products> {
         print("HI");
         print(_state);
         if (_state is UpdatedFirebaseProductsState) {
-          return GridView.builder(
+          return _state.data.length == 0 ? Container(child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.add_box,
+                  color: Colors.purple[100],
+                  size: 100,
+                ), // icon
+                Text(
+                  "กรุณาเพิ่มสินค้า",
+                  style: TextStyle(
+                      color: Colors.purple[100],
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold),
+                ), // text
+              ],
+            ),
+          ),) : GridView.builder(
               itemCount: _state.data.length ?? 0,
               gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2),

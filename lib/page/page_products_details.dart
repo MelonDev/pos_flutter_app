@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
@@ -664,6 +665,20 @@ class ProductDetail extends StatelessWidget {
         } else {
           return Container(
             color: Colors.purple,
+            child: Stack(
+              children: [
+                Center(
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    child: SpinKitSquareCircle(
+                      color: Colors.white,
+                      size: 50.0,
+                    ),
+                  ),
+                )
+              ],
+            ),
           );
         }
       },

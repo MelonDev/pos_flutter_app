@@ -82,7 +82,25 @@ class _OutOffStockPageState extends State<OutOffStockPage> {
                 ],
               ),
             ),
-            body: GridView.builder(
+            body: _state.data.length == 0 ? Container(child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.add_box,
+                    color: Colors.purple[100],
+                    size: 100,
+                  ), // icon
+                  Text(
+                    "ไม่พบข้อมูล",
+                    style: TextStyle(
+                        color: Colors.purple[100],
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold),
+                  ), // text
+                ],
+              ),
+            ),) : GridView.builder(
                 itemCount: _state.data.length ?? 0,
                 gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2),

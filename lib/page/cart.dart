@@ -184,141 +184,171 @@ class _CartState extends State<Cart> {
               ],
             ),
           ),
-          body: ListView.builder(
-            itemCount: _listProductPack.length ?? 0,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Container(
-                  color: Colors.green,
-                  width: double.infinity,
-                  height: 120,
-                  child: Hero(
-                    tag: new Text("hero1"),
-                    child: Material(
-                      child: Container(
-                        width: double.infinity,
-                        child: Stack(
-                          children: <Widget>[
-                            Align(
-                              child: Container(
-                                height: 120,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      width: 100,
-                                      alignment: Alignment.centerLeft,
-                                      //color: Color(0x40000000),
-                                      child: _listProductPack[index]
-                                                  .product
-                                                  .image
-                                                  .length >
-                                              0
-                                          ? Container(
-                                              height: 120,
-                                              child: Image.network(
-                                                _getImage(
-                                                    _listProductPack[index]
-                                                        .product),
-                                                fit: BoxFit.fitHeight,
-                                              ),
-                                            )
-                                          : Container(),
-                                    ),
-                                    Container(
-                                      width: MediaQuery.of(context).size.width -
-                                          100 -
-                                          50 -
-                                          100,
-                                      //color: Color(0x40000000),
-                                      child: Container(
-                                        alignment: Alignment.centerLeft,
-                                        margin: EdgeInsets.only(
-                                            left: 20, right: 20),
-                                        child: Text(
-                                          _listProductPack[index]
-                                                  .product
-                                                  .name ??
-                                              "",
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 4,
-                                          style: GoogleFonts.itim(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20,
-                                              color: Colors.black87),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 90,
-                                      color: Colors.white,
-                                      child: Container(
-                                        child: Text(
-                                          "${_listProductPack[index].product.salePrice}" +
-                                                  " ฿" ??
-                                              "",
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                          style: GoogleFonts.itim(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20,
-                                              color: Colors.black87),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 50,
-                                      alignment: Alignment.centerRight,
-                                      color: Colors.white,
-                                      child: Column(
-                                        children: <Widget>[
-                                          new IconButton(
-                                            icon: Icon(Icons.arrow_drop_up),
-                                            onPressed: () {
-                                              _externalBloc.add(
-                                                  IncreaseProductPackExternalEvent(
-                                                      _listProductPack[index],
-                                                      index,
-                                                      this.context));
-                                            },
-                                          ),
-                                          new Text(
-                                            _listProductPack[index]
-                                                .count
-                                                .toString(),
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 16),
-                                          ),
-                                          new IconButton(
-                                            icon: Icon(Icons.arrow_drop_down),
-                                            onPressed: () {
-                                              _externalBloc.add(
-                                                  DecreaseProductPackExternalEvent(
-                                                      _listProductPack[index],
-                                                      index,
-                                                      this.context));
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+          body: _listProductPack.length == 0
+              ? Container(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.add_box,
+                          color: Colors.purple[100],
+                          size: 100,
+                        ), // icon
+                        Text(
+                          "กรุณาเพิ่มสินค้า",
+                          style: TextStyle(
+                              color: Colors.purple[100],
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold),
+                        ), // text
+                      ],
                     ),
                   ),
+                )
+              : ListView.builder(
+                  itemCount: _listProductPack.length ?? 0,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        color: Colors.green,
+                        width: double.infinity,
+                        height: 120,
+                        child: Hero(
+                          tag: new Text("hero1"),
+                          child: Material(
+                            child: Container(
+                              width: double.infinity,
+                              child: Stack(
+                                children: <Widget>[
+                                  Align(
+                                    child: Container(
+                                      height: 120,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            width: 100,
+                                            alignment: Alignment.centerLeft,
+                                            //color: Color(0x40000000),
+                                            child: _listProductPack[index]
+                                                        .product
+                                                        .image
+                                                        .length >
+                                                    0
+                                                ? Container(
+                                                    height: 120,
+                                                    child: Image.network(
+                                                      _getImage(
+                                                          _listProductPack[
+                                                                  index]
+                                                              .product),
+                                                      fit: BoxFit.fitHeight,
+                                                    ),
+                                                  )
+                                                : Container(),
+                                          ),
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width -
+                                                100 -
+                                                50 -
+                                                100,
+                                            //color: Color(0x40000000),
+                                            child: Container(
+                                              alignment: Alignment.centerLeft,
+                                              margin: EdgeInsets.only(
+                                                  left: 20, right: 20),
+                                              child: Text(
+                                                _listProductPack[index]
+                                                        .product
+                                                        .name ??
+                                                    "",
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 4,
+                                                style: GoogleFonts.itim(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20,
+                                                    color: Colors.black87),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            width: 90,
+                                            color: Colors.white,
+                                            child: Container(
+                                              child: Text(
+                                                "${_listProductPack[index].product.salePrice}" +
+                                                        " ฿" ??
+                                                    "",
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                                style: GoogleFonts.itim(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20,
+                                                    color: Colors.black87),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            width: 50,
+                                            alignment: Alignment.centerRight,
+                                            color: Colors.white,
+                                            child: Column(
+                                              children: <Widget>[
+                                                new IconButton(
+                                                  icon:
+                                                      Icon(Icons.arrow_drop_up),
+                                                  onPressed: () {
+                                                    _externalBloc.add(
+                                                        IncreaseProductPackExternalEvent(
+                                                            _listProductPack[
+                                                                index],
+                                                            index,
+                                                            this.context));
+                                                  },
+                                                ),
+                                                new Text(
+                                                  _listProductPack[index]
+                                                      .count
+                                                      .toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontSize: 16),
+                                                ),
+                                                new IconButton(
+                                                  icon: Icon(
+                                                      Icons.arrow_drop_down),
+                                                  onPressed: () {
+                                                    _externalBloc.add(
+                                                        DecreaseProductPackExternalEvent(
+                                                            _listProductPack[
+                                                                index],
+                                                            index,
+                                                            this.context));
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () {
               _showDialogSelect(context);
