@@ -10,6 +10,7 @@ import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_products/firebase_products_bloc.dart';
 import 'package:posflutterapp/models/products_models.dart';
+import 'package:posflutterapp/page/page_add_type_product.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 //import 'package:posflutterapp/page/page_edit_products_details.dart';
 
@@ -94,7 +95,9 @@ class ProductDetail extends StatelessWidget {
       TextEditingController();
 
   void updateController() {
+    print("B");
     if (_product != null) {
+      print("C");
       id = _product.id;
       _nameTextControllerProductDetails.text = _product.name ?? "";
       _serialNumberTextControllerProductDetails.text =
@@ -171,15 +174,20 @@ class ProductDetail extends StatelessWidget {
           //_serialNumberTextControllerProductDetails.text = _state.barcode ?? "";
 
           if (_state is EditExternalState) {
-            if (_state.barcode != null && _state.fromScanner != null) {
-              _serialNumberTextControllerProductDetails.text =
-                  _state.barcode ?? "";
-            } else if (_state.fromImage != null) {
-              isImageEdit = true;
-              _imageOffline = _state.fromImage;
-            } else {
-              _productBackup = _product;
-              updateController();
+            if (_state.withType != null) {
+              _typeTextControllerProductDetails.text = _state.withType;
+              print("A ${_state.withType}");
+            }else {
+              if (_state.barcode != null && _state.fromScanner != null) {
+                _serialNumberTextControllerProductDetails.text =
+                    _state.barcode ?? "";
+              } else if (_state.fromImage != null) {
+                isImageEdit = true;
+                _imageOffline = _state.fromImage;
+              } else {
+                _productBackup = _product;
+                updateController();
+              }
             }
           } else {
             _imageOffline = null;
@@ -446,8 +454,8 @@ class ProductDetail extends StatelessWidget {
                                         autovalidate: true,
                                         decoration: InputDecoration(
                                           labelText: "รหัสสินค้า",
-                                          labelStyle: TextStyle(
-                                              color: Colors.purple),
+                                          labelStyle:
+                                              TextStyle(color: Colors.purple),
                                           border: InputBorder.none,
                                           prefixIcon: IconButton(
                                             icon: Icon(Icons.camera),
@@ -470,30 +478,42 @@ class ProductDetail extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Material(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Colors.white,
-                                    elevation: 0.0,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: TextFormField(
-                                        enabled: _state is EditExternalState,
-                                        controller:
-                                            _typeTextControllerProductDetails,
-                                        decoration: InputDecoration(
-                                          labelText: "ประเภทสินค้า",
-                                          labelStyle: TextStyle(
-                                              color: Colors.purple),
-                                          border: InputBorder.none,
+                                GestureDetector(
+                                  onTap: () {
+                                    if(_state is EditExternalState){
+                                      Navigator.of(context).push(
+                                          new MaterialPageRoute(
+                                              builder: (context) =>
+                                              new PageAddTypeProduct(
+                                                  isEdit: true)));
+                                    }
+
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Material(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colors.white,
+                                      elevation: 0.0,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: TextFormField(
+                                          enabled: false,
+                                          controller:
+                                              _typeTextControllerProductDetails,
+                                          decoration: InputDecoration(
+                                            labelText: "ประเภทสินค้า",
+                                            labelStyle:
+                                                TextStyle(color: Colors.purple),
+                                            border: InputBorder.none,
+                                          ),
+                                          validator: (value) {
+                                            if (value.isEmpty) {
+                                              return 'กรุณากรอกข้อมูล';
+                                            }
+                                            return null;
+                                          },
                                         ),
-                                        validator: (value) {
-                                          if (value.isEmpty) {
-                                            return 'กรุณากรอกข้อมูล';
-                                          }
-                                          return null;
-                                        },
                                       ),
                                     ),
                                   ),
@@ -518,8 +538,8 @@ class ProductDetail extends StatelessWidget {
                                         autovalidate: true,
                                         decoration: InputDecoration(
                                             labelText: "ขนาดสินค้า",
-                                            labelStyle: TextStyle(
-                                                color: Colors.purple),
+                                            labelStyle:
+                                                TextStyle(color: Colors.purple),
                                             border: InputBorder.none),
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -551,8 +571,8 @@ class ProductDetail extends StatelessWidget {
                                         autovalidate: true,
                                         decoration: InputDecoration(
                                             labelText: "ราคาต้น",
-                                            labelStyle: TextStyle(
-                                                color: Colors.purple),
+                                            labelStyle:
+                                                TextStyle(color: Colors.purple),
                                             border: InputBorder.none),
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -584,8 +604,8 @@ class ProductDetail extends StatelessWidget {
                                         autovalidate: true,
                                         decoration: InputDecoration(
                                             labelText: "ราคาขาย",
-                                            labelStyle: TextStyle(
-                                                color: Colors.purple),
+                                            labelStyle:
+                                                TextStyle(color: Colors.purple),
                                             border: InputBorder.none),
                                         validator: (value) {
                                           if (value.isEmpty) {
@@ -617,8 +637,8 @@ class ProductDetail extends StatelessWidget {
                                         autovalidate: true,
                                         decoration: InputDecoration(
                                             labelText: "จำนวน",
-                                            labelStyle: TextStyle(
-                                                color: Colors.purple),
+                                            labelStyle:
+                                                TextStyle(color: Colors.purple),
                                             border: InputBorder.none),
                                         validator: (value) {
                                           if (value.isEmpty) {

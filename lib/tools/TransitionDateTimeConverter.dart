@@ -12,6 +12,13 @@ class TransitionDateTimeConverter {
     int mCount = 0;
     double mPrice = 0;
     int month = 0;
+
+    originalList.sort((a,b) => _convertToDateTime(a.createAt).compareTo(_convertToDateTime(b.createAt)));
+
+    originalList.forEach((element) {
+      print("originalList ${element.createAt}");
+    });
+
     for (var data in originalList) {
       var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
       DateTime dateTime = formatter.parse(data.createAt);
@@ -20,7 +27,7 @@ class TransitionDateTimeConverter {
         _datetime = _date;
       }
       if (_date.isAfter(_datetime)) {
-
+        print("_date.isAfter(_datetime) ${_date.toString()} ${_datetime.toString()}");
         newList.add(TransitionItem(null, _loadDateForLabel(formatter.format(_datetime)),count: mCount,month: month,price: mPrice.toStringAsFixed(2)));
         mCount = 0;
         mPrice = 0;
@@ -48,6 +55,12 @@ class TransitionDateTimeConverter {
 
     }
     return newList;
+  }
+
+  DateTime _convertToDateTime(String date){
+    var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    DateTime dateTime = formatter.parse(date);
+    return dateTime;
   }
 
   String _loadDateForLabel(String date) {

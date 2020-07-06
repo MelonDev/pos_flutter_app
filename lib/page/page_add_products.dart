@@ -14,6 +14,7 @@ import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
 import 'package:posflutterapp/db/product_db.dart';
 import 'package:posflutterapp/models/products_models.dart';
+import 'package:posflutterapp/page/page_add_type_product.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:uuid/uuid.dart';
 
@@ -96,6 +97,9 @@ class _addProductsState extends State<addProducts> {
         if (_state is NormalExternalState) {
           if (_state.fromImage == null) {
             _serialNumberTextController.text = _state.barcode ?? "";
+          }
+          if(_state.withType != null){
+            _typeTextController.text = _state.withType;
           }
           return BlocBuilder<FirebaseCrudBloc, FirebaseCrudState>(
             builder: (BuildContext contextCRUD, _stateCRUD) {
@@ -310,18 +314,24 @@ class _addProductsState extends State<addProducts> {
 //                            ],
 //                          ),
 
-                                      Padding(
+                                    GestureDetector(
+                                      onTap: () => Navigator.of(context).push(
+                                          new MaterialPageRoute(
+                                              builder: (context) =>
+                                              new PageAddTypeProduct(isEdit:false))),
+                                      child:  Padding(
                                         padding: const EdgeInsets.all(10),
                                         child: Material(
                                           borderRadius:
-                                              BorderRadius.circular(20),
+                                          BorderRadius.circular(20),
                                           color: Colors.white,
                                           elevation: 0.0,
                                           child: Padding(
                                             padding: const EdgeInsets.all(10),
                                             child: TextFormField(
                                               controller: _typeTextController,
-                                              autovalidate: true,
+                                              autovalidate: false,
+                                              enabled: false,
                                               decoration: InputDecoration(
                                                 labelText: "ประเภทสินค้า",
                                                 labelStyle: TextStyle(
@@ -338,6 +348,8 @@ class _addProductsState extends State<addProducts> {
                                           ),
                                         ),
                                       ),
+                                    ),
+
 
                                       Padding(
                                         padding: const EdgeInsets.all(10),

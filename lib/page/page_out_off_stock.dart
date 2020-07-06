@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/components/product.dart';
@@ -18,13 +19,12 @@ class _OutOffStockPageState extends State<OutOffStockPage> {
     _externalBloc = BlocProvider.of<ExternalBloc>(context);
 
 //    final products = Provider.of<ProductsProvider>(context);
+    _externalBloc.add(ReportOutOfStockExternalEvent());
 
     print("building Products");
     return BlocBuilder<ExternalBloc, ExternalState>(
       builder: (BuildContext context, _state) {
-        print("HI");
-        print(_state);
-        if (_state is NormalExternalState) {
+        if (_state is ReportOutOfStockExternalState) {
           return Scaffold(
             appBar: new AppBar(
               iconTheme: new IconThemeData(color: Colors.purple),
@@ -69,7 +69,7 @@ class _OutOffStockPageState extends State<OutOffStockPage> {
                       children: <Widget>[
                         Container(
                           child: Text(
-                            "คลังสินค้า",
+                            "สินค้าหมดสต๊อก",
                             style: GoogleFonts.itim(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
@@ -82,35 +82,35 @@ class _OutOffStockPageState extends State<OutOffStockPage> {
                 ],
               ),
             ),
-            body: new Column(
-              children: <Widget>[
-                Flexible(child: Products()),
-              ],
-            ),
-
-            floatingActionButton: FloatingActionButton.extended(
-              heroTag: "btn1",
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (BuildContext context) {
-                    return addProducts(null
-//                isUpdating: false,
-                        );
-                  }),
-                );
-              },
-              icon: Icon(Icons.add),
-              label: Text("เพิ่มสินค้า"),
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.orange,
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
+            body: GridView.builder(
+                itemCount: _state.data.length ?? 0,
+                gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2),
+                itemBuilder: (BuildContext context, int index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Single_prod(_state.data[index]),
+                  );
+                }),
           );
 
         } else {
           return Container(
             color: Colors.purple,
+            child: Stack(
+              children: [
+                Center(
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    child: SpinKitSquareCircle(
+                      color: Colors.white,
+                      size: 50.0,
+                    ),
+                  ),
+                )
+              ],
+            ),
           );
         }
       },

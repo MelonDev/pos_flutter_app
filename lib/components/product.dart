@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,15 +19,19 @@ class _ProductsState extends State<Products> {
   FirebaseProductsBloc _firebaseProductsBloc;
   Future<void> run() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    if(user != null){
-      Firestore.instance.collection("Users").document(user.uid).collection('products').snapshots().listen((value) {
+    if (user != null) {
+      Firestore.instance
+          .collection("Users")
+          .document(user.uid)
+          .collection('products')
+          .snapshots()
+          .listen((value) {
         _firebaseProductsBloc.add(RefreshFirebaseProductsEvent(value));
         value.documents.forEach((element) {
           print(element.data);
         });
       });
     }
-
   }
 
   @override
@@ -97,7 +102,7 @@ class Single_prod extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProductDetail(_product,context),
+                  builder: (context) => ProductDetail(_product, context),
                 ),
               );
             },
@@ -109,10 +114,17 @@ class Single_prod extends StatelessWidget {
                       ? Container(
                           width: (MediaQuery.of(context).size.width / 2) - 8,
                           height: 120,
-                          child: Image.network(
+                          child: CachedNetworkImage(
+                            imageUrl: _image,
+                            fit: BoxFit.fitHeight,
+
+                          ),
+                          /*child: Image.network(
                             _image,
                             fit: BoxFit.fitHeight,
                           ),
+
+                           */
                         )
                       : Container(),
                   Align(
@@ -199,13 +211,25 @@ class Single_prod extends StatelessWidget {
                                       Align(
                                         alignment: Alignment.centerRight,
                                         child: Text(
-                                          _product.quantity == null ? "" : (double.parse(_product.quantity) == 0 ? "สินค้าหมด" : _product.quantity),
+                                          _product.quantity == null
+                                              ? ""
+                                              : (double.parse(
+                                                          _product.quantity) ==
+                                                      0
+                                                  ? "สินค้าหมด"
+                                                  : _product.quantity),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                           style: GoogleFonts.itim(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16,
-                                              color: _product.quantity == null ? Colors.black87 : (double.parse(_product.quantity) == 0 ? Colors.red : Colors.black87)),
+                                              color: _product.quantity == null
+                                                  ? Colors.black87
+                                                  : (double.parse(_product
+                                                              .quantity) ==
+                                                          0
+                                                      ? Colors.red
+                                                      : Colors.black87)),
                                         ),
                                       )
                                     ],

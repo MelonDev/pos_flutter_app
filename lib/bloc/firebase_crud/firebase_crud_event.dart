@@ -60,3 +60,13 @@ class DeleteProductFirebaseCrudEvent extends FirebaseCrudEvent {
   DeleteProductFirebaseCrudEvent(this.context,this.key);
 }
 
+class AddTypeFirebaseCrudEvent extends FirebaseCrudEvent {
+
+  final BuildContext context;
+  final String name;
+  final bool isEdit;
+
+  AddTypeFirebaseCrudEvent(this.context, this.name,this.isEdit);
+
+}
+

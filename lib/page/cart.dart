@@ -42,6 +42,7 @@ class _CartState extends State<Cart> {
 
     return BlocBuilder<ExternalBloc, ExternalState>(
       builder: (BuildContext context, _state) {
+        print("A");
         if (_state is NormalExternalState) {
           if (_state.manageProduct != null) {
             if (_state.productPack.count > 0) {
@@ -65,6 +66,9 @@ class _CartState extends State<Cart> {
 //addProducts(_state.barcode);
             } else {
               List<ProductPackDuplicate> duplicateList = [];
+              _listProductPack.forEach((element) {
+                print(element.product.serialNumber);
+              });
               for (int i = 0; i < _listProductPack.length; i++) {
                 if (_listProductPack[i]
                     .product
@@ -76,6 +80,7 @@ class _CartState extends State<Cart> {
               }
 
               if (duplicateList.length > 0) {
+                print(duplicateList.length);
                 _externalBloc.add(IncreaseProductPackExternalEvent(
                     duplicateList[0].productPack,
                     duplicateList[0].position,
@@ -83,6 +88,7 @@ class _CartState extends State<Cart> {
               } else {
                 if (_state.outOfStock == null) {
                   _listProductPack.add(_state.productPack);
+                  _externalBloc.add(InitialExternalEvent());
                   _totalPrice +=
                       double.parse(_state.productPack.product.salePrice);
                 }
@@ -154,32 +160,25 @@ class _CartState extends State<Cart> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
-                    Container(
-                      color: Colors.transparent,
-                      child: SizedBox(
-                        width: 60,
-                        height: 56,
-                        child: LayoutBuilder(
-                          builder: (lbContext, constraint) {
-                            return FlatButton(
-                              padding: EdgeInsets.all(0),
-                              onPressed: () {
-                                _externalBloc.add(InitialExternalEvent());
-                                _firebaseCrudBloc.add(
-                                    StartTransitionFirebaseCrudEvent(
-                                        _listProductPack,
-                                        _totalPrice,
-                                        this.context));
-                              },
-                              child: Icon(
-                                Icons.send,
-                                color: Colors.purple,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
+//                    Container(
+//                      color: Colors.transparent,
+//                      child: SizedBox(
+//                        width: 60,
+//                        height: 56,
+//                        child: LayoutBuilder(
+//                          builder: (lbContext, constraint) {
+//                            return FlatButton(
+//                              padding: EdgeInsets.all(0),
+//                              onPressed: () {},
+//                              child: Icon(
+//                                Icons.send,
+//                                color: Colors.purple,
+//                              ),
+//                            );
+//                          },
+//                        ),
+//                      ),
+//                    ),
                   ],
                 )
               ],
@@ -320,6 +319,21 @@ class _CartState extends State<Cart> {
               );
             },
           ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              _showDialogSelect(context);
+            },
+            label: Text(
+              "เพิ่มสินค้า",
+              style: GoogleFonts.itim(),
+            ),
+            icon: Icon(Icons.add),
+          ),
+          /*floatingActionButton: FloatingActionButton(onPressed: (){
+            _showDialogSelect(context);
+          },backgroundColor: Colors.white,child: Icon(Icons.add,color: Colors.orange,),),
+
+           */
           bottomNavigationBar: Container(
             color: Colors.purple,
             height: 60,
@@ -367,7 +381,14 @@ class _CartState extends State<Cart> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            _showDialogSelect(context);
+                            if (_listProductPack.length > 0) {
+                              _externalBloc.add(InitialExternalEvent());
+                              _firebaseCrudBloc.add(
+                                  StartTransitionFirebaseCrudEvent(
+                                      _listProductPack,
+                                      _totalPrice,
+                                      this.context));
+                            }
                           },
                           child: Container(
                             color: Colors.orange,
@@ -376,7 +397,7 @@ class _CartState extends State<Cart> {
                               alignment: Alignment.centerRight,
                               margin: EdgeInsets.only(left: 20, right: 20),
                               child: Text(
-                                "เพิ่มสินค้า",
+                                "ชำระเงิน",
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                                 style: GoogleFonts.itim(
@@ -407,7 +428,8 @@ class _CartState extends State<Cart> {
 
   _showDialogPay(
       BuildContext context, double _totalPrice, List<ProductPack> listProduct) {
-    TextEditingController _serialNumberTextCartController = TextEditingController();
+    TextEditingController _serialNumberTextCartController =
+        TextEditingController();
     Alert(
       context: context,
       title: "ชำระเงิน",
@@ -416,20 +438,15 @@ class _CartState extends State<Cart> {
         child: Column(
           children: [
             TextFormField(
-              controller:
-              _serialNumberTextCartController,
-              keyboardType:
-              TextInputType.number,
-              inputFormatters: <
-                  TextInputFormatter>[
-                WhitelistingTextInputFormatter
-                    .digitsOnly
+              controller: _serialNumberTextCartController,
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                WhitelistingTextInputFormatter.digitsOnly
               ],
               autovalidate: true,
               decoration: InputDecoration(
                 labelText: "รหัสสินค้า",
-                labelStyle: TextStyle(
-                    color: Colors.purple),
+                labelStyle: TextStyle(color: Colors.purple),
                 border: InputBorder.none,
               ),
               validator: (value) {
@@ -459,8 +476,53 @@ class _CartState extends State<Cart> {
             style: TextStyle(color: Colors.black87),
           ),
           color: Colors.lightGreenAccent,
-          onPressed: () {
+          onPressed: () {},
+        ),
+      ],
+    ).show();
+  }
 
+  _showDialogTextInput(BuildContext context) {
+    TextEditingController _TextInputController = TextEditingController();
+    Alert(
+      context: context,
+      title: "กรอกรหัสสินค้า",
+      content: Form(
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _TextInputController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: "ระบุรหัสสินค้า"),
+            ),
+          ],
+        ),
+      ),
+      buttons: [
+        DialogButton(
+          child: Text(
+            "ยกเลิก",
+            style: GoogleFonts.itim(color: Colors.black87),
+          ),
+          color: Colors.black12,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        DialogButton(
+          child: Text(
+            "ยืนยัน",
+            style: GoogleFonts.itim(color: Colors.black87),
+          ),
+          color: Colors.lightGreenAccent,
+          onPressed: () {
+            BlocProvider.of<ExternalBloc>(context).add(InitialExternalEvent());
+            if (_TextInputController.text.length > 0) {
+              _externalBloc.add(
+                  TextInputExternalEvent(_TextInputController.text, context));
+
+              Navigator.pop(context);
+            }
           },
         ),
       ],
@@ -479,13 +541,16 @@ class _CartState extends State<Cart> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 DialogButton(
-                  child: Text("แสกนบาร์โค้ด",style: GoogleFonts.itim(color: Colors.white),),
+                  child: Text(
+                    "แสกนบาร์โค้ด",
+                    style: GoogleFonts.itim(color: Colors.white),
+                  ),
                   color: Colors.orange,
                   onPressed: () {
-                    BlocProvider.of<ExternalBloc>(context).add(InitialExternalEvent());
+                    BlocProvider.of<ExternalBloc>(context)
+                        .add(InitialExternalEvent());
                     Navigator.pop(context);
-                    _externalBloc
-                        .add(OpenScannerOnCartExternalEvent(context));
+                    _externalBloc.add(OpenScannerOnCartExternalEvent(context));
                   },
                 ),
               ])
@@ -493,20 +558,21 @@ class _CartState extends State<Cart> {
       ),
       buttons: [
         DialogButton(
-          child: Text("กรอกรหัสสินค้า",style: GoogleFonts.itim(color: Colors.white),),
+          child: Text(
+            "กรอกรหัสสินค้า",
+            style: GoogleFonts.itim(color: Colors.white),
+          ),
           color: Colors.orange,
           onPressed: () {
             BlocProvider.of<ExternalBloc>(context).add(InitialExternalEvent());
             Navigator.pop(context);
+            _showDialogTextInput(context);
           },
         ),
       ],
     ).show();
   }
 }
-
-
-
 
 //class Single_cart_product extends StatelessWidget {
 //  final ProductPack _productPack;

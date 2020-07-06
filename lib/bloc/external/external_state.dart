@@ -18,14 +18,17 @@ class NormalExternalState extends ExternalState {
   final bool manageProduct;
   final int position;
 
-  NormalExternalState(this.barcode,{this.newProduct,this.fromScanner,this.fromImage,this.outOfStock,this.notfound,this.isCart,this.position,this.productPack,this.manageProduct});
+  final String withType;
+
+  NormalExternalState(this.barcode,{this.newProduct,this.withType,this.fromScanner,this.fromImage,this.outOfStock,this.notfound,this.isCart,this.position,this.productPack,this.manageProduct});
 }
 
 class EditExternalState extends NormalExternalState {
   final bool fromScanner;
   final File fromImage;
+  final String withType;
 
-  EditExternalState(String barcode,{this.fromScanner,this.fromImage}) : super(barcode);
+  EditExternalState(String barcode,{this.fromScanner,this.fromImage,this.withType}) : super(barcode);
 }
 
 class ScannerIsUsingExternalState extends ExternalState {}
@@ -56,3 +59,19 @@ class YearReadTransitionExternalState extends ReadTransitionExternalState {
   YearReadTransitionExternalState(List<TransitionItem> data, List<SalesData> saleData) : super(data, saleData);
 }
 
+class ReportOutOfStockExternalState extends ExternalState {
+  final List<Product> data;
+
+  ReportOutOfStockExternalState(this.data);
+}
+
+class ChooseTypeExternalState extends ExternalState {
+
+  ChooseTypeExternalState();
+}
+
+class LoadTypeExternalState extends ExternalState {
+  final List<TypeModel> data;
+
+  LoadTypeExternalState(this.data);
+}

@@ -17,8 +17,10 @@ import 'package:posflutterapp/bloc/external/external_bloc.dart';
 import 'package:posflutterapp/models/ProductPack.dart';
 import 'package:posflutterapp/models/TransitionItem.dart';
 import 'package:posflutterapp/models/TransitionModel.dart';
+import 'package:posflutterapp/models/TypeModel.dart';
 import 'package:posflutterapp/models/products_models.dart';
 import 'package:posflutterapp/tools/TransitionDateTimeConverter.dart';
+import 'package:posflutterapp/tools/TypeTool.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:uuid/uuid.dart';
 
@@ -44,7 +46,23 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       yield* _transitionToState(event);
     } else if (event is StartTransitionFirebaseCrudEvent) {
       yield* _startTransitionToState(event);
+    }else if (event is AddTypeFirebaseCrudEvent) {
+      yield* _mapAddTypeToState(event);
     }
+  }
+
+  @override
+  Stream<FirebaseCrudState> _mapAddTypeToState(
+      AddTypeFirebaseCrudEvent event) async* {
+    yield LoadingFirebaseCrudState();
+
+    await _addType(event.name);
+    ExternalBloc _externalBloc = BlocProvider.of<ExternalBloc>(event.context);
+    _externalBloc.add(ChooseTypeExternalEvent(event.context, event.isEdit, event.name));
+
+    yield ClearFirebaseCrudState();
+    Navigator.pop(event.context);
+    Navigator.pop(event.context);
   }
 
   @override
@@ -126,6 +144,17 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       }
     }else {
       return null;
+    }
+
+  }
+
+  Future<void> _addType(String typeName) async {
+    Map<String, dynamic> data = {
+      "name": typeName
+    };
+    DocumentReference path = await _initialFirestore("types",null);
+    if(path != null){
+      await path.setData(data);
     }
 
   }
@@ -224,6 +253,21 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     yield ClearFirebaseCrudState();
   }
 
+  Future<List<TypeModel>> readingTypeCRUD() async {
+    QuerySnapshot querySnapshot;
+
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    if(user != null){
+      querySnapshot = await Firestore.instance.collection("Users").document(user.uid).collection('types').getDocuments();
+    }
+
+    List<TypeModel> list = await querySnapshot.documents
+        .map((document) => TypeModel.fromSnapshot(document))
+        .toList();
+    return list;
+  }
+
+
   Future<List<Product>> readingCRUD() async {
     QuerySnapshot querySnapshot;
 
@@ -236,6 +280,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
         .map((document) => Product.fromSnapshot(document))
         .toList();
   }
+
 
   Future<List<TransitionModel>> readingTransitionCRUD() async {
     QuerySnapshot querySnapshot;

@@ -12,8 +12,10 @@ import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
 import 'package:posflutterapp/models/ProductPack.dart';
 import 'package:posflutterapp/models/SalesDataModel.dart';
 import 'package:posflutterapp/models/TransitionItem.dart';
+import 'package:posflutterapp/models/TypeModel.dart';
 import 'package:posflutterapp/models/products_models.dart';
 import 'package:posflutterapp/page/page_add_products.dart';
+import 'package:posflutterapp/tools/TypeTool.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 part 'external_event.dart';
@@ -26,6 +28,7 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
 
   @override
   Stream<ExternalState> mapEventToState(ExternalEvent event) async* {
+    print(event);
     if (event is InitialExternalEvent) {
       yield NormalExternalState(null);
     } else if (event is OpenScannerExternalEvent) {
@@ -50,6 +53,14 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       yield* _monthReadTransitionToState(event);
     } else if (event is YearReadTransitionExternalEvent) {
       yield* _yearReadTransitionToState(event);
+    } else if (event is ReportOutOfStockExternalEvent) {
+      yield* _reportOutOfStockToState(event);
+    } else if (event is ChooseTypeExternalEvent) {
+      yield* _chooseTypeToState(event);
+    } else if (event is LoadTypeExternalEvent) {
+      yield* _loadTypeToState(event);
+    } else if (event is TextInputExternalEvent) {
+      yield* _mapTextInputOnCartToState(event);
     }
   }
 
@@ -144,6 +155,7 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
               .contains(result.rawContent.toUpperCase()))
           .toList();
 
+
       if (filterList.length > 0) {
         if (int.parse(filterList[0].quantity.toString()) > 0) {
           yield NormalExternalState(null,
@@ -170,6 +182,45 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       }
     } else {
       yield NormalExternalState(null, isCart: true);
+    }
+  }
+
+  @override
+  Stream<ExternalState> _mapTextInputOnCartToState(
+      TextInputExternalEvent event) async* {
+    yield LoadingExternalState();
+
+    List<Product> listProduct = await FirebaseCrudBloc().readingCRUD();
+
+    List<Product> filterList = listProduct
+        .where((element) => element.serialNumber
+        .toUpperCase()
+        .contains(event.barcode.toUpperCase()))
+        .toList();
+
+    if (filterList.length > 0) {
+      if (int.parse(filterList[0].quantity.toString()) > 0) {
+        yield NormalExternalState(null,
+            isCart: true,
+            notfound: false,
+            productPack: ProductPack().initialProductPack(filterList[0]));
+      } else {
+        yield NormalExternalState(null,
+            isCart: true,
+            notfound: false,
+            outOfStock: true,
+            productPack: ProductPack().initialProductPack(filterList[0]));
+        showDialogs(event.context);
+      }
+    } else {
+      yield NormalExternalState(event.barcode,
+          isCart: true, notfound: true);
+      showDialogsNoProduct(event.context, event.barcode);
+//        Navigator.push(
+//            event.context,
+//            MaterialPageRoute(
+//              builder: (context) => new addProducts(result.rawContent),
+//            ));
     }
   }
 
@@ -295,6 +346,10 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
     List<TransitionItem> list =
         await FirebaseCrudBloc().readingWeekTransitionCRUD();
 
+    list.forEach((element) {
+      print(element.label);
+    });
+
     yield WeekReadTransitionExternalState(
         list.reversed.toList(), _dayConvertSaleData(list));
   }
@@ -306,6 +361,10 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
 
     List<TransitionItem> list =
         await FirebaseCrudBloc().readingMonthTransitionCRUD();
+
+    list.forEach((element) {
+      print(element.label);
+    });
 
     yield MonthReadTransitionExternalState(
         list.reversed.toList(), _dayConvertSaleData(list));
@@ -373,4 +432,53 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
 
     return saleList;
   }
+
+
+  @override
+  Stream<ExternalState> _reportOutOfStockToState(
+      ReportOutOfStockExternalEvent event) async* {
+    yield LoadingExternalState();
+
+    List<Product> list =
+    await FirebaseCrudBloc().readingCRUD();
+
+   List<Product> newList=  list.where((element) => int.parse(element.quantity) == 0).toList();
+
+    yield ReportOutOfStockExternalState(newList);
+  }
+
+  @override
+  Stream<ExternalState> _chooseTypeToState(
+      ChooseTypeExternalEvent event) async* {
+    yield LoadingExternalState();
+
+
+
+    if(event.isEdit){
+      yield EditExternalState(null,withType: event.type);
+    }else {
+yield NormalExternalState(null,withType: event.type );
+    }
+
+    Navigator.pop(event.context);
+
+
+  }
+
+  @override
+  Stream<ExternalState> _loadTypeToState(
+      LoadTypeExternalEvent event) async* {
+    yield LoadingExternalState();
+
+    List<TypeModel> list =
+    await FirebaseCrudBloc().readingTypeCRUD();
+
+    list.addAll(TypeTool.DEFAULT_lIST);
+
+    yield LoadTypeExternalState(list);
+
+  }
+
+
+
 }
