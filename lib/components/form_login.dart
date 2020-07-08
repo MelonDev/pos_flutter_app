@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:posflutterapp/bloc/authentication/authentication_bloc.dart';
 import 'package:posflutterapp/bloc/login/login_bloc.dart';
+import 'package:posflutterapp/widgets/ForgotButton.dart';
 import 'package:posflutterapp/widgets/create_account_button.dart';
 import 'package:posflutterapp/widgets/login_botton.dart';
 
@@ -99,7 +100,7 @@ class _LoginFormState extends State<LoginForm> {
                           "POS SHOP",
                           style: TextStyle(
                               color: Colors.purple,
-                              fontSize: 60,
+                              fontSize: 45,
                               fontWeight: FontWeight.bold),
                         ), // text
                       ],
@@ -148,6 +149,7 @@ class _LoginFormState extends State<LoginForm> {
                               ? _onFormSubmitted
                               : null,
                         ),
+//                        ForgotButton(userRepository: _userRepository),
 //                        GoogleLoginButton(),
                         CreateAccountButton(userRepository: _userRepository),
                       ],

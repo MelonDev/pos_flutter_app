@@ -95,7 +95,7 @@ class _addProductsState extends State<addProducts> {
         print("HI");
         print(_state);
         if (_state is NormalExternalState) {
-          if (_state.fromImage == null) {
+          if (_state.fromImage == null && _state.fromScanner != null) {
             _serialNumberTextController.text = _state.barcode ?? "";
           }
           if(_state.withType != null){
@@ -281,7 +281,7 @@ class _addProductsState extends State<addProducts> {
                                                   onPressed: () {
                                                     print("A0");
                                                     _externalBloc.add(
-                                                      OpenScannerExternalEvent(
+                                                      OpenScannerExternalEvent(this.context,
                                                           false),
                                                     );
                                                   },
@@ -318,7 +318,7 @@ class _addProductsState extends State<addProducts> {
                                       onTap: () => Navigator.of(context).push(
                                           new MaterialPageRoute(
                                               builder: (context) =>
-                                              new PageAddTypeProduct(isEdit:false))),
+                                              new PageAddTypeProduct(isPage: false,isEdit:false))),
                                       child:  Padding(
                                         padding: const EdgeInsets.all(10),
                                         child: Material(
@@ -362,13 +362,11 @@ class _addProductsState extends State<addProducts> {
                                             padding: const EdgeInsets.all(10),
                                             child: TextFormField(
                                               controller: _sizeTextController,
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              inputFormatters: <
-                                                  TextInputFormatter>[
-                                                WhitelistingTextInputFormatter
-                                                    .digitsOnly
-                                              ],
+//                                              inputFormatters: <
+//                                                  TextInputFormatter>[
+//                                                WhitelistingTextInputFormatter
+//                                                    .digitsOnly
+//                                              ],
                                               autovalidate: true,
                                               decoration: InputDecoration(
                                                   labelText: "ขนาดสินค้า",

@@ -92,7 +92,7 @@ class _RegisterFormState extends State<RegisterForm> {
                           "REGISTER",
                           style: TextStyle(
                               color: Colors.purple,
-                              fontSize: 60,
+                              fontSize: 45,
                               fontWeight: FontWeight.bold),
                         ), // text
                       ],

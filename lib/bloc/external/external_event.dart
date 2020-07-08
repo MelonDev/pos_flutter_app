@@ -8,8 +8,9 @@ class InitialExternalEvent extends ExternalEvent {
 }
 
 class OpenScannerExternalEvent extends ExternalEvent {
+  final BuildContext context;
   final bool isEdit;
-  OpenScannerExternalEvent(this.isEdit);
+  OpenScannerExternalEvent(this.context,this.isEdit);
 }
 
 class OpenScannerOnCartExternalEvent extends ExternalEvent {
@@ -68,11 +69,15 @@ class WeekReadTransitionExternalEvent extends ExternalEvent {
 }
 
 class MonthReadTransitionExternalEvent extends ExternalEvent {
-  MonthReadTransitionExternalEvent();
+  final int month;
+  final int year;
+  MonthReadTransitionExternalEvent({this.month,this.year});
 }
 
 class YearReadTransitionExternalEvent extends ExternalEvent {
-  YearReadTransitionExternalEvent();
+  final int year;
+
+  YearReadTransitionExternalEvent({this.year});
 }
 
 class ReportOutOfStockExternalEvent extends ExternalEvent {

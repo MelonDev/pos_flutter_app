@@ -33,7 +33,7 @@ class _ScannerPageState extends State<ScannerPage> {
             tooltip: "Scan",
             onPressed: () {
               print("A0");
-              _externalBloc.add(OpenScannerExternalEvent(false));
+              _externalBloc.add(OpenScannerExternalEvent(this.context,false));
             },
           )
         ],
@@ -57,7 +57,7 @@ class _ScannerPageState extends State<ScannerPage> {
                   MaterialButton(
                     onPressed: () {
                       print("A1");
-                      _externalBloc.add(OpenScannerExternalEvent(false));
+                      _externalBloc.add(OpenScannerExternalEvent(this.context,false));
                     },
                     color: Colors.blue,
                     elevation: 0,

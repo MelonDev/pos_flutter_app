@@ -155,6 +155,32 @@ class ProductDetail extends StatelessWidget {
     ).show();
   }
 
+  _showDialogDelete(BuildContext context) {
+    Alert(
+      context: context,
+
+      title: "ต้องการลบสินค้า !",
+      //desc: "เงินทอน ${change.toStringAsFixed(2)} บาท",
+      buttons: [
+        DialogButton(
+          child: Text("ยกเลิก"),
+          color: Colors.red,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        DialogButton(
+          child: Text("ยืนยัน"),
+          color: Colors.green,
+          onPressed: () {
+            _firebaseCrudBloc
+                .add(DeleteProductFirebaseCrudEvent(context, _product.id));
+          },
+        ),
+      ],
+    ).show();
+  }
+
   @override
   Widget build(BuildContext context) {
     _image = _product.image != null
@@ -178,7 +204,7 @@ class ProductDetail extends StatelessWidget {
             if (_state.withType != null) {
               _typeTextControllerProductDetails.text = _state.withType;
               print("A ${_state.withType}");
-            }else {
+            } else {
               if (_state.barcode != null && _state.fromScanner != null) {
                 _serialNumberTextControllerProductDetails.text =
                     _state.barcode ?? "";
@@ -355,9 +381,10 @@ class ProductDetail extends StatelessWidget {
                                           return FlatButton(
                                             padding: EdgeInsets.all(0),
                                             onPressed: () {
-                                              _firebaseCrudBloc.add(
-                                                  DeleteProductFirebaseCrudEvent(
-                                                      context, _product.id));
+//                                              _firebaseCrudBloc.add(
+//                                                  DeleteProductFirebaseCrudEvent(
+//                                                      context, _product.id));
+                                              _showDialogDelete(context);
                                             },
                                             child: Icon(
                                               Icons.delete,
@@ -465,7 +492,7 @@ class ProductDetail extends StatelessWidget {
                                               print("A0");
                                               _externalBloc.add(
                                                   OpenScannerExternalEvent(
-                                                      true));
+                                                      this.mainContext, true));
                                             },
                                           ),
                                         ),
@@ -481,14 +508,13 @@ class ProductDetail extends StatelessWidget {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    if(_state is EditExternalState){
+                                    if (_state is EditExternalState) {
                                       Navigator.of(context).push(
                                           new MaterialPageRoute(
                                               builder: (context) =>
-                                              new PageAddTypeProduct(
-                                                  isEdit: true)));
+                                                  new PageAddTypeProduct(
+                                                      isPage: false,isEdit: true)));
                                     }
-
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.all(10),

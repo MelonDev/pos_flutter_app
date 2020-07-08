@@ -51,15 +51,29 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     }
   }
 
+
   @override
   Stream<FirebaseCrudState> _mapAddTypeToState(
       AddTypeFirebaseCrudEvent event) async* {
     yield LoadingFirebaseCrudState();
 
-    await _addType(event.name);
+    if(event.id == null){
+      await _addType(event.name);
+    }else {
+      if(event.delete != null){
+        await _deleteType(event.id);
+      }else {
+        await _updateType(event.name, event.id);
+      }
+    }
     ExternalBloc _externalBloc = BlocProvider.of<ExternalBloc>(event.context);
-    _externalBloc.add(ChooseTypeExternalEvent(event.context, event.isEdit, event.name));
+    if(event.isChoose) {
+      _externalBloc.add(
+          ChooseTypeExternalEvent(event.context, event.isEdit, event.name));
+    }else {
+      _externalBloc.add(LoadTypeExternalEvent());
 
+    }
     yield ClearFirebaseCrudState();
   }
 
@@ -147,15 +161,41 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
   }
 
   Future<void> _addType(String typeName) async {
+    String id = Uuid().v1().toString();
+
     Map<String, dynamic> data = {
+"id" : id,
       "name": typeName
     };
-    DocumentReference path = await _initialFirestore("types",null);
+    DocumentReference path = await _initialFirestore("types",id);
     if(path != null){
       await path.setData(data);
     }
 
   }
+
+  Future<void> _updateType(String typeName,String id) async {
+    Map<String, dynamic> data = {
+      "id" : id,
+      "name": typeName
+    };
+    DocumentReference path = await _initialFirestore("types",id);
+    if(path != null){
+      await path.updateData(data);
+    }
+
+  }
+
+  Future<void> _deleteType(String id) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    if(user != null) {
+      await Firestore.instance.collection("Users")
+          .document(user.uid)
+          .collection("types")
+          .document(id).delete();
+    }
+  }
+
 
   Future<void> _createProduct(String ref, String id, Map<String, dynamic> data,
       List<String> imageList) async {
@@ -235,6 +275,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     DocumentReference documentReference;
 
     DocumentReference path = await _initialFirestore(ref, event.key);
+
     if(path != null){
 
 
@@ -242,8 +283,14 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       if (user.uid != null) {
         StorageReference storageReference =
         FirebaseStorage.instance.ref().child(user.uid).child(picture);
-        await storageReference.delete();
-        await documentReference.delete();
+        try {
+          await Firestore.instance.collection("Users").document(user.uid).collection(ref).document(event.key).delete();
+          //await documentReference.delete();
+          await storageReference.delete();
+        }catch (error){
+          print(error);
+        }
+
       }
     }
 
@@ -321,7 +368,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
 
   }
 
-  Future<List<TransitionItem>> readingMonthTransitionCRUD() async {
+  Future<List<TransitionItem>> readingMonthTransitionCRUD(int month,int year) async {
     List<TransitionModel> rawList = await readingTransitionCRUD();
 
     List<TransitionModel> filterList = [];
@@ -332,8 +379,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
 
       var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
       DateTime modelDateTime = formatter.parse(model.createAt);
-
-      if(modelDateTime.year == dateTime.year && modelDateTime.month == dateTime.month){
+      if(modelDateTime.year == (year ?? dateTime.year) && modelDateTime.month == (month ?? dateTime.month)){
         filterList.add(model);
       }
 
@@ -344,7 +390,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
 
   }
 
-  Future<List<TransitionItem>> readingYearTransitionCRUD() async {
+  Future<List<TransitionItem>> readingYearTransitionCRUD(int year) async {
     List<TransitionModel> rawList = await readingTransitionCRUD();
 
     List<TransitionModel> filterList = [];
@@ -356,7 +402,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
       DateTime modelDateTime = formatter.parse(model.createAt);
 
-      if(modelDateTime.year == dateTime.year ){
+      if(modelDateTime.year == (year ?? dateTime.year) ){
         filterList.add(model);
       }
 

@@ -64,9 +64,12 @@ class AddTypeFirebaseCrudEvent extends FirebaseCrudEvent {
 
   final BuildContext context;
   final String name;
+  final String id;
+  final bool isChoose;
   final bool isEdit;
+  final bool delete;
 
-  AddTypeFirebaseCrudEvent(this.context, this.name,this.isEdit);
+  AddTypeFirebaseCrudEvent(this.context,this.isChoose, this.name,this.isEdit,{this.id,this.delete});
 
 }
 

@@ -418,6 +418,8 @@ class _CartState extends State<Cart> {
                                       _listProductPack,
                                       _totalPrice,
                                       this.context));
+                            }else{
+                              _showDialogsNoProductOnCart(context);
                             }
                           },
                           child: Container(
@@ -553,6 +555,28 @@ class _CartState extends State<Cart> {
 
               Navigator.pop(context);
             }
+          },
+        ),
+      ],
+    ).show();
+  }
+
+  _showDialogsNoProductOnCart(
+      BuildContext context
+      ) {
+    Alert(
+      context: context,
+      title: "กรุณาเพิ่มสินค้า !",
+//      desc: "เงินทอน 0 บาท",
+      buttons: [
+        DialogButton(
+          child: Text(
+            "ยืนยัน",
+            style: GoogleFonts.itim(color: Colors.black87),
+          ),
+          color: Colors.green,
+          onPressed: () {
+            Navigator.pop(context);
           },
         ),
       ],

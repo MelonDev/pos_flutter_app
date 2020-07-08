@@ -110,9 +110,31 @@ class _SalesReportPageState extends State<SalesReportPage> {
                         if (mPosition == 0) {
                           return _segmentWidget(_state);
                         } else if (mPosition == 1 ) {
-                          return _state.saleData.length > 0 ? _chartWidget(_state) : SizedBox();
+                          return _state.saleData.length > 0 ? _chartWidget(_state) : Container(
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+//                                  Icon(
+//                                    Icons.no,
+//                                    color: Colors.purple[100],
+//                                    size: 100,
+//                                  ), // icon
+                                  Text(
+                                    "ไม่พบข้อมูล",
+                                    style: TextStyle(
+                                        color: Colors.purple[100],
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.bold),
+                                  ), // text
+                                ],
+                              ),
+                            ),
+                          );
+//                        } else if (mPosition == 2) {
+//                          return _state.saleData.length > 0 ? _dropdownWidget(context) : SizedBox();
                         } else if (mPosition == 2) {
-                          return _buttonWidget();
+                          return _state.saleData.length > 0 ? _buttonWidget() : SizedBox();
                         } else {
                           int position = mPosition - 3;
                           if (_state.data[position].label != null) {
@@ -244,7 +266,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
                     style: GoogleFonts.itim(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
-                        color: Colors.deepPurpleAccent),
+                        color: Colors.purple),
                   )
                 ],
               ),
@@ -371,6 +393,45 @@ class _SalesReportPageState extends State<SalesReportPage> {
     return "${dateTime.hour}:${dateTime.minute}";
   }
 
+  String dropdownValue = 'January';
+
+  Widget _dropdownWidget(BuildContext context) {
+    return DropdownButton<String>(
+      value: dropdownValue,
+      icon: Icon(Icons.arrow_downward),
+      iconSize: 24,
+      elevation: 16,
+      style: TextStyle(color: Colors.deepPurple),
+      underline: Container(
+        height: 2,
+        color: Colors.deepPurpleAccent,
+      ),
+      onChanged: (String newValue) {
+        _externalBloc.add(MonthReadTransitionExternalEvent(month: int.parse(dropdownValue)));
+      },
+      items: <String>[
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'Sepember',
+        'October',
+        'November',
+        'December']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
+  }
+  }
+
   Row buildDropDownRow(Person person) {
     return Row(
       children: <Widget>[
@@ -383,7 +444,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
       ],
     );
   }
-}
+
 
 class Person {
   final String gender;

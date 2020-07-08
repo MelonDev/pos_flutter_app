@@ -7,24 +7,21 @@ import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class PageAddTypeProduct extends StatefulWidget {
-
   final bool isEdit;
+  final bool isPage;
 
-  PageAddTypeProduct({Key key,this.isEdit}) : super(key: key);
+  PageAddTypeProduct({Key key, this.isPage, this.isEdit}) : super(key: key);
 
   @override
   _PageAddTypeProductState createState() => _PageAddTypeProductState();
 }
 
 class _PageAddTypeProductState extends State<PageAddTypeProduct> {
-
   ExternalBloc _externalBloc;
   FirebaseCrudBloc _firebaseCrudBloc;
 
-
   @override
   Widget build(BuildContext context) {
-
     _externalBloc = BlocProvider.of<ExternalBloc>(context);
     _firebaseCrudBloc = BlocProvider.of<FirebaseCrudBloc>(context);
 
@@ -32,8 +29,7 @@ class _PageAddTypeProductState extends State<PageAddTypeProduct> {
 
     return BlocBuilder<ExternalBloc, ExternalState>(
       builder: (BuildContext context, _state) {
-
-        if(_state is LoadTypeExternalState) {
+        if (_state is LoadTypeExternalState) {
           return Scaffold(
             appBar: new AppBar(
               iconTheme: new IconThemeData(color: Colors.purple),
@@ -84,43 +80,45 @@ class _PageAddTypeProductState extends State<PageAddTypeProduct> {
                       children: <Widget>[
                         Container(
                             child: Text(
-                              "เลือกประเภทสินค้า",
-                              style: GoogleFonts.itim(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Colors.purple,
-                              ),
-                            )),
+                          widget.isPage ? "ประเภทสินค้า" : "เลือกประเภทสินค้า",
+                          style: GoogleFonts.itim(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Colors.purple,
+                          ),
+                        )),
                       ],
                     ),
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                    ],
+                    children: <Widget>[],
                   )
                 ],
               ),
             ),
             body: ListView.builder(
-              itemCount: (_state.data.length ?? 0)+1,
+              itemCount: (_state.data.length ?? 0) + 1,
               itemBuilder: (context, index) {
                 return GestureDetector(
-                  onTap: (){
-                    if(index == 0){
+                  onTap: () {
+                    if (index == 0) {
                       //AD
                       // _firebaseCrudBloc.add(AddTypeFirebaseCrudEvent(this.context, {TYPE NAME},widget.isEdit));
-                      _showDialogTextTypeInput(context);
-                    }else {
-                      _externalBloc.add(ChooseTypeExternalEvent(this.context,widget.isEdit,_state.data[index - 1].name));
+                      _showDialogTextTypeInput(context,widget.isPage);
+                    } else {
+                      if (!widget.isPage) {
+                        _externalBloc.add(ChooseTypeExternalEvent(this.context,
+                            widget.isEdit, _state.data[index - 1].name));
+                      }
                     }
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: Container(
                       color: Colors.green,
-                      width: MediaQuery.of(context).size.width - 8 ,
+                      width: MediaQuery.of(context).size.width - 8,
                       height: 60,
                       child: Hero(
                         tag: new Text("hero1"),
@@ -129,36 +127,60 @@ class _PageAddTypeProductState extends State<PageAddTypeProduct> {
                             width: MediaQuery.of(context).size.width - 8,
                             child: Stack(
                               children: <Widget>[
+
+                                widget.isPage ? (index != 0 ? (_state.data[index-1].id != null ?Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Container(
+                                    height: 60,
+                                    width: 100,
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                            icon: Icon(Icons.edit),
+                                            onPressed: () {_showDialogTextTypeInput(context,widget.isPage,text:_state.data[index - 1].name,id: _state.data[index - 1].id);}),
+                                        IconButton(
+                                            icon: Icon(Icons.delete),
+                                            onPressed: () {
+                                              _firebaseCrudBloc.add(AddTypeFirebaseCrudEvent(
+                                                  this.context,false, null, widget.isEdit,id:_state.data[index - 1].id,delete: true));
+                                            })
+                                      ],
+                                    ),
+                                  ),
+                                ):Container()):Container()):Container(),
                                 Align(
+                                  alignment: Alignment.centerLeft,
                                   child: Container(
                                     height: 60,
                                     child: Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-
                                         Container(
-                                          width: MediaQuery
-                                              .of(context)
-                                              .size
-                                              .width  - 8,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              8,
                                           //color: Color(0x40000000),
                                           child: Container(
                                             alignment: Alignment.centerLeft,
                                             margin: EdgeInsets.only(
                                                 left: 20, right: 20),
                                             child: Text(
-                                              index == 0 ? "เพิ่มประเภทสินค้า" : _state.data[index - 1].name,
+                                              index == 0
+                                                  ? "เพิ่มประเภทสินค้า"
+                                                  : _state.data[index - 1].name,
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 4,
                                               style: GoogleFonts.itim(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20,
-                                                  color: index == 0 ? Colors.orange : Colors.black87),
+                                                  color: index == 0
+                                                      ? Colors.orange
+                                                      : Colors.black87),
                                             ),
                                           ),
                                         ),
-
                                       ],
                                     ),
                                   ),
@@ -173,9 +195,8 @@ class _PageAddTypeProductState extends State<PageAddTypeProduct> {
                 );
               },
             ),
-
           );
-        }else {
+        } else {
           return Container(
             color: Colors.purple,
             child: Stack(
@@ -198,16 +219,19 @@ class _PageAddTypeProductState extends State<PageAddTypeProduct> {
     );
   }
 
-  _showDialogTextTypeInput(BuildContext context) {
-    TextEditingController _TextInputController = TextEditingController();
+  _showDialogTextTypeInput(BuildContext context,bool isPage,{String text,String id}) {
+    TextEditingController _textInputController = TextEditingController();
+    if(text != null){
+      _textInputController.text = text;
+    }
     Alert(
       context: context,
-      title: "เพิ่มประเภทสินค้า",
+      title: "${text != null ?"แก้ไข":"เพิ่ม"}ประเภทสินค้า",
       content: Form(
         child: Column(
           children: [
             TextFormField(
-              controller: _TextInputController,
+              controller: _textInputController,
               decoration: InputDecoration(labelText: "ระบุประเภทสินค้า"),
             ),
           ],
@@ -232,10 +256,17 @@ class _PageAddTypeProductState extends State<PageAddTypeProduct> {
           color: Colors.lightGreenAccent,
           onPressed: () {
             BlocProvider.of<ExternalBloc>(context).add(InitialExternalEvent());
-            if (_TextInputController.text.length > 0) {
-              _firebaseCrudBloc.add(AddTypeFirebaseCrudEvent(this.context, _TextInputController.text,widget.isEdit));
+            if (_textInputController.text.length > 0) {
+              if(text == null && !isPage) {
+                _firebaseCrudBloc.add(AddTypeFirebaseCrudEvent(
+                    this.context,true, _textInputController.text, widget.isEdit));
 //              _externalBloc.add(
 //                  TextInputExternalEvent(_TextInputController.text, context));
+              }else {
+
+                _firebaseCrudBloc.add(AddTypeFirebaseCrudEvent(
+                    this.context,false, _textInputController.text, widget.isEdit,id:id));
+              }
               Navigator.pop(context);
             }
           },

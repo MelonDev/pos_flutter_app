@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/bloc/authentication/authentication_bloc.dart';
+import 'package:posflutterapp/page/page_add_type_product.dart';
 import 'package:posflutterapp/page/page_products.dart';
 import 'package:posflutterapp/page/page_report.dart';
 import 'package:posflutterapp/page/page_setting.dart';
@@ -146,6 +147,41 @@ class HomePage extends StatelessWidget {
                         ), // icon
                         Text(
                           "รายงาน",
+                          style: GoogleFonts.itim(
+                              color: Colors.white,
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold),
+                        ), // text
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 200,
+                child: Material(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0)),
+                  color: Colors.purple, // button color
+                  child: InkWell(
+                    onTap: () => Navigator.of(context).push(
+                        new MaterialPageRoute(
+                            builder: (context) =>
+                            new PageAddTypeProduct(isPage: true,isEdit: false,))), // button pressed
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.line_weight,
+                          color: Colors.white,
+                          size: 100,
+                        ), // icon
+                        Text(
+                          "ประเภทสินค้า",
                           style: GoogleFonts.itim(
                               color: Colors.white,
                               fontSize: 40,

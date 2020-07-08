@@ -126,11 +126,29 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
     ScanResult result = await BarcodeScanner.scan();
 
     if (result.type == ResultType.Barcode) {
-      if (event.isEdit) {
-        yield EditExternalState(result.rawContent, fromScanner: true);
+      List<Product> listProduct = await FirebaseCrudBloc().readingCRUD();
+
+      List<Product> filterList = listProduct
+          .where((element) => element.serialNumber
+              .toUpperCase()
+              .contains(result.rawContent.toUpperCase()))
+          .toList();
+
+      if (filterList.length > 0) {
+        showDialogsHaveProduct(event.context, result.rawContent);
+        if (event.isEdit) {
+          yield EditExternalState(result.rawContent);
+        } else {
+          yield NormalExternalState(result.rawContent);
+        }
       } else {
-        yield NormalExternalState(result.rawContent);
+        if (event.isEdit) {
+          yield EditExternalState(result.rawContent, fromScanner: true);
+        } else {
+          yield NormalExternalState(result.rawContent, fromScanner: true);
+        }
       }
+
     } else {
       if (event.isEdit) {
         yield EditExternalState(null);
@@ -154,7 +172,6 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
               .toUpperCase()
               .contains(result.rawContent.toUpperCase()))
           .toList();
-
 
       if (filterList.length > 0) {
         if (int.parse(filterList[0].quantity.toString()) > 0) {
@@ -194,8 +211,8 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
 
     List<Product> filterList = listProduct
         .where((element) => element.serialNumber
-        .toUpperCase()
-        .contains(event.barcode.toUpperCase()))
+            .toUpperCase()
+            .contains(event.barcode.toUpperCase()))
         .toList();
 
     if (filterList.length > 0) {
@@ -213,8 +230,7 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
         showDialogs(event.context);
       }
     } else {
-      yield NormalExternalState(event.barcode,
-          isCart: true, notfound: true);
+      yield NormalExternalState(event.barcode, isCart: true, notfound: true);
       showDialogsNoProduct(event.context, event.barcode);
 //        Navigator.push(
 //            event.context,
@@ -314,6 +330,28 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       ],
     ).show();
   }
+  void showDialogsHaveProduct(
+      BuildContext context,
+      String rawContent,
+      ) {
+    Alert(
+      context: context,
+      title: "มีรหัสสินค้านี้แล้ว",
+//      desc: "เงินทอน 0 บาท",
+      buttons: [
+        DialogButton(
+          child: Text(
+            "ยืนยัน",
+            style: GoogleFonts.itim(color: Colors.black87),
+          ),
+          color: Colors.green,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ).show();
+  }
 
   @override
   Stream<ExternalState> _decreaseProductPackToState(
@@ -360,7 +398,7 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
     yield LoadingExternalState();
 
     List<TransitionItem> list =
-        await FirebaseCrudBloc().readingMonthTransitionCRUD();
+        await FirebaseCrudBloc().readingMonthTransitionCRUD(event.month,event.year);
 
     list.forEach((element) {
       print(element.label);
@@ -376,7 +414,7 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
     yield LoadingExternalState();
 
     List<TransitionItem> list =
-        await FirebaseCrudBloc().readingYearTransitionCRUD();
+        await FirebaseCrudBloc().readingYearTransitionCRUD(event.year);
 
     yield YearReadTransitionExternalState(
         list.reversed.toList(), _monthConvertSaleData(list));
@@ -413,7 +451,6 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
         if (count == list.length) {
           price += double.parse(item.price);
           saleList.add(SalesData("$month", price));
-
         } else {
           if (month == 0) {
             month = item.month;
@@ -423,7 +460,6 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
             month = item.month;
             price = double.parse(item.price);
           } else {
-
             price += double.parse(item.price);
           }
         }
@@ -433,16 +469,15 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
     return saleList;
   }
 
-
   @override
   Stream<ExternalState> _reportOutOfStockToState(
       ReportOutOfStockExternalEvent event) async* {
     yield LoadingExternalState();
 
-    List<Product> list =
-    await FirebaseCrudBloc().readingCRUD();
+    List<Product> list = await FirebaseCrudBloc().readingCRUD();
 
-   List<Product> newList=  list.where((element) => int.parse(element.quantity) == 0).toList();
+    List<Product> newList =
+        list.where((element) => int.parse(element.quantity) == 0).toList();
 
     yield ReportOutOfStockExternalState(newList);
   }
@@ -452,33 +487,23 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       ChooseTypeExternalEvent event) async* {
     yield LoadingExternalState();
 
-
-
-    if(event.isEdit){
-      yield EditExternalState(null,withType: event.type);
-    }else {
-yield NormalExternalState(null,withType: event.type );
+    if (event.isEdit) {
+      yield EditExternalState(null, withType: event.type);
+    } else {
+      yield NormalExternalState(null, withType: event.type);
     }
 
     Navigator.pop(event.context);
-
-
   }
 
   @override
-  Stream<ExternalState> _loadTypeToState(
-      LoadTypeExternalEvent event) async* {
+  Stream<ExternalState> _loadTypeToState(LoadTypeExternalEvent event) async* {
     yield LoadingExternalState();
 
-    List<TypeModel> list =
-    await FirebaseCrudBloc().readingTypeCRUD();
+    List<TypeModel> list = await FirebaseCrudBloc().readingTypeCRUD();
 
     list.addAll(TypeTool.DEFAULT_lIST);
 
     yield LoadTypeExternalState(list);
-
   }
-
-
-
 }

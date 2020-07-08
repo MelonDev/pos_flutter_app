@@ -98,7 +98,7 @@ class _ReportPageState extends State<ReportPage> {
                       child: Material(
                         borderRadius:
                         BorderRadius.circular(10),
-                        color: Colors.orange,
+                        color: Colors.purple,
                         elevation: 0.0,
                         child: MaterialButton(
                           onPressed: () => Navigator.of(context).push(
@@ -123,7 +123,7 @@ class _ReportPageState extends State<ReportPage> {
                       child: Material(
                         borderRadius:
                         BorderRadius.circular(10),
-                        color: Colors.orange,
+                        color: Colors.purple,
                         elevation: 0.0,
                         child: MaterialButton(
                           onPressed: () => Navigator.of(context).push(
