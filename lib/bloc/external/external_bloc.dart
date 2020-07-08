@@ -307,7 +307,7 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
             "ยกเลิก",
             style: GoogleFonts.itim(color: Colors.black87),
           ),
-          color: Colors.red,
+          color: Colors.black12,
           onPressed: () {
             Navigator.pop(context);
           },

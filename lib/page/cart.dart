@@ -507,7 +507,7 @@ class _CartState extends State<Cart> {
             "ยืนยัน",
             style: TextStyle(color: Colors.black87),
           ),
-          color: Colors.lightGreenAccent,
+          color: Colors.green,
           onPressed: () {},
         ),
       ],

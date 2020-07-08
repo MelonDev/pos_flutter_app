@@ -164,7 +164,7 @@ class ProductDetail extends StatelessWidget {
       buttons: [
         DialogButton(
           child: Text("ยกเลิก"),
-          color: Colors.red,
+          color: Colors.black12,
           onPressed: () {
             Navigator.pop(context);
           },
@@ -173,6 +173,7 @@ class ProductDetail extends StatelessWidget {
           child: Text("ยืนยัน"),
           color: Colors.green,
           onPressed: () {
+            Navigator.pop(context);
             _firebaseCrudBloc
                 .add(DeleteProductFirebaseCrudEvent(context, _product.id));
           },

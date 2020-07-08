@@ -141,9 +141,10 @@ class _PageAddTypeProductState extends State<PageAddTypeProduct> {
                                         IconButton(
                                             icon: Icon(Icons.delete),
                                             onPressed: () {
-                                              _firebaseCrudBloc.add(AddTypeFirebaseCrudEvent(
-                                                  this.context,false, null, widget.isEdit,id:_state.data[index - 1].id,delete: true));
-                                            })
+_showDialogConfirm(context,index,_state);
+//                                              _firebaseCrudBloc.add(AddTypeFirebaseCrudEvent(
+//                                                  this.context,false, null, widget.isEdit,id:_state.data[index - 1].id,delete: true));
+                                            },),
                                       ],
                                     ),
                                   ),
@@ -219,6 +220,32 @@ class _PageAddTypeProductState extends State<PageAddTypeProduct> {
     );
   }
 
+  _showDialogConfirm(BuildContext context, index, _state) {
+    Alert(
+      context: context,
+      title: "ลบประเภทสินค้า",
+      //desc: "เงินทอน ${change.toStringAsFixed(2)} บาท",
+      buttons: [
+        DialogButton(
+          child: Text("ยกเลิก"),
+          color: Colors.black12,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        DialogButton(
+          child: Text("ยืนยัน"),
+          color: Colors.green,
+          onPressed: () {
+            _firebaseCrudBloc.add(AddTypeFirebaseCrudEvent(
+                this.context,false, null, widget.isEdit,id:_state.data[index - 1].id,delete: true));
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ).show();
+  }
+
   _showDialogTextTypeInput(BuildContext context,bool isPage,{String text,String id}) {
     TextEditingController _textInputController = TextEditingController();
     if(text != null){
@@ -253,7 +280,7 @@ class _PageAddTypeProductState extends State<PageAddTypeProduct> {
             "ยืนยัน",
             style: GoogleFonts.itim(color: Colors.black87),
           ),
-          color: Colors.lightGreenAccent,
+          color: Colors.green,
           onPressed: () {
             BlocProvider.of<ExternalBloc>(context).add(InitialExternalEvent());
             if (_textInputController.text.length > 0) {

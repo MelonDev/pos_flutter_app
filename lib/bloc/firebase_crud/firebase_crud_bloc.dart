@@ -534,7 +534,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
             "ยืนยัน",
             style: GoogleFonts.itim(color: Colors.black87),
           ),
-          color: Colors.lightGreenAccent,
+          color: Colors.green,
           onPressed: () {
             try {
               if (double.parse(_reciveMoneyController.text) >= _totalPrice) {
