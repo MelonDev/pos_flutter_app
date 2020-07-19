@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
 import 'package:posflutterapp/components/validators.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -49,7 +52,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     } else if (event is RegisterPasswordChanged) {
       yield* _mapRegisterPasswordChangedToState(event.password);
     } else if (event is RegisterSubmitted) {
-      yield* _mapRegisterSubmittedToState(event.email, event.password);
+      yield* _mapRegisterSubmittedToState(event);
     }
   }
 
@@ -67,15 +70,18 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   }
 
   Stream<RegisterState> _mapRegisterSubmittedToState(
-    String email,
-    String password,
+      RegisterSubmitted event
   ) async* {
     yield RegisterState.loading();
     try {
       await _userRepository.signUp(
-        email: email,
-        password: password,
+        email: event.email,
+        password: event.password,
       );
+
+      FirebaseCrudBloc().addShopDetail(AddShopDetailFirebaseCrudEvent(event.context, event.email, event.shopName, event.shopAddress, event.shopTax, event.shopNumber));
+
+
       yield RegisterState.success();
     } catch (_) {
       yield RegisterState.failure();

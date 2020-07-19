@@ -18,6 +18,24 @@ class OpenScannerOnCartExternalEvent extends ExternalEvent {
   OpenScannerOnCartExternalEvent(this.context);
 }
 
+class OpenScannerShowDetailExternalEvent extends ExternalEvent {
+  final BuildContext context;
+  OpenScannerShowDetailExternalEvent(this.context);
+}
+
+class OpenSearchProductExternalEvent extends ExternalEvent {
+  final BuildContext context;
+  OpenSearchProductExternalEvent(this.context);
+}
+
+
+
+class OpenTextSearchProductExternalEvent extends ExternalEvent {
+  final BuildContext context;
+  final String text;
+  OpenTextSearchProductExternalEvent(this.context,this.text);
+}
+
 class OpenGelleryExternalEvent extends ExternalEvent {
   final bool isEdit;
   final bool camera;
@@ -64,6 +82,10 @@ class ReadTransitionExternalEvent extends ExternalEvent {
   ReadTransitionExternalEvent();
 }
 
+class NowadaysReadTransitionExternalEvent extends ExternalEvent {
+  NowadaysReadTransitionExternalEvent();
+}
+
 class WeekReadTransitionExternalEvent extends ExternalEvent {
   WeekReadTransitionExternalEvent();
 }
@@ -102,4 +124,30 @@ class TextInputExternalEvent extends ExternalEvent {
   final BuildContext context;
 
   TextInputExternalEvent(this.barcode, this.context);
+}
+
+
+
+
+
+class ShowTransitionDialogExternalEvent extends ExternalEvent {
+  final BuildContext context;
+  final TransitionItem item;
+  final int position;
+  ShowTransitionDialogExternalEvent(this.context,this.item,this.position);
+}
+
+class DeleteTransitionExternalEvent extends ExternalEvent {
+  final BuildContext context;
+  DeleteTransitionExternalEvent(this.context);
+}
+
+class ShowReceiptExternalEvent extends ExternalEvent {
+  final BuildContext context;
+  ShowReceiptExternalEvent(this.context);
+}
+
+class GeneratingReceiptExternalEvent extends ExternalEvent {
+  final BuildContext context;
+  GeneratingReceiptExternalEvent(this.context);
 }

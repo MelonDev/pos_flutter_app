@@ -80,6 +80,33 @@ class _ProductsPageState extends State<ProductsPage> {
                       ],
                     ),
                   ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Container(
+                          color: Colors.transparent,
+                          child: SizedBox(
+                            width: 60,
+                            height: 56,
+                            child:
+                            LayoutBuilder(builder: (context, constraint) {
+                              return FlatButton(
+                                  padding: EdgeInsets.all(0),
+                                  onPressed: () {
+_externalBloc.add(OpenSearchProductExternalEvent(this.context));
+                                  },
+                                  color: Colors.transparent,
+                                  child: Icon(
+                                    Icons.search,
+                                    //color: Colors.black.withAlpha(150),
+                                    color: Colors.purple,
+                                  ));
+                            }),
+                          )),
+                    ],
+                  ),
                 ],
               ),
             ),

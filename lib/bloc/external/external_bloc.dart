@@ -4,17 +4,22 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:posflutterapp/bloc/firebase_crud/firebase_crud_bloc.dart';
+import 'package:posflutterapp/models/CartModel.dart';
 import 'package:posflutterapp/models/ProductPack.dart';
 import 'package:posflutterapp/models/SalesDataModel.dart';
+import 'package:posflutterapp/models/ShopDetailModel.dart';
 import 'package:posflutterapp/models/TransitionItem.dart';
 import 'package:posflutterapp/models/TypeModel.dart';
 import 'package:posflutterapp/models/products_models.dart';
 import 'package:posflutterapp/page/page_add_products.dart';
+import 'package:posflutterapp/page/page_products_details.dart';
+import 'package:posflutterapp/page/receipt_page.dart';
 import 'package:posflutterapp/tools/TypeTool.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -41,12 +46,20 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       yield* _mapGelleryToState(event);
     } else if (event is OpenScannerOnCartExternalEvent) {
       yield* _mapScannerOnCartToState(event);
+    } else if (event is OpenScannerShowDetailExternalEvent) {
+      yield* _mapScannerShowDetailToState(event);
+    } else if (event is OpenSearchProductExternalEvent) {
+      yield* _mapSearchProductToState(event);
+    } else if (event is OpenTextSearchProductExternalEvent) {
+      yield* _mapTextShowDetailToState(event);
     } else if (event is IncreaseProductPackExternalEvent) {
       yield* _increaserProductPackToState(event);
     } else if (event is DecreaseProductPackExternalEvent) {
       yield* _decreaseProductPackToState(event);
     } else if (event is OpenImageSourceExternalEvent) {
       yield* _mapImageSourceToState(event);
+    } else if (event is NowadaysReadTransitionExternalEvent) {
+      yield* _nowadaysReadTransitionToState(event);
     } else if (event is WeekReadTransitionExternalEvent) {
       yield* _weekReadTransitionToState(event);
     } else if (event is MonthReadTransitionExternalEvent) {
@@ -61,6 +74,8 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       yield* _loadTypeToState(event);
     } else if (event is TextInputExternalEvent) {
       yield* _mapTextInputOnCartToState(event);
+    } else if (event is ShowTransitionDialogExternalEvent) {
+      yield* _mapTransitionDialogToState(event);
     }
   }
 
@@ -102,6 +117,12 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
             ),
           );
         });
+  }
+
+  @override
+  Stream<ExternalState> _mapSearchProductToState(
+      OpenSearchProductExternalEvent event) async* {
+    _showDialogSelect(event.context);
   }
 
   @override
@@ -148,7 +169,6 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
           yield NormalExternalState(result.rawContent, fromScanner: true);
         }
       }
-
     } else {
       if (event.isEdit) {
         yield EditExternalState(null);
@@ -174,18 +194,24 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
           .toList();
 
       if (filterList.length > 0) {
-        if (int.parse(filterList[0].quantity.toString()) > 0) {
-          yield NormalExternalState(null,
-              isCart: true,
-              notfound: false,
-              productPack: ProductPack().initialProductPack(filterList[0]));
-        } else {
-          yield NormalExternalState(null,
-              isCart: true,
-              notfound: false,
-              outOfStock: true,
-              productPack: ProductPack().initialProductPack(filterList[0]));
-          showDialogs(event.context);
+        if (filterList[0].serialNumber.length == result.rawContent.length) {
+          if (int.parse(filterList[0].quantity.toString()) > 0) {
+            yield NormalExternalState(null,
+                isCart: true,
+                notfound: false,
+                productPack: ProductPack().initialProductPack(filterList[0]));
+          } else {
+            yield NormalExternalState(null,
+                isCart: true,
+                notfound: false,
+                //outOfStock: true,
+                productPack: ProductPack().initialProductPack(filterList[0]));
+            showDialogsOut(event.context);
+          }
+        }else {
+          yield NormalExternalState(result.rawContent,
+              isCart: true, notfound: true);
+          showDialogsNoProduct(event.context, result.rawContent);
         }
       } else {
         yield NormalExternalState(result.rawContent,
@@ -203,6 +229,78 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
   }
 
   @override
+  Stream<ExternalState> _mapScannerShowDetailToState(
+      OpenScannerShowDetailExternalEvent event) async* {
+    yield LoadingExternalState();
+    ScanResult result = await BarcodeScanner.scan();
+
+    if (result.type == ResultType.Barcode) {
+      List<Product> listProduct = await FirebaseCrudBloc().readingCRUD();
+
+      List<Product> filterList = listProduct
+          .where((element) => element.serialNumber
+              .toUpperCase()
+              .contains(result.rawContent.toUpperCase()))
+          .toList();
+
+      if (filterList.length > 0) {
+        if (filterList[0].serialNumber.length == result.rawContent.length) {
+          yield NormalExternalState(result.rawContent);
+
+          Navigator.push(
+            event.context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetail(filterList[0], event.context),
+            ),
+          );
+        } else {
+          yield NormalExternalState(result.rawContent,
+              isCart: true, notfound: true);
+          showDialogsNoProduct(event.context, result.rawContent);
+        }
+      } else {
+        yield NormalExternalState(result.rawContent,
+            isCart: true, notfound: true);
+        showDialogsNoProduct(event.context, result.rawContent);
+      }
+    } else {
+      yield NormalExternalState(null, isCart: true);
+    }
+  }
+
+  @override
+  Stream<ExternalState> _mapTextShowDetailToState(
+      OpenTextSearchProductExternalEvent event) async* {
+    yield LoadingExternalState();
+    List<Product> listProduct = await FirebaseCrudBloc().readingCRUD();
+
+    List<Product> filterList = listProduct
+        .where((element) => element.serialNumber
+            .toUpperCase()
+            .contains(event.text.toUpperCase()))
+        .toList();
+
+    if (filterList.length > 0) {
+      if (filterList[0].serialNumber.length == event.text.length) {
+        yield NormalExternalState(event.text);
+
+        Navigator.push(
+          event.context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetail(filterList[0], event.context),
+          ),
+        );
+      } else {
+        yield NormalExternalState(event.text, isCart: true, notfound: true);
+        showDialogsNoProduct(event.context, event.text);
+      }
+    } else {
+      yield NormalExternalState(event.text, isCart: true, notfound: true);
+      showDialogsNoProduct(event.context, event.text);
+    }
+  }
+
+  @override
   Stream<ExternalState> _mapTextInputOnCartToState(
       TextInputExternalEvent event) async* {
     yield LoadingExternalState();
@@ -216,18 +314,23 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
         .toList();
 
     if (filterList.length > 0) {
-      if (int.parse(filterList[0].quantity.toString()) > 0) {
-        yield NormalExternalState(null,
-            isCart: true,
-            notfound: false,
-            productPack: ProductPack().initialProductPack(filterList[0]));
-      } else {
-        yield NormalExternalState(null,
-            isCart: true,
-            notfound: false,
-            outOfStock: true,
-            productPack: ProductPack().initialProductPack(filterList[0]));
-        showDialogs(event.context);
+      if (filterList[0].serialNumber.length == event.barcode.length) {
+        if (int.parse(filterList[0].quantity.toString()) > 0) {
+          yield NormalExternalState(null,
+              isCart: true,
+              notfound: false,
+              productPack: ProductPack().initialProductPack(filterList[0]));
+        } else {
+          yield NormalExternalState(null,
+              isCart: true,
+              notfound: false,
+              //outOfStock: true,
+              productPack: ProductPack().initialProductPack(filterList[0]));
+          showDialogsOut(event.context);
+        }
+      }else {
+        yield NormalExternalState(event.barcode, isCart: true, notfound: true);
+        showDialogsNoProduct(event.context, event.barcode);
       }
     } else {
       yield NormalExternalState(event.barcode, isCart: true, notfound: true);
@@ -268,15 +371,16 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
         yield NormalExternalState(null,
             manageProduct: true,
             isCart: true,
-            outOfStock: true,
-            productPack: event.productPack,
+            //outOfStock: true,
+            //productPack: event.productPack,
+            productPack: ppa,
             position: event.position);
-        showDialogs(event.context);
+        showDialogsOut(event.context);
       }
     }
   }
 
-  void showDialogs(BuildContext context) {
+  void showDialogsOut(BuildContext context) {
     Alert(
       context: context,
       title: "OUT OF STOCK",
@@ -330,10 +434,11 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       ],
     ).show();
   }
+
   void showDialogsHaveProduct(
-      BuildContext context,
-      String rawContent,
-      ) {
+    BuildContext context,
+    String rawContent,
+  ) {
     Alert(
       context: context,
       title: "มีรหัสสินค้านี้แล้ว",
@@ -347,6 +452,97 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
           color: Colors.green,
           onPressed: () {
             Navigator.pop(context);
+          },
+        ),
+      ],
+    ).show();
+  }
+
+  _showDialogSelect(BuildContext context) {
+    Alert(
+      context: context,
+      title: "ค้นหาสินค้า",
+      desc: "",
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                DialogButton(
+                  child: Text(
+                    "แสกนบาร์โค้ด",
+                    style: GoogleFonts.itim(color: Colors.white),
+                  ),
+                  color: Colors.orange,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    this.add(OpenScannerShowDetailExternalEvent(context));
+                  },
+                ),
+              ])
+        ],
+      ),
+      buttons: [
+        DialogButton(
+          child: Text(
+            "กรอกรหัสสินค้า",
+            style: GoogleFonts.itim(color: Colors.white),
+          ),
+          color: Colors.orange,
+          onPressed: () {
+            Navigator.pop(context);
+            _showDialogTextInput(context);
+          },
+        ),
+      ],
+    ).show();
+  }
+
+  _showDialogTextInput(BuildContext context) {
+    TextEditingController _TextInputController = TextEditingController();
+    Alert(
+      context: context,
+      title: "กรอกรหัสสินค้า",
+      content: Form(
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _TextInputController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: "ระบุรหัสสินค้า"),
+            ),
+          ],
+        ),
+      ),
+      buttons: [
+        DialogButton(
+          child: Text(
+            "ยกเลิก",
+            style: GoogleFonts.itim(color: Colors.black87),
+          ),
+          color: Colors.black12,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        DialogButton(
+          child: Text(
+            "ยืนยัน",
+            style: GoogleFonts.itim(color: Colors.black87),
+          ),
+          color: Colors.lightGreenAccent,
+          onPressed: () {
+            if (_TextInputController.text.length > 0) {
+              /*_externalBloc.add(
+                  TextInputExternalEvent(_TextInputController.text, context));
+
+               */
+              Navigator.pop(context);
+
+              this.add(OpenTextSearchProductExternalEvent(
+                  context, _TextInputController.text));
+            }
           },
         ),
       ],
@@ -377,6 +573,22 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
   }
 
   @override
+  Stream<ExternalState> _nowadaysReadTransitionToState(
+      NowadaysReadTransitionExternalEvent event) async* {
+    yield LoadingExternalState();
+
+    List<TransitionItem> list =
+    await FirebaseCrudBloc().readingNowadaysTransitionCRUD();
+
+    list.forEach((element) {
+      print(element.label);
+    });
+
+    yield NowadaysReadTransitionExternalState(
+        list.reversed.toList());
+  }
+
+  @override
   Stream<ExternalState> _weekReadTransitionToState(
       WeekReadTransitionExternalEvent event) async* {
     yield LoadingExternalState();
@@ -397,8 +609,8 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       MonthReadTransitionExternalEvent event) async* {
     yield LoadingExternalState();
 
-    List<TransitionItem> list =
-        await FirebaseCrudBloc().readingMonthTransitionCRUD(event.month,event.year);
+    List<TransitionItem> list = await FirebaseCrudBloc()
+        .readingMonthTransitionCRUD(event.month, event.year);
 
     list.forEach((element) {
       print(element.label);
@@ -505,5 +717,89 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
     list.addAll(TypeTool.DEFAULT_lIST);
 
     yield LoadTypeExternalState(list);
+  }
+
+  String _transitionDesInfo(List<CartModel> list) {
+    String text = "";
+
+    for (CartModel cart in list) {
+      text +=
+          "${cart.product.name} ${cart.product.size != null ? "(ขนาด ${cart.product.size}) " : ""}: ${cart.amount} ชิ้น\n";
+    }
+
+    return text;
+  }
+
+  _showTransitionDialog(
+      BuildContext context, TransitionItem item, int tabPosition,ShopDetailModel shopDetailModel) {
+    Alert(
+      context: context,
+      title: "รายละเอียด",
+      desc:
+          "ราคา: ${item.value.price} บาท\n${_transitionDesInfo(item.value.cart)}\n",
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                DialogButton(
+                  child: Text(
+                    "ดูใบเสร็จ",
+                    style: GoogleFonts.itim(color: Colors.white),
+                  ),
+                  color: Colors.blue,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              new ReceiptPage(item,shopDetailModel),
+                        ));
+                  },
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                DialogButton(
+                  child: Text(
+                    "ลบ",
+                    style: GoogleFonts.itim(color: Colors.white),
+                  ),
+                  color: Colors.red,
+                  onPressed: () {
+                    Navigator.pop(context);
+                    FirebaseCrudBloc _firebaseCrud =
+                        BlocProvider.of<FirebaseCrudBloc>(context);
+                    _firebaseCrud.add(DeleteTransitionFirebaseCrudEvent(
+                        context, item.value.id, tabPosition));
+                  },
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                DialogButton(
+                  child: Text(
+                    "ปิด",
+                    style: GoogleFonts.itim(color: Colors.black87),
+                  ),
+                  color: Colors.black12,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ])
+        ],
+      ),
+      buttons: [],
+    ).show();
+  }
+
+  @override
+  Stream<ExternalState> _mapTransitionDialogToState(
+      ShowTransitionDialogExternalEvent event) async* {
+    ShopDetailModel shopDetailModel = await FirebaseCrudBloc().readingShopDetail();
+    _showTransitionDialog(event.context, event.item, event.position,shopDetailModel);
   }
 }

@@ -620,7 +620,7 @@ class _addProductsState extends State<addProducts> {
       product.type = _typeTextController.text;
       product.price = _priceTextController.text;
       product.salePrice = _salePriceTextController.text;
-      product.sizes = _sizeTextController.text;
+      product.size = _sizeTextController.text;
       product.quantity = _quantityTextController.text;
       return product;
     } else {

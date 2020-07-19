@@ -82,7 +82,7 @@ class _OutOffStockPageState extends State<OutOffStockPage> {
                 ],
               ),
             ),
-            body: _state.data.length == 0 ? Container(child: Center(
+            body: _state.data.length <= 0 ? Container(child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[

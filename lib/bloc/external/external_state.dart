@@ -47,6 +47,10 @@ class ReadTransitionExternalState extends ExternalState {
   ReadTransitionExternalState(this.data,this.saleData);
 }
 
+class NowadaysReadTransitionExternalState extends ReadTransitionExternalState {
+  NowadaysReadTransitionExternalState(List<TransitionItem> data) : super(data, null);
+}
+
 class WeekReadTransitionExternalState extends ReadTransitionExternalState {
   WeekReadTransitionExternalState(List<TransitionItem> data, List<SalesData> saleData) : super(data, saleData);
 }

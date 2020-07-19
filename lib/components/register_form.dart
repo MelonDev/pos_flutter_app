@@ -13,10 +13,17 @@ class _RegisterFormState extends State<RegisterForm> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  final TextEditingController _shopNameController = TextEditingController();
+  final TextEditingController _shopAddressController = TextEditingController();
+  final TextEditingController _shopTaxController = TextEditingController();
+  final TextEditingController _shopNumberController = TextEditingController();
+
+
+
   RegisterBloc _registerBloc;
 
   bool get isPopulated =>
-      _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
+      _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty && _shopNameController.text.isNotEmpty && _shopAddressController.text.isNotEmpty && _shopTaxController.text.isNotEmpty && _shopNumberController.text.isNotEmpty;
 
   bool isRegisterButtonEnabled(RegisterState state) {
     return state.isFormValid && isPopulated && !state.isSubmitting;
@@ -180,6 +187,99 @@ class _RegisterFormState extends State<RegisterForm> {
                     ),
                   ),
                   Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Material(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      elevation: 0.0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: TextFormField(
+                          controller: _shopNameController,
+                          decoration: InputDecoration(
+                            icon: Icon(
+                              Icons.shopping_cart,
+                              color: Colors.purple,
+                            ),
+                            labelText: 'ชื่อร้าน',
+                            border: InputBorder.none,
+                          ),
+                          keyboardType: TextInputType.text,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Material(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      elevation: 0.0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: TextFormField(
+                          controller: _shopAddressController,
+                          decoration: InputDecoration(
+                            icon: Icon(
+                              Icons.location_on,
+                              color: Colors.purple,
+                            ),
+                            labelText: 'ที่อยู่',
+                            border: InputBorder.none,
+                          ),
+                          keyboardType: TextInputType.text,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Material(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      elevation: 0.0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: TextFormField(
+                          controller: _shopTaxController,
+                          decoration: InputDecoration(
+                            icon: Icon(
+                              Icons.attach_file,
+                              color: Colors.purple,
+                            ),
+                            labelText: 'เลขที่ผู้เสียภาษี',
+                            border: InputBorder.none,
+                          ),
+                          keyboardType: TextInputType.text,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Material(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      elevation: 0.0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: TextFormField(
+                          controller: _shopNumberController,
+                          decoration: InputDecoration(
+                            icon: Icon(
+                              Icons.phone_android,
+                              color: Colors.purple,
+                            ),
+                            labelText: 'เบอร์โทร',
+                            border: InputBorder.none,
+                          ),
+                          keyboardType: TextInputType.phone,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -223,8 +323,13 @@ class _RegisterFormState extends State<RegisterForm> {
   void _onFormSubmitted() {
     _registerBloc.add(
       RegisterSubmitted(
+        this.context,
         email: _emailController.text,
         password: _passwordController.text,
+        shopName: _shopNameController.text,
+        shopAddress: _shopAddressController.text,
+        shopNumber: _shopNumberController.text,
+        shopTax: _shopTaxController.text
       ),
     );
   }

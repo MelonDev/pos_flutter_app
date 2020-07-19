@@ -60,6 +60,16 @@ class DeleteProductFirebaseCrudEvent extends FirebaseCrudEvent {
   DeleteProductFirebaseCrudEvent(this.context,this.key);
 }
 
+class DeleteTransitionFirebaseCrudEvent extends FirebaseCrudEvent {
+
+  final BuildContext context;
+  final String key;
+  final int tabPosition;
+
+
+  DeleteTransitionFirebaseCrudEvent(this.context,this.key,this.tabPosition);
+}
+
 class AddTypeFirebaseCrudEvent extends FirebaseCrudEvent {
 
   final BuildContext context;
@@ -71,5 +81,17 @@ class AddTypeFirebaseCrudEvent extends FirebaseCrudEvent {
 
   AddTypeFirebaseCrudEvent(this.context,this.isChoose, this.name,this.isEdit,{this.id,this.delete});
 
+}
+
+class AddShopDetailFirebaseCrudEvent extends FirebaseCrudEvent {
+  final BuildContext context;
+  final String email;
+  final String shopName;
+  final String shopAddress;
+  final String shopTax;
+  final String shopNumber;
+
+  AddShopDetailFirebaseCrudEvent(this.context,this.email, this.shopName, this.shopAddress,
+      this.shopTax, this.shopNumber);
 }
 

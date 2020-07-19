@@ -104,7 +104,7 @@ class ProductDetail extends StatelessWidget {
       _serialNumberTextControllerProductDetails.text =
           _product.serialNumber ?? "";
       _typeTextControllerProductDetails.text = _product.type ?? "";
-      _sizeTextControllerProductDetails.text = _product.sizes ?? "";
+      _sizeTextControllerProductDetails.text = _product.size ?? "";
       _priceTextControllerProductDetails.text = _product.price ?? "";
       _salePriceTextControllerProductDetails.text = _product.salePrice ?? "";
       _quantityTextControllerProductDetails.text = _product.quantity ?? "";
@@ -126,7 +126,7 @@ class ProductDetail extends StatelessWidget {
       product.type = _typeTextControllerProductDetails.text;
       product.price = _priceTextControllerProductDetails.text;
       product.salePrice = _salePriceTextControllerProductDetails.text;
-      product.sizes = _sizeTextControllerProductDetails.text;
+      product.size = _sizeTextControllerProductDetails.text;
       product.quantity = _quantityTextControllerProductDetails.text;
       product.image = _product.image;
       return product;
@@ -558,11 +558,7 @@ class ProductDetail extends StatelessWidget {
                                         enabled: _state is EditExternalState,
                                         controller:
                                             _sizeTextControllerProductDetails,
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: <TextInputFormatter>[
-                                          WhitelistingTextInputFormatter
-                                              .digitsOnly
-                                        ],
+                                        keyboardType: TextInputType.text,
                                         autovalidate: true,
                                         decoration: InputDecoration(
                                             labelText: "ขนาดสินค้า",

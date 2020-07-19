@@ -35,11 +35,12 @@ class _SalesReportPageState extends State<SalesReportPage> {
   }
 
   ExternalBloc _externalBloc;
+
   @override
   Widget build(BuildContext context) {
     _externalBloc = BlocProvider.of<ExternalBloc>(context);
 
-    _externalBloc.add(WeekReadTransitionExternalEvent());
+    _externalBloc.add(NowadaysReadTransitionExternalEvent());
 
     return BlocBuilder<ExternalBloc, ExternalState>(
       builder: (BuildContext context, _state) {
@@ -105,42 +106,57 @@ class _SalesReportPageState extends State<SalesReportPage> {
                     padding: const EdgeInsets.all(0.0),
                     child: ListView.builder(
                       itemCount: _state.data.length + 3,
-                      padding: EdgeInsets.only(top: 20,bottom: 40,left: 10,right: 10),
+                      padding: EdgeInsets.only(
+                          top: 20, bottom: 40, left: 10, right: 10),
                       itemBuilder: (BuildContext listContect, int mPosition) {
                         if (mPosition == 0) {
                           return _segmentWidget(_state);
-                        } else if (mPosition == 1 ) {
-                          return _state.saleData.length > 0 ? _chartWidget(_state) : Container(
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
+                        } else if (mPosition == 1) {
+                          if(_state.saleData == null ){
+                            return Container();
+                          }else {
+                          return _state.saleData.length > 0
+                              ? _chartWidget(_state)
+                              : Container(
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
 //                                  Icon(
 //                                    Icons.no,
 //                                    color: Colors.purple[100],
 //                                    size: 100,
 //                                  ), // icon
-                                  Text(
-                                    "ไม่พบข้อมูล",
-                                    style: TextStyle(
-                                        color: Colors.purple[100],
-                                        fontSize: 40,
-                                        fontWeight: FontWeight.bold),
-                                  ), // text
-                                ],
-                              ),
-                            ),
-                          );
+                                        Text(
+                                          "ไม่พบข้อมูล",
+                                          style: TextStyle(
+                                              color: Colors.purple[100],
+                                              fontSize: 40,
+                                              fontWeight: FontWeight.bold),
+                                        ), // text
+                                      ],
+                                    ),
+                                  ),
+                                );
+                          }
 //                        } else if (mPosition == 2) {
 //                          return _state.saleData.length > 0 ? _dropdownWidget(context) : SizedBox();
                         } else if (mPosition == 2) {
-                          return _state.saleData.length > 0 ? _buttonWidget() : SizedBox();
+                          if(_state.saleData == null){
+                            return Container();
+                          } else {
+                            return _state.saleData.length > 0
+                                ? _buttonWidget()
+                                : SizedBox();
+                          }
                         } else {
                           int position = mPosition - 3;
                           if (_state.data[position].label != null) {
                             return _titleWidget(_state.data[position]);
                           } else {
-                            return _transitionWidget(_state.data[position]);
+                            return _transitionWidget(
+                                _state.data[position], _state);
                           }
                         }
                       },
@@ -148,22 +164,22 @@ class _SalesReportPageState extends State<SalesReportPage> {
                   ),
                 )
               : Container(
-            color: Colors.white,
-            child: Stack(
-              children: [
-                Center(
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    child: SpinKitSquareCircle(
-                      color: Colors.purple,
-                      size: 50.0,
-                    ),
+                  color: Colors.white,
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          child: SpinKitSquareCircle(
+                            color: Colors.purple,
+                            size: 50.0,
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                )
-              ],
-            ),
-          ),
+                ),
         );
       },
     );
@@ -185,41 +201,45 @@ class _SalesReportPageState extends State<SalesReportPage> {
     );
   }
 
-  void _onTapSegment(int position){
-    if(position == 0){
+  void _onTapSegment(int position) {
+    if (position == 0) {
+      _externalBloc.add(NowadaysReadTransitionExternalEvent());
+    } else if (position == 1) {
       _externalBloc.add(WeekReadTransitionExternalEvent());
-    }else if(position == 1){
+    } else if (position == 2) {
       _externalBloc.add(MonthReadTransitionExternalEvent());
-    }else if(position == 2){
+    } else if (position == 3) {
       _externalBloc.add(YearReadTransitionExternalEvent());
     }
   }
 
-  int _getSegmentPosition(ReadTransitionExternalState _state){
-    if(_state is WeekReadTransitionExternalState){
+  int _getSegmentPosition(ReadTransitionExternalState _state) {
+    if (_state is NowadaysReadTransitionExternalEvent) {
       return 0;
-    }else  if(_state is MonthReadTransitionExternalState){
+    } else if (_state is WeekReadTransitionExternalState) {
       return 1;
-    }else  if(_state is YearReadTransitionExternalState){
+    } else if (_state is MonthReadTransitionExternalState) {
       return 2;
-    }else {
+    } else if (_state is YearReadTransitionExternalState) {
+      return 3;
+    } else {
       return 0;
     }
   }
 
   final Map<int, Widget> _listSegment = <int, Widget>{
     0: Text(
-      "สัปดาห์",
+      "วันนี้",
       style: GoogleFonts.itim(),
     ),
     1: Text(
-      "เดือน",
+      "สัปดาห์",
       style: GoogleFonts.itim(),
     ),
     2: Text(
-      "ปี",
+      "เดือน",
       style: GoogleFonts.itim(),
-    )
+    ),
   };
 
   Widget _chartWidget(ReadTransitionExternalState _state) {
@@ -235,11 +255,11 @@ class _SalesReportPageState extends State<SalesReportPage> {
               dataSource: _state.saleData,
               xValueMapper: (SalesData sales, _) => sales.year,
               yValueMapper: (SalesData sales, _) => sales.sales,
-            width: 3,
-            color: Colors.purple,
-            enableTooltip: false,
-            markerSettings: MarkerSettings(isVisible : true,borderWidth: 3,height: 14,width: 14)
-          )
+              width: 3,
+              color: Colors.purple,
+              enableTooltip: false,
+              markerSettings: MarkerSettings(
+                  isVisible: true, borderWidth: 3, height: 14, width: 14))
         ],
       ),
     );
@@ -294,54 +314,62 @@ class _SalesReportPageState extends State<SalesReportPage> {
     );
   }
 
-  Widget _transitionWidget(TransitionItem item) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(width: 0,color: Colors.transparent),left: BorderSide(width: 4,color: Colors.orange[300]),right: BorderSide(width: 4,color: Colors.orange[300]))
-      ),
-      alignment: Alignment.bottomLeft,
-      margin: EdgeInsets.only(left: 10, right: 10, bottom: 0),
-      padding: EdgeInsets.only(left: 20, right: 20, bottom: 14,top: 14),
-
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "รายการที่ ${item.count}",
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: GoogleFonts.itim(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.black87),
+  Widget _transitionWidget(
+      TransitionItem item, ReadTransitionExternalState _state) {
+    return GestureDetector(
+      onTap: () {
+        _externalBloc.add(ShowTransitionDialogExternalEvent(
+            this.context, item, _getSegmentPosition(_state)));
+      },
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border(
+                top: BorderSide(width: 0, color: Colors.transparent),
+                left: BorderSide(width: 4, color: Colors.orange[300]),
+                right: BorderSide(width: 4, color: Colors.orange[300]))),
+        alignment: Alignment.bottomLeft,
+        margin: EdgeInsets.only(left: 10, right: 10, bottom: 0),
+        padding: EdgeInsets.only(left: 20, right: 20, bottom: 14, top: 14),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "รายการที่ ${item.count}",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: GoogleFonts.itim(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.black87),
+              ),
             ),
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              "${_loadDateForTimeLabel(item.value.createAt)} น.",
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: GoogleFonts.itim(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.black87),
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                "${_loadDateForTimeLabel(item.value.createAt)} น.",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: GoogleFonts.itim(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.black87),
+              ),
             ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              "${item.value.price} บาท",
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: GoogleFonts.itim(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.black87),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                "${item.value.price} บาท",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: GoogleFonts.itim(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.black87),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -350,12 +378,12 @@ class _SalesReportPageState extends State<SalesReportPage> {
     return Container(
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.orange[300],
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
-      ),
+          color: Colors.orange[300],
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
       alignment: Alignment.bottomLeft,
-      margin: EdgeInsets.only(left: 10, right: 10, bottom: 0,top: 20),
-      padding: EdgeInsets.only(left: 20,right: 20),
+      margin: EdgeInsets.only(left: 10, right: 10, bottom: 0, top: 20),
+      padding: EdgeInsets.only(left: 20, right: 20),
       child: Stack(
         children: [
           Align(
@@ -407,7 +435,8 @@ class _SalesReportPageState extends State<SalesReportPage> {
         color: Colors.deepPurpleAccent,
       ),
       onChanged: (String newValue) {
-        _externalBloc.add(MonthReadTransitionExternalEvent(month: int.parse(dropdownValue)));
+        _externalBloc.add(
+            MonthReadTransitionExternalEvent(month: int.parse(dropdownValue)));
       },
       items: <String>[
         'January',
@@ -421,8 +450,8 @@ class _SalesReportPageState extends State<SalesReportPage> {
         'Sepember',
         'October',
         'November',
-        'December']
-          .map<DropdownMenuItem<String>>((String value) {
+        'December'
+      ].map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
           child: Text(value),
@@ -430,21 +459,20 @@ class _SalesReportPageState extends State<SalesReportPage> {
       }).toList(),
     );
   }
-  }
+}
 
-  Row buildDropDownRow(Person person) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-            child: Text(
-          person?.gender ?? "Select",
-          style: GoogleFonts.itim(
-              fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),
-        )),
-      ],
-    );
-  }
-
+Row buildDropDownRow(Person person) {
+  return Row(
+    children: <Widget>[
+      Expanded(
+          child: Text(
+        person?.gender ?? "Select",
+        style: GoogleFonts.itim(
+            fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),
+      )),
+    ],
+  );
+}
 
 class Person {
   final String gender;

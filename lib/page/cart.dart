@@ -46,10 +46,14 @@ class _CartState extends State<Cart> {
         if (_state is NormalExternalState) {
           if (_state.manageProduct != null) {
             if (_state.productPack.count > 0) {
-              if (_state.outOfStock == null) {
+              _listProductPack.removeAt(_state.position);
+              _listProductPack.insert(_state.position, _state.productPack);
+              /*if (_state.outOfStock == null) {
                 _listProductPack.removeAt(_state.position);
                 _listProductPack.insert(_state.position, _state.productPack);
               }
+
+               */
             } else {
               _listProductPack.removeAt(_state.position);
             }
@@ -86,12 +90,18 @@ class _CartState extends State<Cart> {
                     duplicateList[0].position,
                     this.context));
               } else {
-                if (_state.outOfStock == null) {
+                _listProductPack.add(_state.productPack);
+                _externalBloc.add(InitialExternalEvent());
+                _totalPrice +=
+                    double.parse(_state.productPack.product.salePrice);
+              /*  if (_state.outOfStock == null) {
                   _listProductPack.add(_state.productPack);
                   _externalBloc.add(InitialExternalEvent());
                   _totalPrice +=
                       double.parse(_state.productPack.product.salePrice);
                 }
+
+               */
               }
             }
           }
@@ -263,10 +273,11 @@ class _CartState extends State<Cart> {
                                               margin: EdgeInsets.only(
                                                   left: 20, right: 20),
                                               child: Text(
-                                                _listProductPack[index]
-                                                        .product
-                                                        .name ??
-                                                    "",
+                                                "${(_listProductPack[index]
+                                                    .product
+                                                    .name ??
+                                                    "")} \n(ขนาด ${_listProductPack[index]
+                                                    .product.size})",
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 4,
                                                 style: GoogleFonts.itim(

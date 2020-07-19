@@ -161,7 +161,7 @@ class Single_prod extends StatelessWidget {
                               alignment: Alignment.bottomLeft,
                               margin: EdgeInsets.only(left: 20, right: 20),
                               child: Text(
-                                _product.name ?? "",
+                                "${(_product.name ?? "")} (ขนาด ${_product.size})",
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                                 style: GoogleFonts.itim(
@@ -232,7 +232,7 @@ class Single_prod extends StatelessWidget {
                                           _product.quantity == null
                                               ? ""
                                               : (double.parse(
-                                                          _product.quantity) ==
+                                                          _product.quantity) <=
                                                       0
                                                   ? "สินค้าหมด"
                                                   : _product.quantity),
@@ -244,7 +244,7 @@ class Single_prod extends StatelessWidget {
                                               color: _product.quantity == null
                                                   ? Colors.black87
                                                   : (double.parse(_product
-                                                              .quantity) ==
+                                                              .quantity) <=
                                                           0
                                                       ? Colors.red
                                                       : Colors.black87)),

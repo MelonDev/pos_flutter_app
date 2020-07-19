@@ -21,7 +21,7 @@ class Product {
   String serialNumber;
   String price;
   String quantity;
-  String sizes;
+  String size;
   List subIngredients;
   String salePrice;
   String createdAt;
@@ -38,7 +38,7 @@ class Product {
     quantity = data[QUANTITY].toString();
     salePrice = double.parse(data[SALEPRICE].toString()).toStringAsFixed(2);
     serialNumber = double.parse(data[SERIALNUMBER].toString()).toStringAsFixed(0);
-    sizes = data[SIZES].toString();
+    size = data[SIZES].toString();
     subIngredients = data[SUBINGREDIENTS];
 //    image = data[IMAGES];
     image = _convertToListString(data[IMAGES]);
@@ -58,7 +58,7 @@ class Product {
     quantity = data[QUANTITY].toString();
     salePrice = double.parse(data[SALEPRICE].toString()).toStringAsFixed(2);
     serialNumber = double.parse(data[SERIALNUMBER].toString()).toStringAsFixed(0);
-    sizes = data[SIZES].toString();
+    size = data[SIZES].toString();
     subIngredients = data[SUBINGREDIENTS];
     image = _convertToListString(data[IMAGES]);
     createdAt = data[CREATEDAT];
@@ -75,7 +75,7 @@ class Product {
       'price': price,
       'serialNumber': serialNumber,
       'quantity': quantity,
-      'sizes': sizes,
+      'size': size,
       'salePrice': salePrice,
       'images': image,
       'createAt': createdAt,

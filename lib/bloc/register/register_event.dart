@@ -33,12 +33,23 @@ class RegisterPasswordChanged extends RegisterEvent {
 }
 
 class RegisterSubmitted extends RegisterEvent {
+  final BuildContext context;
   final String email;
   final String password;
+  final String shopName;
+  final String shopAddress;
+  final String shopTax;
+  final String shopNumber;
 
-  const RegisterSubmitted({
+
+  const RegisterSubmitted(this.context,{
     @required this.email,
     @required this.password,
+    @required this.shopName,
+    @required this.shopAddress,
+    @required this.shopTax,
+    @required this.shopNumber,
+
   });
 
   @override
