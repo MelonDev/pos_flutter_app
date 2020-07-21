@@ -40,7 +40,7 @@ class ScannerOnCartIsUsingExternalState extends ExternalState {
 class LoadingExternalState extends ExternalState {}
 
 class ReadTransitionExternalState extends ExternalState {
-  final List<TransitionItem> data;
+  final List<TransitionModel> data;
 
   final List<SalesData> saleData;
 
@@ -48,19 +48,22 @@ class ReadTransitionExternalState extends ExternalState {
 }
 
 class NowadaysReadTransitionExternalState extends ReadTransitionExternalState {
-  NowadaysReadTransitionExternalState(List<TransitionItem> data) : super(data, null);
+  NowadaysReadTransitionExternalState(List<TransitionModel> data) : super(data, null);
 }
 
 class WeekReadTransitionExternalState extends ReadTransitionExternalState {
-  WeekReadTransitionExternalState(List<TransitionItem> data, List<SalesData> saleData) : super(data, saleData);
+  WeekReadTransitionExternalState(List<TransitionModel> data, List<SalesData> saleData) : super(data, saleData);
 }
 
 class MonthReadTransitionExternalState extends ReadTransitionExternalState {
-  MonthReadTransitionExternalState(List<TransitionItem> data, List<SalesData> saleData) : super(data, saleData);
+  final List<TransitionItem> list;
+
+  MonthReadTransitionExternalState(this.list, List<SalesData> saleData) : super(null, saleData);
 }
 
 class YearReadTransitionExternalState extends ReadTransitionExternalState {
-  YearReadTransitionExternalState(List<TransitionItem> data, List<SalesData> saleData) : super(data, saleData);
+  final List<TransitionItem> list;
+  YearReadTransitionExternalState(this.list, List<SalesData> saleData) : super(null, saleData);
 }
 
 class ReportOutOfStockExternalState extends ExternalState {

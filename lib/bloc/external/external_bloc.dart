@@ -15,6 +15,7 @@ import 'package:posflutterapp/models/ProductPack.dart';
 import 'package:posflutterapp/models/SalesDataModel.dart';
 import 'package:posflutterapp/models/ShopDetailModel.dart';
 import 'package:posflutterapp/models/TransitionItem.dart';
+import 'package:posflutterapp/models/TransitionModel.dart';
 import 'package:posflutterapp/models/TypeModel.dart';
 import 'package:posflutterapp/models/products_models.dart';
 import 'package:posflutterapp/page/page_add_products.dart';
@@ -208,7 +209,7 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
                 productPack: ProductPack().initialProductPack(filterList[0]));
             showDialogsOut(event.context);
           }
-        }else {
+        } else {
           yield NormalExternalState(result.rawContent,
               isCart: true, notfound: true);
           showDialogsNoProduct(event.context, result.rawContent);
@@ -328,7 +329,7 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
               productPack: ProductPack().initialProductPack(filterList[0]));
           showDialogsOut(event.context);
         }
-      }else {
+      } else {
         yield NormalExternalState(event.barcode, isCart: true, notfound: true);
         showDialogsNoProduct(event.context, event.barcode);
       }
@@ -577,15 +578,10 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       NowadaysReadTransitionExternalEvent event) async* {
     yield LoadingExternalState();
 
-    List<TransitionItem> list =
-    await FirebaseCrudBloc().readingNowadaysTransitionCRUD();
 
-    list.forEach((element) {
-      print(element.label);
-    });
+    List<TransitionModel> list = await FirebaseCrudBloc().readingNowadaysTransitionCRUD(date: event.date);
 
-    yield NowadaysReadTransitionExternalState(
-        list.reversed.toList());
+    yield NowadaysReadTransitionExternalState(list.reversed.toList());
   }
 
   @override
@@ -593,15 +589,10 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       WeekReadTransitionExternalEvent event) async* {
     yield LoadingExternalState();
 
-    List<TransitionItem> list =
+    List<TransitionModel> list =
         await FirebaseCrudBloc().readingWeekTransitionCRUD();
 
-    list.forEach((element) {
-      print(element.label);
-    });
-
-    yield WeekReadTransitionExternalState(
-        list.reversed.toList(), _dayConvertSaleData(list));
+    yield WeekReadTransitionExternalState(list.reversed.toList(), null);
   }
 
   @override
@@ -612,12 +603,8 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
     List<TransitionItem> list = await FirebaseCrudBloc()
         .readingMonthTransitionCRUD(event.month, event.year);
 
-    list.forEach((element) {
-      print(element.label);
-    });
 
-    yield MonthReadTransitionExternalState(
-        list.reversed.toList(), _dayConvertSaleData(list));
+    yield MonthReadTransitionExternalState(list.reversed.toList(), null);
   }
 
   @override
@@ -626,10 +613,19 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
     yield LoadingExternalState();
 
     List<TransitionItem> list =
-        await FirebaseCrudBloc().readingYearTransitionCRUD(event.year);
+        await FirebaseCrudBloc().readingYearTransitionCRUD();
 
-    yield YearReadTransitionExternalState(
-        list.reversed.toList(), _monthConvertSaleData(list));
+    list.forEach((element) {
+      if (element.value != null) {
+        print(element.value.createAt);
+
+      }else {
+        print(element.label);
+        print(element.price);
+      }
+    });
+
+    yield YearReadTransitionExternalState(list.reversed.toList(), null);
   }
 
   List<SalesData> _dayConvertSaleData(List<TransitionItem> list) {
@@ -730,8 +726,8 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
     return text;
   }
 
-  _showTransitionDialog(
-      BuildContext context, TransitionItem item, int tabPosition,ShopDetailModel shopDetailModel) {
+  _showTransitionDialog(BuildContext context, TransitionItem item,
+      int tabPosition, ShopDetailModel shopDetailModel) {
     Alert(
       context: context,
       title: "รายละเอียด",
@@ -755,7 +751,7 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              new ReceiptPage(item,shopDetailModel),
+                              new ReceiptPage(item, shopDetailModel),
                         ));
                   },
                 ),
@@ -799,7 +795,9 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
   @override
   Stream<ExternalState> _mapTransitionDialogToState(
       ShowTransitionDialogExternalEvent event) async* {
-    ShopDetailModel shopDetailModel = await FirebaseCrudBloc().readingShopDetail();
-    _showTransitionDialog(event.context, event.item, event.position,shopDetailModel);
+    ShopDetailModel shopDetailModel =
+        await FirebaseCrudBloc().readingShopDetail();
+    _showTransitionDialog(
+        event.context, event.item, event.position, shopDetailModel);
   }
 }

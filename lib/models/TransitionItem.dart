@@ -7,8 +7,10 @@ class TransitionItem {
   final int count;
   final int month;
   final String price;
+  final int year;
+  final String createAt;
 
-  TransitionItem(this.value, this.label,{this.count,this.month,this.price});
+  TransitionItem(this.value, this.label,{this.count,this.month,this.year,this.price,this.createAt});
 
 
 

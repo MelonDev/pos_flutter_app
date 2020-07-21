@@ -103,7 +103,7 @@ class ProductDetail extends StatelessWidget {
       _nameTextControllerProductDetails.text = _product.name ?? "";
       _serialNumberTextControllerProductDetails.text =
           _product.serialNumber ?? "";
-      _typeTextControllerProductDetails.text = _product.type ?? "";
+      //_typeTextControllerProductDetails.text = _product.type ?? "";
       _sizeTextControllerProductDetails.text = _product.size ?? "";
       _priceTextControllerProductDetails.text = _product.price ?? "";
       _salePriceTextControllerProductDetails.text = _product.salePrice ?? "";
@@ -114,7 +114,7 @@ class ProductDetail extends StatelessWidget {
   Product zipProduct() {
     if (_checkTextReady(_nameTextControllerProductDetails.text) &&
         _checkTextReady(_serialNumberTextControllerProductDetails.text) &&
-        _checkTextReady(_typeTextControllerProductDetails.text) &&
+        //_checkTextReady(_typeTextControllerProductDetails.text) &&
         _checkTextReady(_priceTextControllerProductDetails.text) &&
         _checkTextReady(_salePriceTextControllerProductDetails.text) &&
         _checkTextReady(_sizeTextControllerProductDetails.text) &&
@@ -123,7 +123,7 @@ class ProductDetail extends StatelessWidget {
       product.id = id;
       product.name = _nameTextControllerProductDetails.text;
       product.serialNumber = _serialNumberTextControllerProductDetails.text;
-      product.type = _typeTextControllerProductDetails.text;
+      //product.type = _typeTextControllerProductDetails.text;
       product.price = _priceTextControllerProductDetails.text;
       product.salePrice = _salePriceTextControllerProductDetails.text;
       product.size = _sizeTextControllerProductDetails.text;
@@ -507,7 +507,7 @@ class ProductDetail extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                GestureDetector(
+                                /*GestureDetector(
                                   onTap: () {
                                     if (_state is EditExternalState) {
                                       Navigator.of(context).push(
@@ -546,6 +546,8 @@ class ProductDetail extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+
+                                 */
                                 Padding(
                                   padding: const EdgeInsets.all(10),
                                   child: Material(

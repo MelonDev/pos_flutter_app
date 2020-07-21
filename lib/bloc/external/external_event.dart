@@ -83,7 +83,8 @@ class ReadTransitionExternalEvent extends ExternalEvent {
 }
 
 class NowadaysReadTransitionExternalEvent extends ExternalEvent {
-  NowadaysReadTransitionExternalEvent();
+  final String date;
+  NowadaysReadTransitionExternalEvent({this.date});
 }
 
 class WeekReadTransitionExternalEvent extends ExternalEvent {
@@ -97,9 +98,9 @@ class MonthReadTransitionExternalEvent extends ExternalEvent {
 }
 
 class YearReadTransitionExternalEvent extends ExternalEvent {
-  final int year;
+  final TransitionItem item;
 
-  YearReadTransitionExternalEvent({this.year});
+  YearReadTransitionExternalEvent({this.item});
 }
 
 class ReportOutOfStockExternalEvent extends ExternalEvent {

@@ -25,9 +25,11 @@ class _RegisterFormState extends State<RegisterForm> {
   bool get isPopulated =>
       _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty && _shopNameController.text.isNotEmpty && _shopAddressController.text.isNotEmpty && _shopTaxController.text.isNotEmpty && _shopNumberController.text.isNotEmpty;
 
-  bool isRegisterButtonEnabled(RegisterState state) {
+  /*bool isRegisterButtonEnabled(RegisterState state) {
     return state.isFormValid && isPopulated && !state.isSubmitting;
   }
+
+   */
 
   @override
   void initState() {
@@ -285,9 +287,12 @@ class _RegisterFormState extends State<RegisterForm> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                         RegisterButton(
-                          onPressed: isRegisterButtonEnabled(state)
+                          onPressed: _onFormSubmitted,
+                          /*onPressed: isRegisterButtonEnabled(state)
                               ? _onFormSubmitted
                               : null,
+
+                           */
                         ),
                       ],
                     ),

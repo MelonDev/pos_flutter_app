@@ -151,13 +151,16 @@ class _SalesReportPageState extends State<SalesReportPage> {
                                 : SizedBox();
                           }
                         } else {
-                          int position = mPosition - 3;
+                          return Container();
+                          /*int position = mPosition - 3;
                           if (_state.data[position].label != null) {
                             return _titleWidget(_state.data[position]);
                           } else {
                             return _transitionWidget(
                                 _state.data[position], _state);
                           }
+
+                           */
                         }
                       },
                     ),
@@ -418,7 +421,7 @@ class _SalesReportPageState extends State<SalesReportPage> {
   String _loadDateForTimeLabel(String date) {
     var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     DateTime dateTime = formatter.parse(date);
-    return "${dateTime.hour}:${dateTime.minute}";
+    return "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
   }
 
   String dropdownValue = 'January';

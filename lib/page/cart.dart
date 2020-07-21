@@ -136,7 +136,7 @@ class _CartState extends State<Cart> {
                               },
                               color: Colors.transparent,
                               child: Icon(
-                                Icons.arrow_back,
+                                Icons.close,
                                 size: constraint.biggest.height - 26,
                                 //color: Colors.black.withAlpha(150),
                                 color: Colors.purple,

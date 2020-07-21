@@ -6,6 +6,7 @@ import 'package:posflutterapp/page/page_add_type_product.dart';
 import 'package:posflutterapp/page/page_products.dart';
 import 'package:posflutterapp/page/page_report.dart';
 import 'package:posflutterapp/page/page_setting.dart';
+import 'package:posflutterapp/page/report_today_page.dart';
 import 'package:posflutterapp/services/functions.dart';
 
 import '../user_repository.dart';
@@ -136,7 +137,7 @@ class HomePage extends StatelessWidget {
                     onTap: () => Navigator.of(context).push(
                         new MaterialPageRoute(
                             builder: (context) =>
-                                new ReportPage())), // button pressed
+                                new ReportTodayPage())), // button pressed
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
@@ -157,7 +158,7 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
+              /*SizedBox(
                 height: 20,
               ),
               SizedBox(
@@ -192,6 +193,8 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
+
+               */
               SizedBox(
                 height: 20,
               ),

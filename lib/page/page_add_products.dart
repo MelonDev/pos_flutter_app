@@ -22,6 +22,7 @@ class addProducts extends StatefulWidget {
   final String code;
 
   addProducts(this.code);
+
   @override
   _addProductsState createState() => _addProductsState(code);
 }
@@ -98,7 +99,7 @@ class _addProductsState extends State<addProducts> {
           if (_state.fromImage == null && _state.fromScanner != null) {
             _serialNumberTextController.text = _state.barcode ?? "";
           }
-          if(_state.withType != null){
+          if (_state.withType != null) {
             _typeTextController.text = _state.withType;
           }
           return BlocBuilder<FirebaseCrudBloc, FirebaseCrudState>(
@@ -281,8 +282,8 @@ class _addProductsState extends State<addProducts> {
                                                   onPressed: () {
                                                     print("A0");
                                                     _externalBloc.add(
-                                                      OpenScannerExternalEvent(this.context,
-                                                          false),
+                                                      OpenScannerExternalEvent(
+                                                          this.context, false),
                                                     );
                                                   },
                                                 ),
@@ -314,7 +315,7 @@ class _addProductsState extends State<addProducts> {
 //                            ],
 //                          ),
 
-                                    GestureDetector(
+                                      /*GestureDetector(
                                       onTap: () => Navigator.of(context).push(
                                           new MaterialPageRoute(
                                               builder: (context) =>
@@ -350,6 +351,7 @@ class _addProductsState extends State<addProducts> {
                                       ),
                                     ),
 
+                                     */
 
                                       Padding(
                                         padding: const EdgeInsets.all(10),
@@ -609,7 +611,7 @@ class _addProductsState extends State<addProducts> {
   Product zipProduct() {
     if (_checkTextReady(_nameTextController.text) &&
         _checkTextReady(_serialNumberTextController.text) &&
-        _checkTextReady(_typeTextController.text) &&
+        //_checkTextReady(_typeTextController.text) &&
         _checkTextReady(_priceTextController.text) &&
         _checkTextReady(_salePriceTextController.text) &&
         _checkTextReady(_sizeTextController.text) &&
@@ -617,7 +619,7 @@ class _addProductsState extends State<addProducts> {
       Product product = Product();
       product.name = _nameTextController.text;
       product.serialNumber = _serialNumberTextController.text;
-      product.type = _typeTextController.text;
+      //product.type = _typeTextController.text;
       product.price = _priceTextController.text;
       product.salePrice = _salePriceTextController.text;
       product.size = _sizeTextController.text;

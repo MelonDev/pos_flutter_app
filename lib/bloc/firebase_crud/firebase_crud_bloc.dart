@@ -411,27 +411,41 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     //return TransitionDateTimeConverter().compareTransitionItemList(listModel);
   }
 
-  Future<List<TransitionItem>> readingNowadaysTransitionCRUD() async {
+  Future<List<TransitionModel>> readingNowadaysTransitionCRUD({String date}) async {
     List<TransitionModel> rawList = await readingTransitionCRUD();
 
     List<TransitionModel> filterList = [];
+    var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-    DateTime dateTime = DateTime.now();
+
+    DateTime dateTime = date != null ? formatter.parse(date) : DateTime.now();
 
     for (TransitionModel model in rawList) {
-      var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
       DateTime modelDateTime = formatter.parse(model.createAt);
 
-      if (modelDateTime.year == dateTime.year &&
-          Jiffy().week == Jiffy(modelDateTime).week && Jiffy().day == Jiffy(modelDateTime).day) {
-        filterList.add(model);
-      }
-    }
+      if(date != null){
 
-    return TransitionDateTimeConverter().compareTransitionItemList(filterList);
+        print("${modelDateTime.year == dateTime.year} ${modelDateTime.month == dateTime.month} ${modelDateTime.day == dateTime.day}");
+
+        if (modelDateTime.year == dateTime.year &&
+            modelDateTime.month == dateTime.month && modelDateTime.day == dateTime.day) {
+          filterList.add(model);
+        }
+      }else {
+        if (modelDateTime.year == dateTime.year &&
+            Jiffy().week == Jiffy(modelDateTime).week && Jiffy().day == Jiffy(modelDateTime).day) {
+          filterList.add(model);
+        }
+      }
+
+
+    }
+    return filterList;
+
+    //return TransitionDateTimeConverter().compareTransitionItemList(filterList);
   }
 
-  Future<List<TransitionItem>> readingWeekTransitionCRUD() async {
+  Future<List<TransitionModel>> readingWeekTransitionCRUD() async {
     List<TransitionModel> rawList = await readingTransitionCRUD();
 
     List<TransitionModel> filterList = [];
@@ -447,8 +461,8 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
         filterList.add(model);
       }
     }
-
-    return TransitionDateTimeConverter().compareTransitionItemList(filterList);
+return filterList;
+    //return TransitionDateTimeConverter().compareTransitionItemList(filterList);
   }
 
   Future<List<TransitionItem>> readingMonthTransitionCRUD(
@@ -459,6 +473,8 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
 
     DateTime dateTime = DateTime.now();
 
+    print("${month} ${year}");
+
     for (TransitionModel model in rawList) {
       var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
       DateTime modelDateTime = formatter.parse(model.createAt);
@@ -467,27 +483,32 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
         filterList.add(model);
       }
     }
-
-    return TransitionDateTimeConverter().compareTransitionItemList(filterList);
+    print(filterList.length);
+    return TransitionDateTimeConverter().compareMonthTransitionItemList(rawList);
+    //return TransitionDateTimeConverter().compareTransitionItemList(filterList);
   }
 
-  Future<List<TransitionItem>> readingYearTransitionCRUD(int year) async {
+  Future<List<TransitionItem>> readingYearTransitionCRUD() async {
     List<TransitionModel> rawList = await readingTransitionCRUD();
 
-    List<TransitionModel> filterList = [];
+   /* List<TransitionModel> filterList = [];
 
     DateTime dateTime = DateTime.now();
 
     for (TransitionModel model in rawList) {
-      var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-      DateTime modelDateTime = formatter.parse(model.createAt);
-
-      if (modelDateTime.year == (year ?? dateTime.year)) {
+      //var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      //DateTime modelDateTime = formatter.parse(model.createAt);
+      filterList.add(model);
+      /*if (modelDateTime.year == (year ?? dateTime.year)) {
         filterList.add(model);
       }
+
+       */
     }
 
-    return TransitionDateTimeConverter().compareTransitionItemList(filterList);
+    */
+//return filterList;
+    return TransitionDateTimeConverter().compareYearTransitionItemList(rawList);
   }
 
   @override
