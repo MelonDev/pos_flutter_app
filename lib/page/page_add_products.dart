@@ -276,7 +276,7 @@ class _addProductsState extends State<addProducts> {
                                                 labelStyle: TextStyle(
                                                     color: Colors.purple),
                                                 border: InputBorder.none,
-                                                prefixIcon: IconButton(
+                                                suffixIcon: IconButton(
                                                   icon: Icon(Icons.camera),
                                                   tooltip: "Scan",
                                                   onPressed: () {

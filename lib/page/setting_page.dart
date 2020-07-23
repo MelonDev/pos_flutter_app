@@ -84,7 +84,7 @@ class _SettingPageState extends State<SettingPage> {
                   onTap: () {
                     Navigator.of(context).push(new MaterialPageRoute(
                         builder: (context) => new ChangeInfoShopPage()));
-                    },
+                  },
                   child: Container(
                     padding: const EdgeInsets.all(20.0),
                     decoration: BoxDecoration(
@@ -150,6 +150,7 @@ class _SettingPageState extends State<SettingPage> {
                     BlocProvider.of<AuthenticationBloc>(context).add(
                       AuthenticationLoggedOut(),
                     );
+                    Navigator.pop(context);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(20.0),
@@ -232,13 +233,13 @@ class _SettingPageState extends State<SettingPage> {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
 
     user.updatePassword(password).then((_) {
-      _showDialogs(this.context,"เปลี่ยนรหัสเรียบร้อย");
+      _showDialogs(this.context, "เปลี่ยนรหัสเรียบร้อย");
     }).catchError((error) {
-      _showDialogs(this.context,"ผิดพลาด");
+      _showDialogs(this.context, "ผิดพลาด");
     });
   }
 
-  _showDialogs(BuildContext context,String title) {
+  _showDialogs(BuildContext context, String title) {
     Alert(
       context: context,
       title: title ?? "",

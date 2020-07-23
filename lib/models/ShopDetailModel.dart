@@ -8,6 +8,8 @@ class ShopDetailModel {
   static const TAX = "tax";
   static const PHONE = "phone";
 
+  ShopDetailModel();
+
   String email;
   String shopName;
   String shopAddress;

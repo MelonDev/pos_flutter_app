@@ -91,11 +91,13 @@ class _ProductsPageState extends State<ProductsPage> {
                             width: 60,
                             height: 56,
                             child:
-                            LayoutBuilder(builder: (context, constraint) {
+                                LayoutBuilder(builder: (context, constraint) {
                               return FlatButton(
                                   padding: EdgeInsets.all(0),
                                   onPressed: () {
-_externalBloc.add(OpenSearchProductExternalEvent(this.context));
+                                    _externalBloc.add(
+                                        OpenSearchProductExternalEvent(
+                                            this.context));
                                   },
                                   color: Colors.transparent,
                                   child: Icon(

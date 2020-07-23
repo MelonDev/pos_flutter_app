@@ -44,34 +44,38 @@ class _ProductsState extends State<Products> {
         print("HI");
         print(_state);
         if (_state is UpdatedFirebaseProductsState) {
-          return _state.data.length == 0 ? Container(child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(
-                  Icons.add_box,
-                  color: Colors.purple[100],
-                  size: 100,
-                ), // icon
-                Text(
-                  "กรุณาเพิ่มสินค้า",
-                  style: TextStyle(
-                      color: Colors.purple[100],
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold),
-                ), // text
-              ],
-            ),
-          ),) : GridView.builder(
-              itemCount: _state.data.length ?? 0,
-              gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2),
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Single_prod(_state.data[index]),
-                );
-              });
+          return _state.data.length == 0
+              ? Container(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.add_box,
+                          color: Colors.purple[100],
+                          size: 100,
+                        ), // icon
+                        Text(
+                          "กรุณาเพิ่มสินค้า",
+                          style: TextStyle(
+                              color: Colors.purple[100],
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold),
+                        ), // text
+                      ],
+                    ),
+                  ),
+                )
+              : GridView.builder(
+                  itemCount: _state.data.length ?? 0,
+                  gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2),
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Single_prod(_state.data[index]),
+                    );
+                  });
         } else {
           return Container(
             color: Colors.purple,
@@ -135,7 +139,6 @@ class Single_prod extends StatelessWidget {
                           child: CachedNetworkImage(
                             imageUrl: _image,
                             fit: BoxFit.fitHeight,
-
                           ),
                           /*child: Image.network(
                             _image,
@@ -228,26 +231,13 @@ class Single_prod extends StatelessWidget {
                                       ),
                                       Align(
                                         alignment: Alignment.centerRight,
-                                        child: Text(
-                                          _product.quantity == null
-                                              ? ""
-                                              : (double.parse(
-                                                          _product.quantity) <=
-                                                      0
-                                                  ? "สินค้าหมด"
-                                                  : _product.quantity),
+                                        child: Text(_product.quantity == null ? "" : (double.parse(_product.quantity) <= 0 ? "สินค้าหมด" : "${_product.quantity} ชิ้น"),
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                           style: GoogleFonts.itim(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16,
-                                              color: _product.quantity == null
-                                                  ? Colors.black87
-                                                  : (double.parse(_product
-                                                              .quantity) <=
-                                                          0
-                                                      ? Colors.red
-                                                      : Colors.black87)),
+                                              color: _product.quantity == null ? Colors.black87 : (double.parse(_product.quantity) <= 10 && double.parse(_product.quantity) >= 1 ? Colors.orange : double.parse(_product.quantity) <= 0 ? Colors.red : Colors.black87)),
                                         ),
                                       )
                                     ],
