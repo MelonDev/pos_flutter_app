@@ -85,22 +85,7 @@ class _ReportHistoryPageState extends State<ReportHistoryPage> {
                   color: Colors.black.withAlpha(10),
                   child: Padding(
                     padding: const EdgeInsets.all(0.0),
-                    child: _state.data.length == 0 ? Container(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              "ไม่พบข้อมูล",
-                              style: TextStyle(
-                                  color: Colors.purple[100],
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold),
-                            ), // text
-                          ],
-                        ),
-                      ),
-                    ) : ListView.builder(
+                    child: ListView.builder(
                       itemCount: _state.list.length,
                       padding: EdgeInsets.only(
                           top: 20, bottom: 40, left: 10, right: 10),

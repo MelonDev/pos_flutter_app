@@ -126,13 +126,18 @@ class _ReportTodayPageState extends State<ReportTodayPage> {
                         ],
                       ),
                     ),
-                  ) : ListView.builder(
-                    itemCount: _state.data.length,
+                  ) :  ListView.builder(
+                    itemCount: _state.data.length + 1,
                     padding: EdgeInsets.only(
                         top: 20, bottom: 40, left: 10, right: 10),
                     itemBuilder: (BuildContext context, int position) {
-                      return _transitionWidget(
-                          _state.data[position], _state, position);
+                      if(position == _state.data.length){
+                        return _transitionWidget(
+                            null, _state, _calTotalPrice(_state.data));
+                      }else {
+                        return _transitionWidget(
+                            _state.data[position], _state, null);
+                      }
                     },
                   ),
                 ),
@@ -159,15 +164,18 @@ class _ReportTodayPageState extends State<ReportTodayPage> {
   }
 
   Widget _transitionWidget(
-      TransitionModel item, ReadTransitionExternalState _state, int position) {
+      TransitionModel item, ReadTransitionExternalState _state, double totalPrice) {
     return GestureDetector(
       onTap: () {
-        _externalBloc.add(ShowTransitionDialogExternalEvent(
-            this.context, TransitionItem(item, null), null));
+        if(item!= null){
+          _externalBloc.add(ShowTransitionDialogExternalEvent(
+              this.context, TransitionItem(item, null), null));
+        }
+
       },
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.white,
+            color: item == null ? Colors.transparent :Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(10))),
         alignment: Alignment.bottomLeft,
         margin: EdgeInsets.only(left: 10, right: 10, bottom: 15),
@@ -177,7 +185,7 @@ class _ReportTodayPageState extends State<ReportTodayPage> {
             Container(
               width: MediaQuery.of(context).size.width - 170 - 80,
               child: Text(
-                "${item.id.replaceAll(new RegExp('-'),'')}",
+                item == null ? "" : "${item.id.replaceAll(new RegExp('-'),'')}",
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: GoogleFonts.itim(
@@ -190,7 +198,7 @@ class _ReportTodayPageState extends State<ReportTodayPage> {
               width: 60,
               alignment: Alignment.centerRight,
               child: Text(
-                "${_loadDateForTimeLabel(item.createAt)} น.",
+                item == null ? "ยอดรวม" :"${_loadDateForTimeLabel(item.createAt)} น.",
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: GoogleFonts.itim(
@@ -203,7 +211,7 @@ class _ReportTodayPageState extends State<ReportTodayPage> {
               alignment: Alignment.centerRight,
               width: 110,
               child: Text(
-                "${item.price} บาท",
+                item == null ? "${totalPrice.toStringAsFixed(2)} บาท" : "${item.price} บาท",
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: GoogleFonts.itim(
@@ -217,6 +225,16 @@ class _ReportTodayPageState extends State<ReportTodayPage> {
       ),
     );
   }
+
+  double _calTotalPrice(List<TransitionModel> list){
+    double total = 0;
+    for(TransitionModel item in list){
+      total += double.parse(item.price);
+    }
+    return total;
+  }
+
+
 
   String _loadDateForTimeLabel(String date) {
     var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class RegisterButton extends StatelessWidget {
+class SaveButton extends StatelessWidget {
   final VoidCallback _onPressed;
 
-  RegisterButton({Key key, VoidCallback onPressed})
+  SaveButton({Key key, VoidCallback onPressed})
       : _onPressed = onPressed,
         super(key: key);
 
@@ -15,7 +15,7 @@ class RegisterButton extends StatelessWidget {
       ),
       onPressed: _onPressed,
       child: Text(
-        'ลงทะเบียน',
+        'บันทึก',
       ),
       color: Colors.orange,
     );

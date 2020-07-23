@@ -385,7 +385,7 @@ class _addProductsState extends State<addProducts> {
                                           ),
                                         ),
                                       ),
-                                      Padding(
+                                      /*Padding(
                                         padding: const EdgeInsets.all(10),
                                         child: Material(
                                           borderRadius:
@@ -419,6 +419,8 @@ class _addProductsState extends State<addProducts> {
                                           ),
                                         ),
                                       ),
+
+                                       */
                                       Padding(
                                         padding: const EdgeInsets.all(10),
                                         child: Material(
@@ -612,7 +614,7 @@ class _addProductsState extends State<addProducts> {
     if (_checkTextReady(_nameTextController.text) &&
         _checkTextReady(_serialNumberTextController.text) &&
         //_checkTextReady(_typeTextController.text) &&
-        _checkTextReady(_priceTextController.text) &&
+        //_checkTextReady(_priceTextController.text) &&
         _checkTextReady(_salePriceTextController.text) &&
         _checkTextReady(_sizeTextController.text) &&
         _checkTextReady(_quantityTextController.text)) {
@@ -620,7 +622,7 @@ class _addProductsState extends State<addProducts> {
       product.name = _nameTextController.text;
       product.serialNumber = _serialNumberTextController.text;
       //product.type = _typeTextController.text;
-      product.price = _priceTextController.text;
+      //product.price = _priceTextController.text;
       product.salePrice = _salePriceTextController.text;
       product.size = _sizeTextController.text;
       product.quantity = _quantityTextController.text;

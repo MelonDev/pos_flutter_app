@@ -5,8 +5,8 @@ import 'package:posflutterapp/bloc/authentication/authentication_bloc.dart';
 import 'package:posflutterapp/page/page_add_type_product.dart';
 import 'package:posflutterapp/page/page_products.dart';
 import 'package:posflutterapp/page/page_report.dart';
-import 'package:posflutterapp/page/page_setting.dart';
 import 'package:posflutterapp/page/report_today_page.dart';
+import 'package:posflutterapp/page/setting_page.dart';
 import 'package:posflutterapp/services/functions.dart';
 
 import '../user_repository.dart';
@@ -18,6 +18,7 @@ class HomePage extends StatelessWidget {
   HomePage({Key key, @required UserRepository userRepository})
       : _userRepository = userRepository,
         super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -207,20 +208,24 @@ class HomePage extends StatelessWidget {
                   color: Colors.purple, // button color
                   child: InkWell(
                     onTap: () {
-                      BlocProvider.of<AuthenticationBloc>(context).add(
+                      /*BlocProvider.of<AuthenticationBloc>(context).add(
                         AuthenticationLoggedOut(),
                       );
+
+                       */
+                      Navigator.of(context).push(new MaterialPageRoute(
+                          builder: (context) => new SettingPage()));
                     }, // button pressed
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Icon(
-                          Icons.exit_to_app,
+                          Icons.settings,
                           color: Colors.white,
                           size: 100,
                         ), // icon
                         Text(
-                          "ออกจากระบบ",
+                          "ตั้งค่า",
                           style: GoogleFonts.itim(
                               color: Colors.white,
                               fontSize: 40,

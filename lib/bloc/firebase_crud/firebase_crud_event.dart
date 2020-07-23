@@ -95,3 +95,14 @@ class AddShopDetailFirebaseCrudEvent extends FirebaseCrudEvent {
       this.shopTax, this.shopNumber);
 }
 
+class EditShopDetailFirebaseCrudEvent extends FirebaseCrudEvent {
+  final BuildContext context;
+  final String shopName;
+  final String shopAddress;
+  final String shopTax;
+  final String shopNumber;
+
+  EditShopDetailFirebaseCrudEvent(this.context,this.shopName, this.shopAddress,
+      this.shopTax, this.shopNumber);
+}
+

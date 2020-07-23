@@ -120,6 +120,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
 
   Future<String> addShopDetail(AddShopDetailFirebaseCrudEvent event) async{
 
+
     Map<String, dynamic> data = {
       "email": event.email,
       "name": event.shopName,
@@ -135,6 +136,23 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     }
     return null;
   }
+  Future<String> editShopDetail(EditShopDetailFirebaseCrudEvent event) async{
+
+    Map<String, dynamic> data = {
+      "name": event.shopName,
+      "tax": event.shopTax,
+      "address": event.shopAddress,
+      "phone": event.shopNumber
+    };
+    String ref = 'shop';
+
+    DocumentReference path = await _initialFirestore(ref,"detail");
+    if (path != null) {
+      await path.updateData(data);
+    }
+    return null;
+  }
+
 
   Future<String> _uploadImage(String id, File imageFile) async {
     final FirebaseStorage storage = FirebaseStorage.instance;

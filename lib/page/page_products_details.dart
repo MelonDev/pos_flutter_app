@@ -105,7 +105,7 @@ class ProductDetail extends StatelessWidget {
           _product.serialNumber ?? "";
       //_typeTextControllerProductDetails.text = _product.type ?? "";
       _sizeTextControllerProductDetails.text = _product.size ?? "";
-      _priceTextControllerProductDetails.text = _product.price ?? "";
+      //_priceTextControllerProductDetails.text = _product.price ?? "";
       _salePriceTextControllerProductDetails.text = _product.salePrice ?? "";
       _quantityTextControllerProductDetails.text = _product.quantity ?? "";
     }
@@ -115,7 +115,7 @@ class ProductDetail extends StatelessWidget {
     if (_checkTextReady(_nameTextControllerProductDetails.text) &&
         _checkTextReady(_serialNumberTextControllerProductDetails.text) &&
         //_checkTextReady(_typeTextControllerProductDetails.text) &&
-        _checkTextReady(_priceTextControllerProductDetails.text) &&
+        //_checkTextReady(_priceTextControllerProductDetails.text) &&
         _checkTextReady(_salePriceTextControllerProductDetails.text) &&
         _checkTextReady(_sizeTextControllerProductDetails.text) &&
         _checkTextReady(_quantityTextControllerProductDetails.text)) {
@@ -124,7 +124,7 @@ class ProductDetail extends StatelessWidget {
       product.name = _nameTextControllerProductDetails.text;
       product.serialNumber = _serialNumberTextControllerProductDetails.text;
       //product.type = _typeTextControllerProductDetails.text;
-      product.price = _priceTextControllerProductDetails.text;
+      //product.price = _priceTextControllerProductDetails.text;
       product.salePrice = _salePriceTextControllerProductDetails.text;
       product.size = _sizeTextControllerProductDetails.text;
       product.quantity = _quantityTextControllerProductDetails.text;
@@ -487,6 +487,7 @@ class ProductDetail extends StatelessWidget {
                                               TextStyle(color: Colors.purple),
                                           border: InputBorder.none,
                                           prefixIcon: IconButton(
+
                                             icon: Icon(Icons.camera),
                                             tooltip: "Scan",
                                             onPressed: () {
@@ -577,7 +578,7 @@ class ProductDetail extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                Padding(
+                                /*Padding(
                                   padding: const EdgeInsets.all(10),
                                   child: Material(
                                     borderRadius: BorderRadius.circular(20),
@@ -610,6 +611,8 @@ class ProductDetail extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+
+                                 */
                                 Padding(
                                   padding: const EdgeInsets.all(10),
                                   child: Material(
