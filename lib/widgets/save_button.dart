@@ -15,7 +15,7 @@ class SaveButton extends StatelessWidget {
       ),
       onPressed: _onPressed,
       child: Text(
-        'บันทึก',
+        'บันทึก',style: TextStyle(color: Colors.white),
       ),
       color: Colors.orange,
     );

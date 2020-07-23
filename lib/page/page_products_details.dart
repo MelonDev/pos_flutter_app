@@ -486,8 +486,7 @@ class ProductDetail extends StatelessWidget {
                                           labelStyle:
                                               TextStyle(color: Colors.purple),
                                           border: InputBorder.none,
-                                          prefixIcon: IconButton(
-
+                                          suffixIcon: IconButton(
                                             icon: Icon(Icons.camera),
                                             tooltip: "Scan",
                                             onPressed: () {
