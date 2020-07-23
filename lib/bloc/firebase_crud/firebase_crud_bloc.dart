@@ -93,7 +93,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       "productName": event.product.name,
       "serialNumber": event.product.serialNumber,
       "type": event.product.type,
-      "price": event.product.price,
+//      "price": event.product.price,
       "salePrice": event.product.salePrice,
       "size": event.product.size,
       "quantity": event.product.quantity,
@@ -118,9 +118,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     Navigator.pop(event.context);
   }
 
-  Future<String> addShopDetail(AddShopDetailFirebaseCrudEvent event) async{
-
-
+  Future<String> addShopDetail(AddShopDetailFirebaseCrudEvent event) async {
     Map<String, dynamic> data = {
       "email": event.email,
       "name": event.shopName,
@@ -130,14 +128,14 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     };
     String ref = 'shop';
 
-    DocumentReference path = await _initialFirestore(ref,"detail");
+    DocumentReference path = await _initialFirestore(ref, "detail");
     if (path != null) {
       await path.setData(data);
     }
     return null;
   }
-  Future<String> editShopDetail(EditShopDetailFirebaseCrudEvent event) async{
 
+  Future<String> editShopDetail(EditShopDetailFirebaseCrudEvent event) async {
     Map<String, dynamic> data = {
       "name": event.shopName,
       "tax": event.shopTax,
@@ -146,13 +144,12 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     };
     String ref = 'shop';
 
-    DocumentReference path = await _initialFirestore(ref,"detail");
+    DocumentReference path = await _initialFirestore(ref, "detail");
     if (path != null) {
       await path.updateData(data);
     }
     return null;
   }
-
 
   Future<String> _uploadImage(String id, File imageFile) async {
     final FirebaseStorage storage = FirebaseStorage.instance;
@@ -256,7 +253,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
       "productName": event.product.name,
       "serialNumber": event.product.serialNumber,
       "type": event.product.type,
-      "price": event.product.price,
+//      "price": event.product.price,
       "salePrice": event.product.salePrice,
       "size": event.product.size,
       "quantity": event.product.quantity,
@@ -429,34 +426,34 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     //return TransitionDateTimeConverter().compareTransitionItemList(listModel);
   }
 
-  Future<List<TransitionModel>> readingNowadaysTransitionCRUD({String date}) async {
+  Future<List<TransitionModel>> readingNowadaysTransitionCRUD(
+      {String date}) async {
     List<TransitionModel> rawList = await readingTransitionCRUD();
 
     List<TransitionModel> filterList = [];
     var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
 
     DateTime dateTime = date != null ? formatter.parse(date) : DateTime.now();
 
     for (TransitionModel model in rawList) {
       DateTime modelDateTime = formatter.parse(model.createAt);
 
-      if(date != null){
-
-        print("${modelDateTime.year == dateTime.year} ${modelDateTime.month == dateTime.month} ${modelDateTime.day == dateTime.day}");
+      if (date != null) {
+        print(
+            "${modelDateTime.year == dateTime.year} ${modelDateTime.month == dateTime.month} ${modelDateTime.day == dateTime.day}");
 
         if (modelDateTime.year == dateTime.year &&
-            modelDateTime.month == dateTime.month && modelDateTime.day == dateTime.day) {
+            modelDateTime.month == dateTime.month &&
+            modelDateTime.day == dateTime.day) {
           filterList.add(model);
         }
-      }else {
+      } else {
         if (modelDateTime.year == dateTime.year &&
-            Jiffy().week == Jiffy(modelDateTime).week && Jiffy().day == Jiffy(modelDateTime).day) {
+            Jiffy().week == Jiffy(modelDateTime).week &&
+            Jiffy().day == Jiffy(modelDateTime).day) {
           filterList.add(model);
         }
       }
-
-
     }
     return filterList;
 
@@ -479,7 +476,7 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
         filterList.add(model);
       }
     }
-return filterList;
+    return filterList;
     //return TransitionDateTimeConverter().compareTransitionItemList(filterList);
   }
 
@@ -502,14 +499,15 @@ return filterList;
       }
     }
     print(filterList.length);
-    return TransitionDateTimeConverter().compareMonthTransitionItemList(rawList);
+    return TransitionDateTimeConverter()
+        .compareMonthTransitionItemList(rawList);
     //return TransitionDateTimeConverter().compareTransitionItemList(filterList);
   }
 
   Future<List<TransitionItem>> readingYearTransitionCRUD() async {
     List<TransitionModel> rawList = await readingTransitionCRUD();
 
-   /* List<TransitionModel> filterList = [];
+    /* List<TransitionModel> filterList = [];
 
     DateTime dateTime = DateTime.now();
 
@@ -589,7 +587,8 @@ return filterList;
 
     ShopDetailModel shopDetailModel = await this.readingShopDetail();
 
-    _showDialogAfterPay(event.context, TransitionItem(transitionModel, null),shopDetailModel);
+    _showDialogAfterPay(
+        event.context, TransitionItem(transitionModel, null), shopDetailModel);
 
     //_showDialogSuccess(event.context, event.receiveMoney - event.price);
 
@@ -636,8 +635,36 @@ return filterList;
       double price, double receiveMoney) {
     Alert(
       context: context,
-      title: "ยืนยันการชำระเงิน",
-      desc: "เงินทอน ${(receiveMoney - price).toStringAsFixed(2)} บาท",
+      title: "เงินที่ได้รับ ${(receiveMoney).toStringAsFixed(2)} บาท",
+      content: Container(
+        height: 120,
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+//          Container(
+//            child: Text(
+//              "เงินที่ได้รับ ${(receiveMoney).toStringAsFixed(2)} บาท",
+//              style: GoogleFonts.itim(color: Colors.black87, fontSize: 20),
+//            ),
+//          ),
+          Container(
+            child: Text(
+              "ยอดชำระ ${(price).toStringAsFixed(2)} บาท",
+              style: GoogleFonts.itim(color: Colors.black54, fontSize: 20),
+            ),
+          ),Container(
+            child: Text(
+              "",
+//              style: GoogleFonts.itim(color: Colors.black87, fontSize: 24),
+            ),
+          ),
+          Container(
+            child: Text(
+              "เงินทอน ${(receiveMoney - price).toStringAsFixed(2)} บาท",
+              style: GoogleFonts.itim(color: Colors.red, fontSize: 30,),
+            ),
+          ),
+        ]),
+      ),
+//      desc: "เงินทอน ${(receiveMoney - price).toStringAsFixed(2)} บาท",
       buttons: [
         DialogButton(
           child: Text(
@@ -650,7 +677,10 @@ return filterList;
           },
         ),
         DialogButton(
-          child: Text("ชำระเงิน"),
+          child: Text(
+            "ยืนยันการชำระเงิน",
+            style: GoogleFonts.itim(color: Colors.white),
+          ),
           color: Colors.green,
           onPressed: () {
             Navigator.pop(context);
@@ -692,7 +722,7 @@ return filterList;
             TextFormField(
               controller: _reciveMoneyController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: "ระบุจำนวนเงิน"),
+              decoration: InputDecoration(labelText: "ระบุจำนวนเงินที่ได้รับ"),
             ),
           ],
         ),
@@ -744,7 +774,8 @@ return filterList;
     ).show();
   }
 
-  _showDialogAfterPay(BuildContext context, TransitionItem item,ShopDetailModel shopDetailModel) {
+  _showDialogAfterPay(BuildContext context, TransitionItem item,
+      ShopDetailModel shopDetailModel) {
     Alert(
       context: context,
       title: "บันทึกเรียบร้อย",
@@ -759,7 +790,7 @@ return filterList;
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => new ReceiptPage(item,shopDetailModel),
+                  builder: (context) => new ReceiptPage(item, shopDetailModel),
                 ));
           },
         ),

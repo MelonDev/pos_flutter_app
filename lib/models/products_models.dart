@@ -4,7 +4,7 @@ class Product {
   static const ID = "id";
   static const TYPE = "type";
   static const NAME = "productName";
-  static const PRICE = "price";
+//  static const PRICE = "price";
   static const SERIALNUMBER = "serialNumber";
   static const QUANTITY = "quantity";
   static const SIZES = "size";
@@ -19,7 +19,7 @@ class Product {
   String type;
   List<String> image;
   String serialNumber;
-  String price;
+//  String price;
   String quantity;
   String size;
   List subIngredients;
@@ -34,7 +34,7 @@ class Product {
     name = data[NAME];
     id = data[ID];
     type = data[TYPE];
-    price = double.parse(data[PRICE].toString()).toStringAsFixed(2);
+//    price = double.parse(data[PRICE].toString()).toStringAsFixed(2);
     quantity = data[QUANTITY].toString();
     salePrice = double.parse(data[SALEPRICE].toString()).toStringAsFixed(2);
     serialNumber = double.parse(data[SERIALNUMBER].toString()).toStringAsFixed(0);
@@ -54,7 +54,7 @@ class Product {
     name = data[NAME];
     id = data[ID];
     type = data[TYPE];
-    price = double.parse(data[PRICE].toString()).toStringAsFixed(2);
+//    price = double.parse(data[PRICE].toString()).toStringAsFixed(2);
     quantity = data[QUANTITY].toString();
     salePrice = double.parse(data[SALEPRICE].toString()).toStringAsFixed(2);
     serialNumber = double.parse(data[SERIALNUMBER].toString()).toStringAsFixed(0);
@@ -72,7 +72,7 @@ class Product {
       'id': id,
       'productName': name,
       'type': type,
-      'price': price,
+//      'price': price,
       'serialNumber': serialNumber,
       'quantity': quantity,
       'size': size,

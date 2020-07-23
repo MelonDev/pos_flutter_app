@@ -557,7 +557,7 @@ class _CartState extends State<Cart> {
             "ยืนยัน",
             style: GoogleFonts.itim(color: Colors.black87),
           ),
-          color: Colors.lightGreenAccent,
+          color: Colors.green,
           onPressed: () {
             BlocProvider.of<ExternalBloc>(context).add(InitialExternalEvent());
             if (_TextInputController.text.length > 0) {
