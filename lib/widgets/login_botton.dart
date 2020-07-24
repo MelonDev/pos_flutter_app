@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginButton extends StatelessWidget {
   final VoidCallback _onPressed;
@@ -14,7 +15,11 @@ class LoginButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(30.0),
       ),
       onPressed: _onPressed,
-      child: Text('Login'),
+      child: Text('เข้าสู่ระบบ',
+        style: GoogleFonts.itim(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.white),),
       color: Colors.orange,
     );
   }

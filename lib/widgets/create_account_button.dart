@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/page/register_page.dart';
 
 import '../user_repository.dart';
@@ -15,7 +16,10 @@ class CreateAccountButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlatButton(
       child: Text(
-        'Create an Account',
+        'สมัครเข้าใช้งาน',style: GoogleFonts.itim(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: Colors.black87)
       ),
       onPressed: () {
         Navigator.of(context).push(

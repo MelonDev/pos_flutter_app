@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/bloc/authentication/authentication_bloc.dart';
 
 import 'package:posflutterapp/bloc/register/register_bloc.dart';
@@ -51,7 +52,10 @@ class _RegisterFormState extends State<RegisterForm> {
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Registering...'),
+                    Text('กำลังลงทะเบียน...',style: GoogleFonts.itim(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.white)),
                     CircularProgressIndicator(),
                   ],
                 ),
@@ -71,7 +75,10 @@ class _RegisterFormState extends State<RegisterForm> {
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Registration Failure'),
+                    Text('ลงทะเบียนล้มเหลว',style: GoogleFonts.itim(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.white)),
                     Icon(Icons.error),
                   ],
                 ),
@@ -98,7 +105,7 @@ class _RegisterFormState extends State<RegisterForm> {
                           size: 100,
                         ), // icon
                         Text(
-                          "REGISTER",
+                          "ลงทะเบียน",
                           style: TextStyle(
                               color: Colors.purple,
                               fontSize: 45,
@@ -122,7 +129,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               Icons.email,
                               color: Colors.purple,
                             ),
-                            labelText: 'Email',
+                            labelText: 'อีเมล',
                             border: InputBorder.none,
                           ),
                           keyboardType: TextInputType.emailAddress,
@@ -135,13 +142,13 @@ class _RegisterFormState extends State<RegisterForm> {
                                   r'^(([^<>()[\]\\.,;:\s@\"]+9\.[^<>()[\]\\.,;:\s@\"]+)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))S';
                               RegExp regex = new RegExp(pattern);
                               if (!regex.hasMatch(_)) if (!state.isEmailValid) {
-                                return 'Please make sure your email address is valid';
+                                return 'กรุณาตรวจสอบความถูกต้อง';
                               } else {
                                 return null;
                               }
                               else
                                 return !state.isEmailValid
-                                    ? 'Please make sure your email address is valid'
+                                    ? 'กรุณาตรวจสอบความถูกต้อง'
                                     : null;
                             }
                           },
@@ -164,7 +171,7 @@ class _RegisterFormState extends State<RegisterForm> {
                               Icons.lock,
                               color: Colors.purple,
                             ),
-                            labelText: 'Password',
+                            labelText: 'รหัสผ่าน',
                             border: InputBorder.none,
                           ),
                           obscureText: true,
@@ -173,11 +180,11 @@ class _RegisterFormState extends State<RegisterForm> {
                           validator: (_) {
                             if (_.isEmpty) {
                               if (!state.isPasswordValid) {
-                                return 'The password field cannot be empty';
+                                return 'กรุณากรอกข้อมูล';
                               }
                             } else if (_.length < 8) {
                               if (!state.isPasswordValid) {
-                                return 'The password has to be at least 8 characters long';
+                                return 'รหัสผ่านต้องมี 8 ตัวอักษรขึ้นไป แล้วต้องมีตัวอักษร 1 ตัว';
                               }
                             }
                             return !state.isPasswordValid

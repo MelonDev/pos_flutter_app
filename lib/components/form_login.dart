@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:posflutterapp/bloc/authentication/authentication_bloc.dart';
 import 'package:posflutterapp/bloc/login/login_bloc.dart';
 import 'package:posflutterapp/widgets/ForgotButton.dart';
@@ -53,7 +54,10 @@ class _LoginFormState extends State<LoginForm> {
               SnackBar(
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text('Login Failure'), Icon(Icons.error)],
+                  children: [Text('เข้าสู่ระบบ ล้มเหลว',style: GoogleFonts.itim(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.red)), Icon(Icons.error)],
                 ),
                 backgroundColor: Colors.red,
               ),
@@ -67,7 +71,10 @@ class _LoginFormState extends State<LoginForm> {
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Logging In...'),
+                    Text('กำลังเข้าสู่ระบบ...',style: GoogleFonts.itim(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.white)),
                     CircularProgressIndicator(),
                   ],
                 ),
@@ -114,13 +121,13 @@ class _LoginFormState extends State<LoginForm> {
                         Icons.email,
                         color: Colors.purple,
                       ),
-                      labelText: 'Email',
+                      labelText: 'อีเมล',
                     ),
                     keyboardType: TextInputType.emailAddress,
                     autovalidate: true,
                     autocorrect: false,
                     validator: (_) {
-                      return !state.isEmailValid ? 'Invalid Email' : null;
+                      return !state.isEmailValid ? 'ข้อมูลไม่ถูกต้อง กรุณากรอกข้อมูล' : null;
                     },
                   ),
                   TextFormField(
@@ -130,13 +137,13 @@ class _LoginFormState extends State<LoginForm> {
                         Icons.lock,
                         color: Colors.purple,
                       ),
-                      labelText: 'Password',
+                      labelText: 'รหัสผ่าน',
                     ),
                     obscureText: true,
                     autovalidate: true,
                     autocorrect: false,
                     validator: (_) {
-                      return !state.isPasswordValid ? 'Invalid Password' : null;
+                      return !state.isPasswordValid ? 'กรุณากรอกข้อมูล' : null;
                     },
                   ),
                   Padding(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:posflutterapp/bloc/register/register_bloc.dart';
 import 'package:posflutterapp/components/register_form.dart';
@@ -22,9 +23,11 @@ class RegisterScreen extends StatelessWidget {
         elevation: 0.1,
         backgroundColor: Colors.white,
         title: Text(
-          'Register',
-          style: TextStyle(
-            color: Colors.purple,
+          'ลงทะเบียน',
+            style: GoogleFonts.itim(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Colors.purple
           ),
         ),
       ),

@@ -384,8 +384,8 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
   void showDialogsOut(BuildContext context) {
     Alert(
       context: context,
-      title: "OUT OF STOCK",
-//      desc: "เงินทอน 0 บาท",
+      title: "สินค้าหมด",
+      desc: "กรุณาเพิ่มสินค้า",
       buttons: [
         DialogButton(
           child: Text("ยืนยัน"),

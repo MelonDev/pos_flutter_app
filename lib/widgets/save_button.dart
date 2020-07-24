@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SaveButton extends StatelessWidget {
   final VoidCallback _onPressed;
@@ -15,7 +16,11 @@ class SaveButton extends StatelessWidget {
       ),
       onPressed: _onPressed,
       child: Text(
-        'บันทึก',style: TextStyle(color: Colors.white),
+        'บันทึก',
+          style: GoogleFonts.itim(
+          fontWeight: FontWeight.bold,
+      fontSize: 20,
+      color: Colors.white),
       ),
       color: Colors.orange,
     );

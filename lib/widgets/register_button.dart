@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class RegisterButton extends StatelessWidget {
   final VoidCallback _onPressed;
@@ -15,7 +16,10 @@ class RegisterButton extends StatelessWidget {
       ),
       onPressed: _onPressed,
       child: Text(
-        'ลงทะเบียน',
+        'ลงทะเบียน',style: GoogleFonts.itim(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: Colors.white)
       ),
       color: Colors.orange,
     );
