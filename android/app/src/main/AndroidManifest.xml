@@ -4,8 +4,8 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="posflutterapp"
-        android:icon="@mipmap/ic_launcher">
+        android:label="POS SHOP"
+        android:icon="@mipmap/shop_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

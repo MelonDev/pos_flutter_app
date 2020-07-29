@@ -493,14 +493,17 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
     for (TransitionModel model in rawList) {
       var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
       DateTime modelDateTime = formatter.parse(model.createAt);
-      if (modelDateTime.year == (year ?? dateTime.year) &&
-          modelDateTime.month == (month ?? dateTime.month)) {
+      print("modelDateTime.month ${modelDateTime.month}");
+      print("month $month");
+      print("dateTime.month ${dateTime.month}");
+      if (modelDateTime.year == year &&
+          modelDateTime.month == month) {
         filterList.add(model);
       }
     }
     print(filterList.length);
     return TransitionDateTimeConverter()
-        .compareMonthTransitionItemList(rawList);
+        .compareMonthTransitionItemList(filterList);
     //return TransitionDateTimeConverter().compareTransitionItemList(filterList);
   }
 
@@ -524,7 +527,10 @@ class FirebaseCrudBloc extends Bloc<FirebaseCrudEvent, FirebaseCrudState> {
 
     */
 //return filterList;
-    return TransitionDateTimeConverter().compareYearTransitionItemList(rawList);
+    List<TransitionItem> list =  TransitionDateTimeConverter().compareYearTransitionItemList(rawList);
+    list.sort((a,b) => a.month.compareTo(b.month));
+
+    return list;
   }
 
   @override

@@ -24,7 +24,7 @@ class _ReportMonthDetailPageState extends State<ReportMonthDetailPage> {
   @override
   Widget build(BuildContext context) {
     _externalBloc = BlocProvider.of<ExternalBloc>(context);
-    _externalBloc.add(MonthReadTransitionExternalEvent(month: widget.item.month + 1,year: widget.item.year));
+    _externalBloc.add(MonthReadTransitionExternalEvent(month: widget.item.month,year: widget.item.year));
 
 
     return BlocBuilder<ExternalBloc, ExternalState>(

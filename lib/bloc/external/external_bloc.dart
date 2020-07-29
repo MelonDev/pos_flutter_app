@@ -600,6 +600,8 @@ class ExternalBloc extends Bloc<ExternalEvent, ExternalState> {
       MonthReadTransitionExternalEvent event) async* {
     yield LoadingExternalState();
 
+    print("event.month ${event.month}");
+
     List<TransitionItem> list = await FirebaseCrudBloc()
         .readingMonthTransitionCRUD(event.month, event.year);
 

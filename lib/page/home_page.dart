@@ -37,7 +37,7 @@ class HomePage extends StatelessWidget {
                 children: <Widget>[
                   Container(
                     child: Text(
-                      "POS",
+                      "POS SHOP",
                       style: GoogleFonts.itim(
                           fontWeight: FontWeight.bold,
                           fontSize: 40,

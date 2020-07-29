@@ -74,12 +74,14 @@ class TransitionDateTimeConverter {
       var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
       DateTime dateTime = formatter.parse(data.createAt);
       DateTime _date = DateTime(dateTime.year, dateTime.month, 0, 0, 0, 0, 0, 0);
+
       if (_datetime == null) {
         _datetime = _date;
       }
       if (_date.isAfter(_datetime)) {
-        print("_date.isAfter(_datetime) ${_date.toString()} ${_datetime.toString()}");
-        newList.add(TransitionItem(null, _loadYearDateForLabel(formatter.format(_datetime)),count: mCount,month: dateTime.month,year: dateTime.year,price: mPrice.toStringAsFixed(2)));
+        //print("_date.isAfter(_datetime) ${_date.toString()} ${_datetime.toString()}");
+        print("${_loadYearDateForLabel(formatter.format(_datetime))}");
+        newList.add(TransitionItem(null, _loadYearDateForLabel(formatter.format(_datetime)),count: mCount,month: _datetime.month + 1,year: _datetime.year,price: mPrice.toStringAsFixed(2)));
         mCount = 0;
         mPrice = 0;
         month = 0;
@@ -100,7 +102,7 @@ class TransitionDateTimeConverter {
       }
       counter++;
       if(counter == originalList.length){
-        newList.add(TransitionItem(null, _loadYearDateForLabel(formatter.format(_datetime)),count: mCount,month: dateTime.month,year: dateTime.year,price: mPrice.toStringAsFixed(2)));
+        newList.add(TransitionItem(null, _loadYearDateForLabel(formatter.format(_datetime)),count: mCount,month: _datetime.month + 1,year: _datetime.year,price: mPrice.toStringAsFixed(2)));
         mCount = 0;
         mPrice = 0;
         month = 0;

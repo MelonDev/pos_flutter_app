@@ -118,6 +118,7 @@ class _ReportHistoryPageState extends State<ReportHistoryPage> {
 
   Widget _transitionWidget(
       TransitionItem item, ReadTransitionExternalState _state, int position) {
+    print("item.month ${item.month}");
     return GestureDetector(
       onTap: () {
         Navigator.push(
